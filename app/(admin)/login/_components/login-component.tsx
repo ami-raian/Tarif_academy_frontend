@@ -69,6 +69,7 @@ export default function LoginComponent() {
       });
 
       const data: LoginResponse = await response.json();
+      console.log("Login Response:", data);
 
       if (data.success) {
         setCookie("accessToken", data.data.accessToken, 7);
