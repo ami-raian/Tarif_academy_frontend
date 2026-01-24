@@ -1,42 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { GraduationCap, ShieldCheck, Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
+import {
+  GraduationCap,
+  ShieldCheck,
+  Mail,
+  Lock,
+  Loader2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
+import { LoginFormData, LoginResponse } from "@/types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_TARIFACADEMY_API_URL || "http://localhost:5000/api/v1";
-
-interface LoginFormData {
-  email: string;
-  password: string;
-}
-
-interface StudentData {
-  id: string;
-  fullName: string;
-  email: string;
-  mobile: string;
-  photo: string;
-  isVerified: boolean;
-}
-
-interface AdminData {
-  id: string;
-  email: string;
-  role: string;
-  avatar: string;
-}
-
-interface LoginResponse {
-  success: boolean;
-  message: string;
-  data: {
-    student?: StudentData;
-    admin?: AdminData;
-    accessToken: string;
-    refreshToken: string;
-  };
-  statusCode: number;
-}
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_TARIFACADEMY_API_URL ||
+  "http://localhost:5000/api/v1";
 
 function setCookie(name: string, value: string, days: number = 7) {
   const expires = new Date();
@@ -49,8 +27,14 @@ export default function LoginComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [studentForm, setStudentForm] = useState<LoginFormData>({ email: "", password: "" });
-  const [adminForm, setAdminForm] = useState<LoginFormData>({ email: "", password: "" });
+  const [studentForm, setStudentForm] = useState<LoginFormData>({
+    email: "",
+    password: "",
+  });
+  const [adminForm, setAdminForm] = useState<LoginFormData>({
+    email: "",
+    password: "",
+  });
 
   const handleStudentInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -70,9 +54,10 @@ export default function LoginComponent() {
     setError(null);
 
     const formData = type === "student" ? studentForm : adminForm;
-    const endpoint = type === "student"
-      ? `${API_BASE_URL}/auth/student/login`
-      : `${API_BASE_URL}/auth/admin/login`;
+    const endpoint =
+      type === "student"
+        ? `${API_BASE_URL}/auth/student/login`
+        : `${API_BASE_URL}/auth/admin/login`;
 
     try {
       const response = await fetch(endpoint, {
@@ -112,16 +97,16 @@ export default function LoginComponent() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-100 to-purple-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-r from-gray-100 to-purple-100 p-4">
       {/* Main Container */}
       <div
-        className={`relative bg-white rounded-[30px] shadow-[0_5px_15px_rgba(0,0,0,0.35)] overflow-hidden w-full max-w-[768px] min-h-[480px] ${
+        className={`relative bg-white rounded-[30px] shadow-[0_5px_15px_rgba(0,0,0,0.35)] overflow-hidden w-full max-w-3xl min-h-120 ${
           isAdminActive ? "admin-active" : ""
         }`}
       >
         {/* Student Sign In Form */}
         <div
-          className={`absolute top-0 left-0 w-1/2 h-full flex items-center justify-center transition-all duration-[0.6s] ease-in-out z-[2] ${
+          className={`absolute top-0 left-0 w-1/2 h-full flex items-center justify-center transition-all duration-[0.6s] ease-in-out z-2 ${
             isAdminActive ? "translate-x-full" : ""
           }`}
         >
@@ -131,9 +116,13 @@ export default function LoginComponent() {
           >
             <div className="flex items-center gap-2 mb-2">
               <GraduationCap className="w-8 h-8 text-purple-600" />
-              <h1 className="text-2xl font-bold text-gray-800">Student Login</h1>
+              <h1 className="text-2xl font-bold text-gray-800">
+                Student Login
+              </h1>
             </div>
-            <span className="text-xs text-gray-500 mb-4">Sign in to access your courses</span>
+            <span className="text-xs text-gray-500 mb-4">
+              Sign in to access your courses
+            </span>
 
             <div className="relative w-full mb-2">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -164,11 +153,18 @@ export default function LoginComponent() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
               </button>
             </div>
 
-            <a href="#" className="text-xs text-gray-600 my-3 hover:text-purple-600">
+            <a
+              href="#"
+              className="text-xs text-gray-600 my-3 hover:text-purple-600"
+            >
               Forgot Your Password?
             </a>
 
@@ -197,8 +193,10 @@ export default function LoginComponent() {
 
         {/* Admin Sign In Form */}
         <div
-          className={`absolute top-0 left-0 w-1/2 h-full flex items-center justify-center transition-all duration-[0.6s] ease-in-out z-[1] opacity-0 ${
-            isAdminActive ? "translate-x-full opacity-100 z-[5] animate-slide" : ""
+          className={`absolute top-0 left-0 w-1/2 h-full flex items-center justify-center transition-all duration-[0.6s] ease-in-out z-1 opacity-0 ${
+            isAdminActive
+              ? "translate-x-full opacity-100 z-5 animate-slide"
+              : ""
           }`}
         >
           <form
@@ -209,7 +207,9 @@ export default function LoginComponent() {
               <ShieldCheck className="w-8 h-8 text-purple-600" />
               <h1 className="text-2xl font-bold text-gray-800">Admin Login</h1>
             </div>
-            <span className="text-xs text-gray-500 mb-4">Authorized personnel only</span>
+            <span className="text-xs text-gray-500 mb-4">
+              Authorized personnel only
+            </span>
 
             <div className="relative w-full mb-2">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -240,11 +240,18 @@ export default function LoginComponent() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
               </button>
             </div>
 
-            <a href="#" className="text-xs text-gray-600 my-3 hover:text-purple-600">
+            <a
+              href="#"
+              className="text-xs text-gray-600 my-3 hover:text-purple-600"
+            >
               Forgot Your Password?
             </a>
 
@@ -273,17 +280,15 @@ export default function LoginComponent() {
 
         {/* Toggle Container */}
         <div
-          className="absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-all duration-[0.6s] ease-in-out z-[1000]"
+          className="absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-all duration-[0.6s] ease-in-out z-1000"
           style={{
             transform: isAdminActive ? "translateX(-100%)" : "translateX(0)",
-            borderRadius: isAdminActive
-              ? "0 150px 100px 0"
-              : "150px 0 0 100px"
+            borderRadius: isAdminActive ? "0 150px 100px 0" : "150px 0 0 100px",
           }}
         >
           {/* Toggle Background */}
           <div
-            className={`bg-gradient-to-r from-indigo-500 to-purple-600 text-white relative -left-full h-full w-[200%] transition-all duration-[0.6s] ease-in-out ${
+            className={`bg-linear-to-r from-indigo-500 to-purple-600 text-white relative -left-full h-full w-[200%] transition-all duration-[0.6s] ease-in-out ${
               isAdminActive ? "translate-x-1/2" : "translate-x-0"
             }`}
           >
@@ -315,7 +320,8 @@ export default function LoginComponent() {
               <ShieldCheck className="w-16 h-16 mb-4 opacity-90" />
               <h1 className="text-2xl font-bold mb-2">Admin Access</h1>
               <p className="text-sm leading-5 tracking-wide my-5 opacity-90">
-                Manage courses, students, and platform settings from your admin panel
+                Manage courses, students, and platform settings from your admin
+                panel
               </p>
               <button
                 onClick={togglePanel}
@@ -331,11 +337,13 @@ export default function LoginComponent() {
       {/* Custom animation keyframes */}
       <style jsx>{`
         @keyframes slide {
-          0%, 49.99% {
+          0%,
+          49.99% {
             opacity: 0;
             z-index: 1;
           }
-          50%, 100% {
+          50%,
+          100% {
             opacity: 1;
             z-index: 5;
           }
