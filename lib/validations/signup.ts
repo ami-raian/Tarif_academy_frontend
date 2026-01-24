@@ -25,7 +25,15 @@ const boards = [
 const groups = ["science", "commerce", "arts"] as const;
 
 // Guardian types
-const guardianTypes = ["father", "mother", "brother", "sister", "uncle", "aunt", "other"] as const;
+const guardianTypes = [
+  "father",
+  "mother",
+  "brother",
+  "sister",
+  "uncle",
+  "aunt",
+  "other",
+] as const;
 
 // Gender
 const genders = ["male", "female", "other"] as const;
@@ -44,14 +52,14 @@ const sscSchema = z.object({
     .string()
     .min(2, "স্কুলের নাম কমপক্ষে ২ অক্ষর হতে হবে")
     .max(100, "স্কুলের নাম সর্বোচ্চ ১০০ অক্ষর হতে পারে"),
-  board: z.enum(boards, { errorMap: () => ({ message: "বোর্ড নির্বাচন করুন" }) }),
+  board: z.enum(boards, { message: "বোর্ড নির্বাচন করুন" }),
   passingYear: z
-    .number({ invalid_type_error: "পাশের সাল আবশ্যক" })
+    .number()
     .min(2000, "পাশের সাল ২০০০ এর পরে হতে হবে")
     .max(new Date().getFullYear() + 1, "ভবিষ্যতের সাল দেওয়া যাবে না"),
-  group: z.enum(groups, { errorMap: () => ({ message: "বিভাগ নির্বাচন করুন" }) }),
+  group: z.enum(groups, { message: "বিভাগ নির্বাচন করুন" }),
   gpa: z
-    .number({ invalid_type_error: "GPA আবশ্যক" })
+    .number()
     .min(1.0, "GPA কমপক্ষে ১.০০ হতে হবে")
     .max(5.0, "GPA সর্বোচ্চ ৫.০০ হতে পারে"),
 });
@@ -70,21 +78,21 @@ const hscSchema = z.object({
     .string()
     .min(2, "কলেজের নাম কমপক্ষে ২ অক্ষর হতে হবে")
     .max(100, "কলেজের নাম সর্বোচ্চ ১০০ অক্ষর হতে পারে"),
-  board: z.enum(boards, { errorMap: () => ({ message: "বোর্ড নির্বাচন করুন" }) }),
+  board: z.enum(boards, { message: "বোর্ড নির্বাচন করুন" }),
   passingYear: z
-    .number({ invalid_type_error: "পাশের সাল আবশ্যক" })
+    .number()
     .min(2000, "পাশের সাল ২০০০ এর পরে হতে হবে")
     .max(new Date().getFullYear() + 5, "পাশের সাল সঠিক নয়"),
-  group: z.enum(groups, { errorMap: () => ({ message: "বিভাগ নির্বাচন করুন" }) }),
+  group: z.enum(groups, { message: "বিভাগ নির্বাচন করুন" }),
   gpa: z
-    .number({ invalid_type_error: "GPA আবশ্যক" })
+    .number()
     .min(1.0, "GPA কমপক্ষে ১.০০ হতে হবে")
     .max(5.0, "GPA সর্বোচ্চ ৫.০০ হতে পারে"),
 });
 
 // Guardian Schema
 const guardianSchema = z.object({
-  type: z.enum(guardianTypes, { errorMap: () => ({ message: "অভিভাবকের ধরন নির্বাচন করুন" }) }),
+  type: z.enum(guardianTypes, { message: "অভিভাবকের ধরন নির্বাচন করুন" }),
   name: z
     .string()
     .min(2, "অভিভাবকের নাম কমপক্ষে ২ অক্ষর হতে হবে")
@@ -122,51 +130,51 @@ const educationalInfoSchema = z.object({
 });
 
 // Main Signup Schema
-export const signupSchema = z.object({
-  // Basic Info
-  fullName: z
-    .string()
-    .min(2, "নাম কমপক্ষে ২ অক্ষর হতে হবে")
-    .max(100, "নাম সর্বোচ্চ ১০০ অক্ষর হতে পারে"),
-  email: z
-    .string()
-    .min(1, "ইমেইল আবশ্যক")
-    .email("সঠিক ইমেইল ঠিকানা দিন"),
-  password: z
-    .string()
-    .min(6, "পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে")
-    .max(50, "পাসওয়ার্ড সর্বোচ্চ ৫০ অক্ষর হতে পারে"),
-  confirmPassword: z
-    .string()
-    .min(1, "পাসওয়ার্ড নিশ্চিত করুন"),
-  mobile: z
-    .string()
-    .min(1, "মোবাইল নম্বর আবশ্যক")
-    .regex(bdPhoneRegex, "সঠিক বাংলাদেশি মোবাইল নম্বর দিন (যেমন: 01712345678)"),
-  whatsapp: z
-    .string()
-    .min(1, "হোয়াটসঅ্যাপ নম্বর আবশ্যক")
-    .regex(bdPhoneRegex, "সঠিক বাংলাদেশি মোবাইল নম্বর দিন"),
-  dateOfBirth: z
-    .string()
-    .min(1, "জন্ম তারিখ আবশ্যক")
-    .refine((date) => {
-      const birthDate = new Date(date);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-      return age >= 10 && age <= 50;
-    }, "বয়স ১০-৫০ বছরের মধ্যে হতে হবে"),
-  gender: z.enum(genders, { errorMap: () => ({ message: "লিঙ্গ নির্বাচন করুন" }) }),
-  bloodGroup: z.enum(bloodGroups, { errorMap: () => ({ message: "রক্তের গ্রুপ নির্বাচন করুন" }) }),
+export const signupSchema = z
+  .object({
+    // Basic Info
+    fullName: z
+      .string()
+      .min(2, "নাম কমপক্ষে ২ অক্ষর হতে হবে")
+      .max(100, "নাম সর্বোচ্চ ১০০ অক্ষর হতে পারে"),
+    email: z.string().min(1, "ইমেইল আবশ্যক").email("সঠিক ইমেইল ঠিকানা দিন"),
+    password: z
+      .string()
+      .min(6, "পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে")
+      .max(50, "পাসওয়ার্ড সর্বোচ্চ ৫০ অক্ষর হতে পারে"),
+    confirmPassword: z.string().min(1, "পাসওয়ার্ড নিশ্চিত করুন"),
+    mobile: z
+      .string()
+      .min(1, "মোবাইল নম্বর আবশ্যক")
+      .regex(
+        bdPhoneRegex,
+        "সঠিক বাংলাদেশি মোবাইল নম্বর দিন (যেমন: 01712345678)",
+      ),
+    whatsapp: z
+      .string()
+      .min(1, "হোয়াটসঅ্যাপ নম্বর আবশ্যক")
+      .regex(bdPhoneRegex, "সঠিক বাংলাদেশি মোবাইল নম্বর দিন"),
+    dateOfBirth: z
+      .string()
+      .min(1, "জন্ম তারিখ আবশ্যক")
+      .refine((date) => {
+        const birthDate = new Date(date);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        return age >= 10 && age <= 50;
+      }, "বয়স ১০-৫০ বছরের মধ্যে হতে হবে"),
+    gender: z.enum(genders, { message: "লিঙ্গ নির্বাচন করুন" }),
+    bloodGroup: z.enum(bloodGroups, { message: "রক্তের গ্রুপ নির্বাচন করুন" }),
 
-  // Nested Objects
-  educationalInfo: educationalInfoSchema,
-  guardian: guardianSchema,
-  address: addressSchema,
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "পাসওয়ার্ড মিলছে না",
-  path: ["confirmPassword"],
-});
+    // Nested Objects
+    educationalInfo: educationalInfoSchema,
+    guardian: guardianSchema,
+    address: addressSchema,
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "পাসওয়ার্ড মিলছে না",
+    path: ["confirmPassword"],
+  });
 
 export type SignupFormData = z.infer<typeof signupSchema>;
 
