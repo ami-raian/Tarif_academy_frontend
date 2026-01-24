@@ -3,7 +3,15 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { GraduationCap, Menu, X, LogIn, UserPlus, LogOut, User } from "lucide-react";
+import {
+  GraduationCap,
+  Menu,
+  X,
+  LogIn,
+  UserPlus,
+  LogOut,
+  User,
+} from "lucide-react";
 
 function getCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
@@ -26,9 +34,12 @@ export function Navbar() {
   useEffect(() => {
     const token = getCookie("accessToken");
     const type = getCookie("userType");
-    setIsLoggedIn(!!token);
-    setUserType(type);
-    setIsLoading(false);
+    // Use a microtask to batch these state updates
+    queueMicrotask(() => {
+      setIsLoggedIn(!!token);
+      setUserType(type);
+      setIsLoading(false);
+    });
   }, []);
 
   const handleLogout = () => {
@@ -46,10 +57,10 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-purple-500/25 transition-shadow">
+            <div className="w-10 h-10 bg-linear-to-br from-purple-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-purple-500/25 transition-shadow">
               <GraduationCap className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-cyan-500 bg-clip-text text-transparent">
+            <span className="text-xl font-bold bg-linear-to-r from-purple-600 to-cyan-500 bg-clip-text text-transparent">
               Tarif Academy
             </span>
           </Link>
@@ -91,7 +102,9 @@ export function Navbar() {
               </div>
             ) : isLoggedIn ? (
               <>
-                <Link href={userType === "admin" ? "/dashboard" : "/my-courses"}>
+                <Link
+                  href={userType === "admin" ? "/dashboard" : "/my-courses"}
+                >
                   <Button
                     variant="ghost"
                     className="text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 dark:text-gray-300 dark:hover:text-purple-400 dark:hover:bg-purple-900/20"
@@ -102,7 +115,7 @@ export function Navbar() {
                 </Link>
                 <Button
                   onClick={handleLogout}
-                  className="text-sm font-medium bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white shadow-lg hover:shadow-red-500/25 transition-all"
+                  className="text-sm font-medium bg-linear-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white shadow-lg hover:shadow-red-500/25 transition-all"
                 >
                   <LogOut className="w-4 h-4 mr-2" />
                   লগআউট
@@ -120,7 +133,7 @@ export function Navbar() {
                   </Button>
                 </Link>
                 <Link href="/sign-up">
-                  <Button className="text-sm font-medium bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 text-white shadow-lg hover:shadow-purple-500/25 transition-all">
+                  <Button className="text-sm font-medium bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 text-white shadow-lg hover:shadow-purple-500/25 transition-all">
                     <UserPlus className="w-4 h-4 mr-2" />
                     সাইন আপ
                   </Button>
@@ -200,7 +213,7 @@ export function Navbar() {
                         handleLogout();
                         setIsMenuOpen(false);
                       }}
-                      className="w-full text-sm font-medium bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white"
+                      className="w-full text-sm font-medium bg-linear-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white"
                     >
                       <LogOut className="w-4 h-4 mr-2" />
                       লগআউট
@@ -218,7 +231,7 @@ export function Navbar() {
                       </Button>
                     </Link>
                     <Link href="/sign-up" onClick={() => setIsMenuOpen(false)}>
-                      <Button className="w-full text-sm font-medium bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 text-white">
+                      <Button className="w-full text-sm font-medium bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 text-white">
                         <UserPlus className="w-4 h-4 mr-2" />
                         সাইন আপ
                       </Button>
