@@ -40,7 +40,8 @@ import {
 } from "@/lib/validations/signup";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_TARIFACADEMY_API_URL || "http://localhost:5000/api/v1";
+  process.env.NEXT_PUBLIC_TARIFACADEMY_API_URL ||
+  "http://localhost:5000/api/v1";
 
 const STEPS = [
   { id: 1, title: "ব্যক্তিগত তথ্য", icon: User },
@@ -164,7 +165,9 @@ export default function SignUpComponent() {
       if (result.success) {
         setSuccess(true);
       } else {
-        setError(result.message || "রেজিস্ট্রেশন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।");
+        setError(
+          result.message || "রেজিস্ট্রেশন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।",
+        );
       }
     } catch {
       setError("নেটওয়ার্ক সমস্যা। আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন।");
@@ -228,7 +231,9 @@ export default function SignUpComponent() {
                       <step.icon className="w-5 h-5" />
                     )}
                   </div>
-                  <span className="text-xs mt-1 hidden sm:block">{step.title}</span>
+                  <span className="text-xs mt-1 hidden sm:block">
+                    {step.title}
+                  </span>
                 </div>
                 {index !== STEPS.length - 1 && (
                   <div
@@ -266,7 +271,9 @@ export default function SignUpComponent() {
                     />
                   </div>
                   {errors.fullName && (
-                    <p className="text-xs text-red-500">{errors.fullName.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.fullName.message}
+                    </p>
                   )}
                 </div>
 
@@ -284,7 +291,9 @@ export default function SignUpComponent() {
                     />
                   </div>
                   {errors.email && (
-                    <p className="text-xs text-red-500">{errors.email.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.email.message}
+                    </p>
                   )}
                 </div>
 
@@ -305,17 +314,25 @@ export default function SignUpComponent() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
                     </button>
                   </div>
                   {errors.password && (
-                    <p className="text-xs text-red-500">{errors.password.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.password.message}
+                    </p>
                   )}
                 </div>
 
                 {/* Confirm Password */}
                 <div className="space-y-1">
-                  <Label htmlFor="confirmPassword">পাসওয়ার্ড নিশ্চিত করুন *</Label>
+                  <Label htmlFor="confirmPassword">
+                    পাসওয়ার্ড নিশ্চিত করুন *
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
@@ -327,14 +344,22 @@ export default function SignUpComponent() {
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
-                      {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showConfirmPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
                     </button>
                   </div>
                   {errors.confirmPassword && (
-                    <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.confirmPassword.message}
+                    </p>
                   )}
                 </div>
 
@@ -351,7 +376,9 @@ export default function SignUpComponent() {
                     />
                   </div>
                   {errors.mobile && (
-                    <p className="text-xs text-red-500">{errors.mobile.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.mobile.message}
+                    </p>
                   )}
                 </div>
 
@@ -368,7 +395,9 @@ export default function SignUpComponent() {
                     />
                   </div>
                   {errors.whatsapp && (
-                    <p className="text-xs text-red-500">{errors.whatsapp.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.whatsapp.message}
+                    </p>
                   )}
                 </div>
 
@@ -385,7 +414,9 @@ export default function SignUpComponent() {
                     />
                   </div>
                   {errors.dateOfBirth && (
-                    <p className="text-xs text-red-500">{errors.dateOfBirth.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.dateOfBirth.message}
+                    </p>
                   )}
                 </div>
 
@@ -405,7 +436,9 @@ export default function SignUpComponent() {
                     ))}
                   </select>
                   {errors.gender && (
-                    <p className="text-xs text-red-500">{errors.gender.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.gender.message}
+                    </p>
                   )}
                 </div>
 
@@ -428,7 +461,9 @@ export default function SignUpComponent() {
                     </select>
                   </div>
                   {errors.bloodGroup && (
-                    <p className="text-xs text-red-500">{errors.bloodGroup.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.bloodGroup.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -451,7 +486,9 @@ export default function SignUpComponent() {
                     placeholder="রোল নম্বর"
                   />
                   {errors.educationalInfo?.ssc?.roll && (
-                    <p className="text-xs text-red-500">{errors.educationalInfo.ssc.roll.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.educationalInfo.ssc.roll.message}
+                    </p>
                   )}
                 </div>
 
@@ -462,7 +499,9 @@ export default function SignUpComponent() {
                     placeholder="রেজিস্ট্রেশন নম্বর"
                   />
                   {errors.educationalInfo?.ssc?.registration && (
-                    <p className="text-xs text-red-500">{errors.educationalInfo.ssc.registration.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.educationalInfo.ssc.registration.message}
+                    </p>
                   )}
                 </div>
 
@@ -473,7 +512,9 @@ export default function SignUpComponent() {
                     placeholder="আপনার স্কুলের নাম"
                   />
                   {errors.educationalInfo?.ssc?.schoolName && (
-                    <p className="text-xs text-red-500">{errors.educationalInfo.ssc.schoolName.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.educationalInfo.ssc.schoolName.message}
+                    </p>
                   )}
                 </div>
 
@@ -491,7 +532,9 @@ export default function SignUpComponent() {
                     ))}
                   </select>
                   {errors.educationalInfo?.ssc?.board && (
-                    <p className="text-xs text-red-500">{errors.educationalInfo.ssc.board.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.educationalInfo.ssc.board.message}
+                    </p>
                   )}
                 </div>
 
@@ -509,7 +552,9 @@ export default function SignUpComponent() {
                     ))}
                   </select>
                   {errors.educationalInfo?.ssc?.group && (
-                    <p className="text-xs text-red-500">{errors.educationalInfo.ssc.group.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.educationalInfo.ssc.group.message}
+                    </p>
                   )}
                 </div>
 
@@ -517,11 +562,15 @@ export default function SignUpComponent() {
                   <Label>পাশের সাল *</Label>
                   <Input
                     type="number"
-                    {...register("educationalInfo.ssc.passingYear", { valueAsNumber: true })}
+                    {...register("educationalInfo.ssc.passingYear", {
+                      valueAsNumber: true,
+                    })}
                     placeholder="2024"
                   />
                   {errors.educationalInfo?.ssc?.passingYear && (
-                    <p className="text-xs text-red-500">{errors.educationalInfo.ssc.passingYear.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.educationalInfo.ssc.passingYear.message}
+                    </p>
                   )}
                 </div>
 
@@ -530,11 +579,15 @@ export default function SignUpComponent() {
                   <Input
                     type="number"
                     step="0.01"
-                    {...register("educationalInfo.ssc.gpa", { valueAsNumber: true })}
+                    {...register("educationalInfo.ssc.gpa", {
+                      valueAsNumber: true,
+                    })}
                     placeholder="5.00"
                   />
                   {errors.educationalInfo?.ssc?.gpa && (
-                    <p className="text-xs text-red-500">{errors.educationalInfo.ssc.gpa.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.educationalInfo.ssc.gpa.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -557,7 +610,9 @@ export default function SignUpComponent() {
                     placeholder="রোল নম্বর"
                   />
                   {errors.educationalInfo?.hsc?.roll && (
-                    <p className="text-xs text-red-500">{errors.educationalInfo.hsc.roll.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.educationalInfo.hsc.roll.message}
+                    </p>
                   )}
                 </div>
 
@@ -568,7 +623,9 @@ export default function SignUpComponent() {
                     placeholder="রেজিস্ট্রেশন নম্বর"
                   />
                   {errors.educationalInfo?.hsc?.registration && (
-                    <p className="text-xs text-red-500">{errors.educationalInfo.hsc.registration.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.educationalInfo.hsc.registration.message}
+                    </p>
                   )}
                 </div>
 
@@ -579,7 +636,9 @@ export default function SignUpComponent() {
                     placeholder="আপনার কলেজের নাম"
                   />
                   {errors.educationalInfo?.hsc?.collegeName && (
-                    <p className="text-xs text-red-500">{errors.educationalInfo.hsc.collegeName.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.educationalInfo.hsc.collegeName.message}
+                    </p>
                   )}
                 </div>
 
@@ -597,7 +656,9 @@ export default function SignUpComponent() {
                     ))}
                   </select>
                   {errors.educationalInfo?.hsc?.board && (
-                    <p className="text-xs text-red-500">{errors.educationalInfo.hsc.board.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.educationalInfo.hsc.board.message}
+                    </p>
                   )}
                 </div>
 
@@ -615,7 +676,9 @@ export default function SignUpComponent() {
                     ))}
                   </select>
                   {errors.educationalInfo?.hsc?.group && (
-                    <p className="text-xs text-red-500">{errors.educationalInfo.hsc.group.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.educationalInfo.hsc.group.message}
+                    </p>
                   )}
                 </div>
 
@@ -623,11 +686,15 @@ export default function SignUpComponent() {
                   <Label>পাশের সাল *</Label>
                   <Input
                     type="number"
-                    {...register("educationalInfo.hsc.passingYear", { valueAsNumber: true })}
+                    {...register("educationalInfo.hsc.passingYear", {
+                      valueAsNumber: true,
+                    })}
                     placeholder="2026"
                   />
                   {errors.educationalInfo?.hsc?.passingYear && (
-                    <p className="text-xs text-red-500">{errors.educationalInfo.hsc.passingYear.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.educationalInfo.hsc.passingYear.message}
+                    </p>
                   )}
                 </div>
 
@@ -636,11 +703,15 @@ export default function SignUpComponent() {
                   <Input
                     type="number"
                     step="0.01"
-                    {...register("educationalInfo.hsc.gpa", { valueAsNumber: true })}
+                    {...register("educationalInfo.hsc.gpa", {
+                      valueAsNumber: true,
+                    })}
                     placeholder="5.00"
                   />
                   {errors.educationalInfo?.hsc?.gpa && (
-                    <p className="text-xs text-red-500">{errors.educationalInfo.hsc.gpa.message}</p>
+                    <p className="text-xs text-red-500">
+                      {errors.educationalInfo.hsc.gpa.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -672,7 +743,9 @@ export default function SignUpComponent() {
                       ))}
                     </select>
                     {errors.guardian?.type && (
-                      <p className="text-xs text-red-500">{errors.guardian.type.message}</p>
+                      <p className="text-xs text-red-500">
+                        {errors.guardian.type.message}
+                      </p>
                     )}
                   </div>
 
@@ -683,7 +756,9 @@ export default function SignUpComponent() {
                       placeholder="অভিভাবকের পূর্ণ নাম"
                     />
                     {errors.guardian?.name && (
-                      <p className="text-xs text-red-500">{errors.guardian.name.message}</p>
+                      <p className="text-xs text-red-500">
+                        {errors.guardian.name.message}
+                      </p>
                     )}
                   </div>
 
@@ -694,7 +769,9 @@ export default function SignUpComponent() {
                       placeholder="01712345678"
                     />
                     {errors.guardian?.mobile && (
-                      <p className="text-xs text-red-500">{errors.guardian.mobile.message}</p>
+                      <p className="text-xs text-red-500">
+                        {errors.guardian.mobile.message}
+                      </p>
                     )}
                   </div>
 
@@ -705,7 +782,9 @@ export default function SignUpComponent() {
                       placeholder="অভিভাবকের পেশা"
                     />
                     {errors.guardian?.occupation && (
-                      <p className="text-xs text-red-500">{errors.guardian.occupation.message}</p>
+                      <p className="text-xs text-red-500">
+                        {errors.guardian.occupation.message}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -726,7 +805,9 @@ export default function SignUpComponent() {
                       placeholder="বাড়ি নং, রোড নং, এলাকা"
                     />
                     {errors.address?.present && (
-                      <p className="text-xs text-red-500">{errors.address.present.message}</p>
+                      <p className="text-xs text-red-500">
+                        {errors.address.present.message}
+                      </p>
                     )}
                   </div>
 
@@ -737,7 +818,9 @@ export default function SignUpComponent() {
                       placeholder="জেলার নাম"
                     />
                     {errors.address?.district && (
-                      <p className="text-xs text-red-500">{errors.address.district.message}</p>
+                      <p className="text-xs text-red-500">
+                        {errors.address.district.message}
+                      </p>
                     )}
                   </div>
 
@@ -748,7 +831,9 @@ export default function SignUpComponent() {
                       placeholder="গ্রাম, উপজেলা, জেলা"
                     />
                     {errors.address?.permanent && (
-                      <p className="text-xs text-red-500">{errors.address.permanent.message}</p>
+                      <p className="text-xs text-red-500">
+                        {errors.address.permanent.message}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -810,7 +895,10 @@ export default function SignUpComponent() {
           <div className="text-center mt-6">
             <p className="text-sm text-gray-600">
               ইতিমধ্যে অ্যাকাউন্ট আছে?{" "}
-              <Link href="/login" className="text-purple-600 hover:text-purple-700 font-medium">
+              <Link
+                href="/login"
+                className="text-purple-600 hover:text-purple-700 font-medium"
+              >
                 লগইন করুন
               </Link>
             </p>
