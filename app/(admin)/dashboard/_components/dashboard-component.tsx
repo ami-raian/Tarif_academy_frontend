@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { VideoPlayer } from "@/components/video-player";
 import type {
   Course,
   CoursesResponse,
@@ -25,6 +26,7 @@ const DashboardComponent = () => {
   const [sections, setSections] = useState<{ [key: string]: Video[] }>({});
   const [loading, setLoading] = useState(true);
   const [videosLoading, setVideosLoading] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [filter, setFilter] = useState<"all" | "published" | "unpublished">(
     "all",
   );
@@ -112,7 +114,16 @@ const DashboardComponent = () => {
 
   const handleBackToCourses = () => {
     setSelectedCourse(null);
+    setSelectedVideo(null);
     setSections({});
+  };
+
+  const handleVideoSelect = (video: Video) => {
+    setSelectedVideo(video);
+  };
+
+  const handleCloseVideo = () => {
+    setSelectedVideo(null);
   };
 
   const formatDate = (dateString: string) => {
@@ -174,6 +185,44 @@ const DashboardComponent = () => {
           </div>
         </div>
 
+        {/* Video Player Modal/Section */}
+        {selectedVideo && (
+          <Card className="border-primary">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>{selectedVideo.title}</CardTitle>
+                  <CardDescription>{selectedVideo.description}</CardDescription>
+                </div>
+                <Button variant="outline" size="sm" onClick={handleCloseVideo}>
+                  ✕ Close
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {selectedVideo.status === "ready" ? (
+                <VideoPlayer
+                  videoGuid={selectedVideo.bunnyGuid}
+                  title={selectedVideo.title}
+                />
+              ) : selectedVideo.status === "processing" ? (
+                <div className="flex flex-col items-center justify-center bg-muted rounded-lg aspect-video">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+                  <p className="text-muted-foreground">
+                    Video is still processing. Please check back later.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center bg-muted rounded-lg aspect-video">
+                  <p className="text-destructive">
+                    Video processing failed. Please re-upload.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {videosLoading ? (
           <div className="flex items-center justify-center min-h-[200px]">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -203,7 +252,12 @@ const DashboardComponent = () => {
                     {videos.map((video, index) => (
                       <div
                         key={video._id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                        onClick={() => handleVideoSelect(video)}
+                        className={`flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer ${
+                          selectedVideo?._id === video._id
+                            ? "border-primary bg-primary/5"
+                            : ""
+                        }`}
                       >
                         <div className="flex items-center gap-4">
                           <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold text-sm">
@@ -236,6 +290,17 @@ const DashboardComponent = () => {
                                 ).padStart(2, "0")}`
                               : "--:--"}
                           </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="ml-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleVideoSelect(video);
+                            }}
+                          >
+                            ▶ Play
+                          </Button>
                         </div>
                       </div>
                     ))}
