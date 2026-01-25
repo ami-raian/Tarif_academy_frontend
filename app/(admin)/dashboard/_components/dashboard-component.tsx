@@ -192,6 +192,21 @@ const Icons = {
       />
     </svg>
   ),
+  refresh: () => (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+      />
+    </svg>
+  ),
 };
 
 const DashboardComponent = () => {
@@ -207,6 +222,7 @@ const DashboardComponent = () => {
   const [filter, setFilter] = useState<"all" | "published" | "unpublished">(
     "all",
   );
+  const [syncing, setSyncing] = useState(false);
 
   // Get auth token from localStorage or cookies
   const getAuthToken = () => {
@@ -299,6 +315,41 @@ const DashboardComponent = () => {
 
   const handleCloseVideo = () => {
     setSelectedVideo(null);
+  };
+
+  // Sync all processing videos with Bunny
+  const syncAllVideos = async () => {
+    try {
+      setSyncing(true);
+      const token = getAuthToken();
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (token) headers.Authorization = `Bearer ${token}`;
+
+      const response = await fetch(
+        `${API_BASE_URL}/webhooks/sync-all-videos`,
+        {
+          method: "POST",
+          headers,
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        // Re-fetch videos to get updated status
+        if (selectedCourse) {
+          await fetchCourseVideos(selectedCourse._id);
+        }
+        alert(`সিঙ্ক সম্পন্ন! ${data.data.ready} টি ভিডিও প্রস্তুত।`);
+      }
+    } catch (error) {
+      console.error("Failed to sync videos:", error);
+      alert("সিঙ্ক করতে সমস্যা হয়েছে");
+    } finally {
+      setSyncing(false);
+    }
   };
 
   const toggleSection = (sectionTitle: string) => {
@@ -439,6 +490,20 @@ const DashboardComponent = () => {
                   </span>
                 </div>
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={syncAllVideos}
+                disabled={syncing}
+                className="gap-2 shrink-0"
+              >
+                <span className={syncing ? "animate-spin" : ""}>
+                  <Icons.refresh />
+                </span>
+                <span className="hidden sm:inline">
+                  {syncing ? "সিঙ্ক হচ্ছে..." : "ভিডিও সিঙ্ক"}
+                </span>
+              </Button>
             </div>
           </div>
         </div>
