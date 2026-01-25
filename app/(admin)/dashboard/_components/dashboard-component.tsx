@@ -1,3 +1,4 @@
+// app/dashboard/_components/dashboard-component
 "use client";
 
 import { useState, useEffect } from "react";
