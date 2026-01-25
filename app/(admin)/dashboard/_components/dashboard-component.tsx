@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { VideoPlayer } from "@/components/video-player";
+import { VideoUploadModal } from "./video-upload-modal";
 import type {
   Course,
   CoursesResponse,
@@ -223,6 +224,7 @@ const DashboardComponent = () => {
     "all",
   );
   const [syncing, setSyncing] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   // Get auth token from localStorage or cookies
   const getAuthToken = () => {
@@ -504,6 +506,14 @@ const DashboardComponent = () => {
                   {syncing ? "সিঙ্ক হচ্ছে..." : "ভিডিও সিঙ্ক"}
                 </span>
               </Button>
+              <Button
+                size="sm"
+                onClick={() => setIsUploadModalOpen(true)}
+                className="gap-2 shrink-0"
+              >
+                <Icons.plus />
+                <span className="hidden sm:inline">ভিডিও আপলোড</span>
+              </Button>
             </div>
           </div>
         </div>
@@ -747,6 +757,16 @@ const DashboardComponent = () => {
             </div>
           </div>
         </div>
+
+        {/* Video Upload Modal */}
+        <VideoUploadModal
+          isOpen={isUploadModalOpen}
+          onClose={() => setIsUploadModalOpen(false)}
+          courseId={selectedCourse._id}
+          courseTitle={selectedCourse.title}
+          existingSections={Object.keys(sections)}
+          onUploadSuccess={() => fetchCourseVideos(selectedCourse._id)}
+        />
       </div>
     );
   }
