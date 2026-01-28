@@ -49,7 +49,9 @@ export const CreateCourseModal = ({
   const [price, setPrice] = useState("");
   const [discountPrice, setDiscountPrice] = useState("");
   const [category, setCategory] = useState("Programming");
-  const [level, setLevel] = useState<"beginner" | "intermediate" | "advanced">("beginner");
+  const [level, setLevel] = useState<"beginner" | "intermediate" | "advanced">(
+    "beginner",
+  );
   const [language, setLanguage] = useState("Bangla");
   const [isPublished, setIsPublished] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -111,7 +113,9 @@ export const CreateCourseModal = ({
         title: title.trim(),
         description: description.trim(),
         price: parseFloat(price),
-        discountPrice: discountPrice ? parseFloat(discountPrice) : parseFloat(price),
+        discountPrice: discountPrice
+          ? parseFloat(discountPrice)
+          : parseFloat(price),
         category,
         level,
         language,
@@ -140,7 +144,8 @@ export const CreateCourseModal = ({
         setError(data.message || "Failed to create course");
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to create course";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to create course";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -178,9 +183,7 @@ export const CreateCourseModal = ({
             <h3 className="text-lg font-semibold text-slate-900">
               Course Created Successfully!
             </h3>
-            <p className="text-slate-500 mt-1">
-              Your course has been created
-            </p>
+            <p className="text-slate-500 mt-1">Your course has been created</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
@@ -260,7 +263,14 @@ export const CreateCourseModal = ({
                 <select
                   id="level"
                   value={level}
-                  onChange={(e) => setLevel(e.target.value as "beginner" | "intermediate" | "advanced")}
+                  onChange={(e) =>
+                    setLevel(
+                      e.target.value as
+                        | "beginner"
+                        | "intermediate"
+                        | "advanced",
+                    )
+                  }
                   disabled={loading}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -326,11 +336,7 @@ export const CreateCourseModal = ({
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={loading}
-                className="flex-1"
-              >
+              <Button type="submit" disabled={loading} className="flex-1">
                 {loading ? "Creating..." : "Create Course"}
               </Button>
             </div>

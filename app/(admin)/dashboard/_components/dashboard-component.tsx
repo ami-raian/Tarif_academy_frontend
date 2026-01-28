@@ -8,10 +8,12 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { VideoPlayer } from "@/components/video-player";
 import { VideoUploadModal } from "./video-upload-modal";
 import { CreateCourseModal } from "./create-course-modal";
+import { toggleCoursePublish } from "@/lib/api";
 import type {
   Course,
   CoursesResponse,
   Video,
+  VideoWithAccess,
   CourseVideosResponse,
 } from "@/types";
 
@@ -214,7 +216,9 @@ const Icons = {
 const DashboardComponent = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [sections, setSections] = useState<{ [key: string]: Video[] }>({});
+  const [sections, setSections] = useState<{
+    [key: string]: Video[] | VideoWithAccess[];
+  }>({});
   const [loading, setLoading] = useState(true);
   const [videosLoading, setVideosLoading] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
@@ -227,6 +231,7 @@ const DashboardComponent = () => {
   const [syncing, setSyncing] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isCreateCourseModalOpen, setIsCreateCourseModalOpen] = useState(false);
+  const [publishingCourse, setPublishingCourse] = useState<string | null>(null);
 
   // Get auth token from localStorage or cookies
   const getAuthToken = () => {
@@ -312,8 +317,9 @@ const DashboardComponent = () => {
     setExpandedSections(new Set());
   };
 
-  const handleVideoSelect = (video: Video) => {
-    setSelectedVideo(video);
+  const handleVideoSelect = (video: Video | VideoWithAccess) => {
+    // For admin view, cast to Video since we have the bunny info
+    setSelectedVideo(video as Video);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -331,14 +337,11 @@ const DashboardComponent = () => {
       };
       if (token) headers.Authorization = `Bearer ${token}`;
 
-      const response = await fetch(
-        `${API_BASE_URL}/webhooks/sync-all-videos`,
-        {
-          method: "POST",
-          headers,
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/webhooks/sync-all-videos`, {
+        method: "POST",
+        headers,
+        credentials: "include",
+      });
 
       const data = await response.json();
       if (data.success) {
@@ -364,6 +367,30 @@ const DashboardComponent = () => {
       newExpanded.add(sectionTitle);
     }
     setExpandedSections(newExpanded);
+  };
+
+  // Toggle publish status
+  const handleTogglePublish = async (e: React.MouseEvent, course: Course) => {
+    e.stopPropagation(); // Prevent course selection
+    try {
+      setPublishingCourse(course._id);
+      const res = await toggleCoursePublish(course._id);
+      if (res.success) {
+        // Update local state
+        setCourses((prev) =>
+          prev.map((c) =>
+            c._id === course._id ? { ...c, isPublished: !c.isPublished } : c,
+          ),
+        );
+      } else {
+        alert(res.message || "স্ট্যাটাস পরিবর্তন করতে সমস্যা হয়েছে");
+      }
+    } catch (error) {
+      console.error("Failed to toggle publish:", error);
+      alert("স্ট্যাটাস পরিবর্তন করতে সমস্যা হয়েছে");
+    } finally {
+      setPublishingCourse(null);
+    }
   };
 
   const formatDuration = (seconds: number) => {
@@ -788,7 +815,10 @@ const DashboardComponent = () => {
                 আপনার কোর্স এবং কনটেন্ট ম্যানেজ করুন
               </p>
             </div>
-            <Button className="gap-2 shadow-lg shadow-primary/25">
+            <Button
+              onClick={() => setIsCreateCourseModalOpen(true)}
+              className="gap-2 shadow-lg shadow-primary/25"
+            >
               <Icons.plus />
               নতুন কোর্স যোগ করুন
             </Button>
@@ -918,16 +948,26 @@ const DashboardComponent = () => {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
 
                         {/* Status Badge */}
-                        <div className="absolute top-3 right-3">
-                          <span
-                            className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                        <div className="absolute top-3 right-3 flex gap-2">
+                          <button
+                            onClick={(e) => handleTogglePublish(e, course)}
+                            disabled={publishingCourse === course._id}
+                            className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-colors ${
                               course.isPublished
-                                ? "bg-emerald-500 text-white"
-                                : "bg-slate-700 text-white"
-                            }`}
+                                ? "bg-emerald-500 hover:bg-emerald-600 text-white"
+                                : "bg-slate-700 hover:bg-slate-800 text-white"
+                            } ${publishingCourse === course._id ? "opacity-70 cursor-wait" : ""}`}
                           >
-                            {course.isPublished ? "প্রকাশিত" : "ড্রাফট"}
-                          </span>
+                            {publishingCourse === course._id ? (
+                              <span className="flex items-center gap-1">
+                                <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              </span>
+                            ) : course.isPublished ? (
+                              "প্রকাশিত ✓"
+                            ) : (
+                              "ড্রাফট"
+                            )}
+                          </button>
                         </div>
 
                         {/* Price */}
@@ -1008,6 +1048,16 @@ const DashboardComponent = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Create Course Modal */}
+      <CreateCourseModal
+        isOpen={isCreateCourseModalOpen}
+        onClose={() => setIsCreateCourseModalOpen(false)}
+        onCourseCreated={() => {
+          // Refresh courses list
+          window.location.reload();
+        }}
+      />
     </div>
   );
 };

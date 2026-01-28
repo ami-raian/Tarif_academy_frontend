@@ -247,7 +247,8 @@ export const VideoUploadModal = ({
       xhr.setRequestHeader("Authorization", `Bearer ${token}`);
       xhr.send(formData);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "আপলোড ব্যর্থ হয়েছে";
+      const errorMessage =
+        err instanceof Error ? err.message : "আপলোড ব্যর্থ হয়েছে";
       setError(errorMessage);
       setUploading(false);
     }
