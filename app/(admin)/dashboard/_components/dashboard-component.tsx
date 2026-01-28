@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { VideoPlayer } from "@/components/video-player";
 import { VideoUploadModal } from "./video-upload-modal";
+import { CreateCourseModal } from "./create-course-modal";
 import type {
   Course,
   CoursesResponse,
@@ -225,6 +226,7 @@ const DashboardComponent = () => {
   );
   const [syncing, setSyncing] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isCreateCourseModalOpen, setIsCreateCourseModalOpen] = useState(false);
 
   // Get auth token from localStorage or cookies
   const getAuthToken = () => {
