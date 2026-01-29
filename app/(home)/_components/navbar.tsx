@@ -2,6 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,6 +49,7 @@ export function Navbar() {
   const [, forceUpdate] = useState(0);
   const { theme, setTheme } = useTheme();
   const mounted = useIsMounted();
+  const pathname = usePathname();
 
   const isLoggedIn = mounted && !!getCookie("accessToken");
   const userType = mounted ? getCookie("userType") : null;
@@ -62,6 +64,11 @@ export function Navbar() {
   const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
   const dashboardPath = userType === "admin" ? "/dashboard" : "/my-courses";
   const dashboardLabel = userType === "admin" ? "ড্যাশবোর্ড" : "আমার কোর্স";
+
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
 
   const themeIcon = mounted && (theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />);
 
@@ -80,16 +87,23 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-6">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="text-sm font-medium text-gray-600 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
+          <div className="hidden md:flex items-center gap-1">
+            {NAV_LINKS.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className={`px-4 py-2 text-base font-medium rounded-lg transition-all ${
+                    active
+                      ? "text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-500/20"
+                      : "text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Desktop Actions */}
@@ -160,16 +174,23 @@ export function Navbar() {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200/50 dark:border-gray-800/50">
             <div className="flex flex-col gap-1">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-purple-600 hover:bg-purple-50 dark:text-gray-300 dark:hover:text-purple-400 dark:hover:bg-purple-500/10 rounded-lg transition-colors"
-                  onClick={closeMenu}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {NAV_LINKS.map((link) => {
+                const active = isActive(link.href);
+                return (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    className={`px-4 py-3 text-base font-medium rounded-lg transition-all ${
+                      active
+                        ? "text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-500/20"
+                        : "text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    }`}
+                    onClick={closeMenu}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
               <div className="border-t border-gray-200/50 dark:border-gray-800/50 mt-2 pt-3 px-4 flex flex-col gap-2">
                 {!mounted ? (
                   <>
