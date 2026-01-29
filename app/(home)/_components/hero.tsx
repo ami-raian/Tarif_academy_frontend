@@ -11,11 +11,22 @@ const stats = [
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-linear-to-br from-violet-50 via-white to-cyan-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300/30 dark:bg-purple-500/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-300/30 dark:bg-cyan-500/10 rounded-full blur-3xl" />
+    <section className="relative overflow-hidden bg-white dark:bg-gray-950">
+      {/* Light mode background */}
+      <div className="absolute inset-0 bg-linear-to-br from-violet-50 via-white to-cyan-50 dark:from-transparent dark:via-transparent dark:to-transparent" />
+
+      {/* Dark mode background with gradient mesh */}
+      <div className="absolute inset-0 hidden dark:block">
+        <div className="absolute inset-0 bg-linear-to-br from-gray-950 via-gray-900 to-gray-950" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-150 bg-violet-600/10 rounded-full blur-3xl" />
+      </div>
+
+      {/* Light mode decorative elements */}
+      <div className="absolute inset-0 overflow-hidden dark:hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200/50 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-200/50 rounded-full blur-3xl" />
       </div>
 
       <div className="container relative mx-auto px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
@@ -40,21 +51,21 @@ export function Hero() {
 
             <div className="flex flex-wrap gap-4">
               <Link href="/courses">
-                <Button size="lg" className="bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 shadow-lg shadow-purple-500/25 dark:shadow-purple-500/20">
+                <Button size="lg" className="bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 shadow-lg shadow-purple-500/25 dark:shadow-purple-500/30">
                   <BookOpen className="w-5 h-5 mr-2" />
                   শুরু করুন
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
               <Link href="/courses">
-                <Button size="lg" variant="outline" className="border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-white">
+                <Button size="lg" variant="outline" className="border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-white/10 dark:text-white">
                   কোর্স দেখুন
                 </Button>
               </Link>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <div className="grid grid-cols-3 gap-6 pt-6 border-t border-gray-200 dark:border-gray-700/50">
               {stats.map((stat) => (
                 <div key={stat.label}>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
@@ -68,9 +79,15 @@ export function Hero() {
 
           {/* Image */}
           <div className="relative flex items-center justify-center">
-            <div className="absolute w-72 h-72 bg-linear-to-br from-purple-400/40 to-purple-600/40 dark:from-purple-500/20 dark:to-purple-700/20 rounded-full blur-3xl" />
-            <div className="absolute w-72 h-72 bg-linear-to-br from-cyan-400/40 to-cyan-600/40 dark:from-cyan-500/20 dark:to-cyan-700/20 rounded-full blur-3xl translate-x-16 translate-y-8" />
-            <div className="relative bg-white dark:bg-gray-800/80 rounded-2xl shadow-2xl dark:shadow-gray-900/50 p-8 backdrop-blur-sm border border-gray-100 dark:border-gray-700">
+            {/* Light mode blurs */}
+            <div className="absolute w-72 h-72 bg-linear-to-br from-purple-300/50 to-purple-500/50 rounded-full blur-3xl dark:hidden" />
+            <div className="absolute w-72 h-72 bg-linear-to-br from-cyan-300/50 to-cyan-500/50 rounded-full blur-3xl translate-x-16 translate-y-8 dark:hidden" />
+
+            {/* Dark mode blurs */}
+            <div className="absolute w-72 h-72 bg-linear-to-br from-purple-500/30 to-purple-700/30 rounded-full blur-3xl hidden dark:block" />
+            <div className="absolute w-72 h-72 bg-linear-to-br from-cyan-500/30 to-cyan-700/30 rounded-full blur-3xl translate-x-16 translate-y-8 hidden dark:block" />
+
+            <div className="relative bg-white dark:bg-gray-800/90 rounded-2xl shadow-2xl dark:shadow-purple-500/10 p-8 backdrop-blur-sm border border-gray-100 dark:border-gray-700/50">
               <Image
                 src="/tarifacademy-logo.png"
                 alt="Tarif Academy"
