@@ -55,6 +55,42 @@
   --chart-5: 340 75% 55%;
 }
 
+/* Hide native scrollbar */
+html {
+  overflow: hidden;
+}
+
+/* SimpleBar custom styles start============================>>>>*/
+.simplebar-scrollbar::before {
+  background: rgb(156 163 175 / 0.5) !important;
+  border-radius: 3px !important;
+}
+
+.simplebar-scrollbar:hover::before,
+.simplebar-scrollbar.simplebar-hover::before {
+  background: rgb(156 163 175 / 0.8) !important;
+}
+
+.dark .simplebar-scrollbar::before {
+  background: rgb(107 114 128 / 0.5) !important;
+}
+
+.dark .simplebar-scrollbar:hover::before,
+.dark .simplebar-scrollbar.simplebar-hover::before {
+  background: rgb(107 114 128 / 0.8) !important;
+}
+
+.simplebar-track.simplebar-vertical {
+  width: 8px !important;
+  right: 0 !important;
+}
+
+.simplebar-track.simplebar-vertical .simplebar-scrollbar {
+  width: 6px !important;
+  right: 1px !important;
+}
+/* Hide native scrollbar end================================<<<<*/
+
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
@@ -63,26 +99,30 @@ body {
 @layer utilities {
   /* Background Grid Pattern */
   .bg-grid-slate-100 {
-    background-image: linear-gradient(to right, rgb(241 245 249 / 0.5) 1px, transparent 1px),
+    background-image:
+      linear-gradient(to right, rgb(241 245 249 / 0.5) 1px, transparent 1px),
       linear-gradient(to bottom, rgb(241 245 249 / 0.5) 1px, transparent 1px);
     background-size: 4rem 4rem;
   }
 
   .bg-grid-slate-700\/25 {
-    background-image: linear-gradient(to right, rgb(51 65 85 / 0.25) 1px, transparent 1px),
+    background-image:
+      linear-gradient(to right, rgb(51 65 85 / 0.25) 1px, transparent 1px),
       linear-gradient(to bottom, rgb(51 65 85 / 0.25) 1px, transparent 1px);
     background-size: 4rem 4rem;
   }
 
   .bg-grid-white\/\[0\.05\] {
-    background-image: linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
       linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
     background-size: 4rem 4rem;
   }
 
   /* Blob Animation */
   @keyframes blob {
-    0%, 100% {
+    0%,
+    100% {
       transform: translate(0, 0) scale(1);
     }
     33% {
@@ -107,7 +147,8 @@ body {
 
   /* Float Animation */
   @keyframes float {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateY(0);
     }
     50% {
