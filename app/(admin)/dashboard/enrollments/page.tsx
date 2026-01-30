@@ -16,33 +16,93 @@ import type { Enrollment, EnrollmentStatus } from "@/types";
 // Icons
 const Icons = {
   back: () => (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M15 19l-7-7 7-7"
+      />
     </svg>
   ),
   check: () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5 13l4 4L19 7"
+      />
     </svg>
   ),
   x: () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M6 18L18 6M6 6l12 12"
+      />
     </svg>
   ),
   clock: () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
     </svg>
   ),
   user: () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+      />
     </svg>
   ),
   refresh: () => (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+      />
     </svg>
   ),
 };
@@ -101,8 +161,10 @@ export default function EnrollmentsPage() {
         // Update local state
         setEnrollments((prev) =>
           prev.map((e) =>
-            e._id === enrollmentId ? { ...e, status: "approved" as EnrollmentStatus } : e
-          )
+            e._id === enrollmentId
+              ? { ...e, status: "approved" as EnrollmentStatus }
+              : e,
+          ),
         );
         // Optionally refetch
         fetchEnrollments();
@@ -124,8 +186,10 @@ export default function EnrollmentsPage() {
       if (res.success) {
         setEnrollments((prev) =>
           prev.map((e) =>
-            e._id === enrollmentId ? { ...e, status: "rejected" as EnrollmentStatus } : e
-          )
+            e._id === enrollmentId
+              ? { ...e, status: "rejected" as EnrollmentStatus }
+              : e,
+          ),
         );
         setShowRejectModal(null);
         setRejectReason("");
@@ -205,11 +269,19 @@ export default function EnrollmentsPage() {
                 ড্যাশবোর্ড
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">এনরোলমেন্ট ম্যানেজমেন্ট</h1>
-                <p className="text-slate-500 mt-1">শিক্ষার্থীদের এনরোলমেন্ট অনুমোদন করুন</p>
+                <h1 className="text-2xl font-bold text-slate-900">
+                  এনরোলমেন্ট ম্যানেজমেন্ট
+                </h1>
+                <p className="text-slate-500 mt-1">
+                  শিক্ষার্থীদের এনরোলমেন্ট অনুমোদন করুন
+                </p>
               </div>
             </div>
-            <Button variant="outline" onClick={fetchEnrollments} disabled={loading}>
+            <Button
+              variant="outline"
+              onClick={fetchEnrollments}
+              disabled={loading}
+            >
               <span className={loading ? "animate-spin" : ""}>
                 <Icons.refresh />
               </span>
@@ -227,7 +299,9 @@ export default function EnrollmentsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-slate-500">মোট</p>
-                  <p className="text-2xl font-bold text-slate-900">{pagination.total}</p>
+                  <p className="text-2xl font-bold text-slate-900">
+                    {pagination.total}
+                  </p>
                 </div>
                 <div className="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center text-violet-600">
                   <Icons.user />
@@ -289,6 +363,7 @@ export default function EnrollmentsPage() {
               <CardTitle className="text-lg">এনরোলমেন্ট তালিকা</CardTitle>
               <Tabs
                 value={filter}
+                defaultValue="pending"
                 onValueChange={(value) => setFilter(value as typeof filter)}
               >
                 <TabsList>
@@ -306,7 +381,9 @@ export default function EnrollmentsPage() {
                 <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
                   <Icons.user />
                 </div>
-                <p className="text-slate-500 font-medium">কোনো এনরোলমেন্ট পাওয়া যায়নি</p>
+                <p className="text-slate-500 font-medium">
+                  কোনো এনরোলমেন্ট পাওয়া যায়নি
+                </p>
               </div>
             ) : (
               <div className="divide-y">
@@ -323,7 +400,8 @@ export default function EnrollmentsPage() {
                           </div>
                           <div>
                             <p className="font-semibold text-slate-900">
-                              {enrollment.studentId?.fullName || "Unknown Student"}
+                              {enrollment.studentId?.fullName ||
+                                "Unknown Student"}
                             </p>
                             <p className="text-sm text-slate-500">
                               {enrollment.studentId?.email}

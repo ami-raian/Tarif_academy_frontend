@@ -373,9 +373,11 @@ export default function MyCoursesPage() {
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 {filter === "all"
                   ? "এখনো কোন কোর্সে এনরোল করেননি"
-                  : filter === "in-progress"
-                    ? "কোন চলমান কোর্স নেই"
-                    : "কোন সম্পন্ন কোর্স নেই"}
+                  : filter === "pending"
+                    ? "কোন পেন্ডিং কোর্স নেই"
+                    : filter === "approved"
+                      ? "কোন অনুমোদিত কোর্স নেই"
+                      : "কোন প্রত্যাখ্যাত কোর্স নেই"}
               </h3>
               <p className="text-gray-600 mb-6">
                 {filter === "all"
