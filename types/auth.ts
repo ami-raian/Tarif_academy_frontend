@@ -4,19 +4,22 @@ export interface LoginFormData {
 }
 
 export interface StudentData {
-  id: string;
+  _id: string;
+  id?: string;
   fullName: string;
   email: string;
   mobile: string;
-  photo: string;
+  photo?: string;
   isVerified: boolean;
+  isActive: boolean;
 }
 
 export interface AdminData {
-  id: string;
+  _id: string;
+  id?: string;
   email: string;
   role: string;
-  avatar: string;
+  avatar?: string;
 }
 
 export interface LoginResponse {
@@ -29,4 +32,18 @@ export interface LoginResponse {
     refreshToken: string;
   };
   statusCode: number;
+}
+
+export interface StudentProfileResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: StudentData;
+}
+
+export interface AdminProfileResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: AdminData;
 }

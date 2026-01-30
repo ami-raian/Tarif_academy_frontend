@@ -1,135 +1,101 @@
+import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, GraduationCap } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
+
+const stats = [
+  { value: "500+", label: "ভিডিও লেসন" },
+  { value: "10K+", label: "শিক্ষার্থী" },
+  { value: "50+", label: "অভিজ্ঞ শিক্ষক" },
+];
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-linear-to-b from-blue-50 via-white to-white dark:from-gray-900 dark:via-gray-950 dark:to-black">
-      <div className="absolute inset-0 bg-grid-slate-100 mask-[linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25 dark:mask-[linear-gradient(0deg,rgba(255,255,255,0.1),rgba(255,255,255,0.5))]" />
+    <section className="relative overflow-hidden bg-white dark:bg-gray-950">
+      {/* Light mode background */}
+      <div className="absolute inset-0 bg-linear-to-br from-violet-50 via-white to-cyan-50 dark:from-transparent dark:via-transparent dark:to-transparent" />
 
-      <div className="container relative mx-auto px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+      {/* Dark mode background with gradient mesh */}
+      <div className="absolute inset-0 hidden dark:block">
+        <div className="absolute inset-0 bg-linear-to-br from-gray-950 via-gray-900 to-gray-950" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-150 bg-violet-600/10 rounded-full blur-3xl" />
+      </div>
+
+      {/* Light mode decorative elements */}
+      <div className="absolute inset-0 overflow-hidden dark:hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200/50 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-200/50 rounded-full blur-3xl" />
+      </div>
+
+      <div className="container relative mx-auto px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
-          {/* Left Content */}
-          <div className="flex flex-col justify-center space-y-8">
-            <div className="space-y-4">
-              <div className="inline-flex items-center rounded-full bg-blue-100 px-4 py-1.5 text-sm font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                <GraduationCap className="mr-2 h-4 w-4" />
-                বাংলাদেশের সেরা অনলাইন শিক্ষা প্ল্যাটফর্ম
-              </div>
-
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl md:text-6xl lg:text-7xl">
-                স্বপ্ন পূরণের পথ{" "}
-                <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                  তারিফ একাডেমি
-                </span>
-              </h1>
-
-              <p className="text-lg text-gray-600 dark:text-gray-300 sm:text-xl">
-                SSC ও HSC পরীক্ষার্থীদের জন্য সম্পূর্ণ বিষয়ভিত্তিক লেসন, নোট
-                এবং অনুশীলন। অভিজ্ঞ শিক্ষকদের গাইডেন্সে তোমার পড়াশোনাকে করো আরও
-                সহজ এবং কার্যকর।
-              </p>
+          {/* Content */}
+          <div className="space-y-6">
+            <div className="inline-flex items-center rounded-full bg-purple-100 dark:bg-purple-500/20 px-4 py-1.5 text-sm font-medium text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30">
+              বাংলাদেশের সেরা অনলাইন শিক্ষা প্ল্যাটফর্ম
             </div>
 
-            <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
-              <Button size="lg" className="group text-base font-semibold">
-                <BookOpen className="mr-2 h-5 w-5" />
-                শুরু করুন
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Button>
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl lg:text-6xl">
+              স্বপ্ন পূরণের পথ{" "}
+              <span className="bg-linear-to-r from-purple-600 to-cyan-500 dark:from-purple-400 dark:to-cyan-400 bg-clip-text text-transparent">
+                তারিফ একাডেমি
+              </span>
+            </h1>
 
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-base font-semibold"
-              >
-                কোর্স দেখুন
-              </Button>
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-xl leading-relaxed">
+              SSC ও HSC পরীক্ষার্থীদের জন্য সম্পূর্ণ বিষয়ভিত্তিক লেসন, নোট এবং অনুশীলন।
+              অভিজ্ঞ শিক্ষকদের গাইডেন্সে তোমার পড়াশোনাকে করো আরও সহজ।
+            </p>
+
+            <div className="flex flex-wrap gap-4">
+              <Link href="/courses">
+                <Button size="lg" className="bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 shadow-lg shadow-purple-500/25 dark:shadow-purple-500/30">
+                  <BookOpen className="w-5 h-5 mr-2" />
+                  শুরু করুন
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+              <Link href="/courses">
+                <Button size="lg" variant="outline" className="border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-white/10 dark:text-white">
+                  কোর্স দেখুন
+                </Button>
+              </Link>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-6 pt-8 border-t border-gray-200 dark:border-gray-800">
-              <div>
-                <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                  500+
+            <div className="grid grid-cols-3 gap-6 pt-6 border-t border-gray-200 dark:border-gray-700/50">
+              {stats.map((stat) => (
+                <div key={stat.label}>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
+                    {stat.value}
+                  </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</div>
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  ভিডিও লেসন
-                </div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                  10K+
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  শিক্ষার্থী
-                </div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                  50+
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  অভিজ্ঞ শিক্ষক
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
-          {/* Right Content - Image/Illustration */}
-          <div className="relative lg:h-150 flex items-center justify-center">
-            <div className="relative w-full max-w-lg">
-              {/* Decorative Elements */}
-              <div className="absolute -top-4 -left-4 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob dark:bg-blue-900/30" />
-              <div className="absolute -top-4 -right-4 w-72 h-72 bg-cyan-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000 dark:bg-cyan-900/30" />
-              <div className="absolute -bottom-8 left-20 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000 dark:bg-purple-900/30" />
+          {/* Image */}
+          <div className="relative flex items-center justify-center">
+            {/* Light mode blurs */}
+            <div className="absolute w-72 h-72 bg-linear-to-br from-purple-300/50 to-purple-500/50 rounded-full blur-3xl dark:hidden" />
+            <div className="absolute w-72 h-72 bg-linear-to-br from-cyan-300/50 to-cyan-500/50 rounded-full blur-3xl translate-x-16 translate-y-8 dark:hidden" />
 
-              {/* Central Image/Logo */}
-              <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 backdrop-blur-sm">
-                <div className="relative w-full h-64 flex items-center justify-center">
-                  <Image
-                    src="/tarifacademy-logo.png"
-                    alt="Tarif Academy Logo"
-                    width={300}
-                    height={300}
-                    className="object-contain"
-                    priority
-                  />
-                </div>
+            {/* Dark mode blurs */}
+            <div className="absolute w-72 h-72 bg-linear-to-br from-purple-500/30 to-purple-700/30 rounded-full blur-3xl hidden dark:block" />
+            <div className="absolute w-72 h-72 bg-linear-to-br from-cyan-500/30 to-cyan-700/30 rounded-full blur-3xl translate-x-16 translate-y-8 hidden dark:block" />
 
-                {/* Floating Cards */}
-                <div className="absolute -left-6 top-1/4 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-3 animate-float">
-                  <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                      <span className="text-2xl">📚</span>
-                    </div>
-                    <div>
-                      <div className="text-xs font-semibold text-gray-900 dark:text-white">
-                        Physics
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        50 Lessons
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="absolute -right-6 bottom-1/4 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-3 animate-float animation-delay-2000">
-                  <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                      <span className="text-2xl">🧪</span>
-                    </div>
-                    <div>
-                      <div className="text-xs font-semibold text-gray-900 dark:text-white">
-                        Chemistry
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        45 Lessons
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div className="relative bg-white dark:bg-gray-800/90 rounded-2xl shadow-2xl dark:shadow-purple-500/10 p-8 backdrop-blur-sm border border-gray-100 dark:border-gray-700/50">
+              <Image
+                src="/tarifacademy-logo.png"
+                alt="Tarif Academy"
+                width={280}
+                height={280}
+                className="object-contain"
+                priority
+              />
             </div>
           </div>
         </div>

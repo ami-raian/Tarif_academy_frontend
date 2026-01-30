@@ -57,8 +57,79 @@ export interface CourseVideosResponse {
   message: string;
   data: {
     sections: {
-      [sectionTitle: string]: Video[];
+      [sectionTitle: string]: VideoWithAccess[];
     };
+    isEnrolled: boolean;
   };
   statusCode: number;
+}
+
+// Video with access info (for course video list)
+export interface VideoWithAccess extends Omit<
+  Video,
+  "bunnyVideoId" | "bunnyGuid"
+> {
+  locked: boolean;
+  completed?: boolean;
+}
+
+// Video stream response
+export interface VideoStreamResponse {
+  success: boolean;
+  statusCode: number;
+  data: {
+    streamUrl: string;
+    embedUrl: string;
+    video: {
+      _id: string;
+      title: string;
+      description?: string;
+      duration: number;
+    };
+  };
+}
+
+// Enrollment types
+export interface Enrollment {
+  _id: string;
+  student: string;
+  course: Course;
+  enrolledAt: string;
+  completedVideos: string[];
+  progress: number;
+  isActive: boolean;
+}
+
+export interface EnrollmentResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: Enrollment;
+}
+
+export interface MyEnrollmentsResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: Enrollment[];
+}
+
+export interface EnrollmentCheckResponse {
+  success: boolean;
+  statusCode: number;
+  data: {
+    isEnrolled: boolean;
+    enrollment?: Enrollment;
+  };
+}
+
+export interface CourseProgressResponse {
+  success: boolean;
+  statusCode: number;
+  data: {
+    totalVideos: number;
+    completedVideos: number;
+    progress: number;
+    completedVideoIds: string[];
+  };
 }
