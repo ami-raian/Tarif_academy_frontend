@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -815,13 +816,21 @@ const DashboardComponent = () => {
                 আপনার কোর্স এবং কনটেন্ট ম্যানেজ করুন
               </p>
             </div>
-            <Button
-              onClick={() => setIsCreateCourseModalOpen(true)}
-              className="gap-2 shadow-lg shadow-primary/25"
-            >
-              <Icons.plus />
-              নতুন কোর্স যোগ করুন
-            </Button>
+            <div className="flex gap-3">
+              <Link href="/dashboard/enrollments">
+                <Button variant="outline" className="gap-2">
+                  <Icons.users />
+                  এনরোলমেন্ট
+                </Button>
+              </Link>
+              <Button
+                onClick={() => setIsCreateCourseModalOpen(true)}
+                className="gap-2 shadow-lg shadow-primary/25"
+              >
+                <Icons.plus />
+                নতুন কোর্স যোগ করুন
+              </Button>
+            </div>
           </div>
         </div>
       </div>

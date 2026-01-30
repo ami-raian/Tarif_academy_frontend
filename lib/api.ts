@@ -312,6 +312,65 @@ export async function getCourseProgress(courseId: string) {
   return response.json();
 }
 
+// Create enrollment with payment info
+export async function createEnrollment(data: {
+  courseId: string;
+  paymentAmount: number;
+  transactionId?: string;
+}) {
+  const response = await fetch(`${API_BASE_URL}/enrollments`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
+// Admin: Get all enrollments
+export async function getAllEnrollments(params?: {
+  status?: string;
+  page?: number;
+  limit?: number;
+}) {
+  const searchParams = new URLSearchParams();
+  if (params?.status) searchParams.set("status", params.status);
+  if (params?.page) searchParams.set("page", params.page.toString());
+  if (params?.limit) searchParams.set("limit", params.limit.toString());
+
+  const response = await fetch(
+    `${API_BASE_URL}/enrollments/admin/all?${searchParams.toString()}`,
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+  return response.json();
+}
+
+// Admin: Approve enrollment
+export async function approveEnrollment(enrollmentId: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/enrollments/${enrollmentId}/approve`,
+    {
+      method: "PATCH",
+      headers: getAuthHeaders(),
+    },
+  );
+  return response.json();
+}
+
+// Admin: Reject enrollment
+export async function rejectEnrollment(enrollmentId: string, reason?: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/enrollments/${enrollmentId}/reject`,
+    {
+      method: "PATCH",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ reason }),
+    },
+  );
+  return response.json();
+}
+
 // ========================
 // SYNC API (Admin)
 // ========================

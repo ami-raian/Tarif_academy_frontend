@@ -120,7 +120,7 @@ export default function MyCoursesPage() {
   const router = useRouter();
   const [enrollments, setEnrollments] = useState<CourseWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "in-progress" | "completed">(
+  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">(
     "all",
   );
 
@@ -167,12 +167,44 @@ export default function MyCoursesPage() {
   }, [router]);
 
   const filteredEnrollments = enrollments.filter((enrollment) => {
-    const progress =
-      enrollment.progressData?.progress || enrollment.progress || 0;
-    if (filter === "completed") return progress === 100;
-    if (filter === "in-progress") return progress > 0 && progress < 100;
+    if (filter === "pending") return enrollment.status === "pending";
+    if (filter === "approved") return enrollment.status === "approved";
+    if (filter === "rejected") return enrollment.status === "rejected";
     return true;
   });
+
+  const getStatusConfig = (status: string) => {
+    switch (status) {
+      case "pending":
+        return {
+          bg: "bg-amber-100",
+          text: "text-amber-800",
+          border: "border-amber-200",
+          label: "অপেক্ষমাণ",
+        };
+      case "approved":
+        return {
+          bg: "bg-emerald-100",
+          text: "text-emerald-800",
+          border: "border-emerald-200",
+          label: "অনুমোদিত",
+        };
+      case "rejected":
+        return {
+          bg: "bg-red-100",
+          text: "text-red-800",
+          border: "border-red-200",
+          label: "প্রত্যাখ্যাত",
+        };
+      default:
+        return {
+          bg: "bg-gray-100",
+          text: "text-gray-800",
+          border: "border-gray-200",
+          label: status,
+        };
+    }
+  };
 
   const formatDuration = (minutes: number) => {
     if (minutes < 60) return `${minutes} মিনিট`;
@@ -232,7 +264,7 @@ export default function MyCoursesPage() {
             </div>
 
             {/* Filters */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => setFilter("all")}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -244,24 +276,34 @@ export default function MyCoursesPage() {
                 সব ({enrollments.length})
               </button>
               <button
-                onClick={() => setFilter("in-progress")}
+                onClick={() => setFilter("pending")}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  filter === "in-progress"
-                    ? "bg-purple-600 text-white"
+                  filter === "pending"
+                    ? "bg-amber-500 text-white"
                     : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
                 }`}
               >
-                চলমান
+                অপেক্ষমাণ ({enrollments.filter((e) => e.status === "pending").length})
               </button>
               <button
-                onClick={() => setFilter("completed")}
+                onClick={() => setFilter("approved")}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  filter === "completed"
-                    ? "bg-purple-600 text-white"
+                  filter === "approved"
+                    ? "bg-emerald-500 text-white"
                     : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
                 }`}
               >
-                সম্পন্ন
+                অনুমোদিত ({enrollments.filter((e) => e.status === "approved").length})
+              </button>
+              <button
+                onClick={() => setFilter("rejected")}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  filter === "rejected"
+                    ? "bg-red-500 text-white"
+                    : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                }`}
+              >
+                প্রত্যাখ্যাত ({enrollments.filter((e) => e.status === "rejected").length})
               </button>
             </div>
           </div>
@@ -277,25 +319,20 @@ export default function MyCoursesPage() {
                   <p className="text-2xl font-bold text-gray-900">
                     {enrollments.length}
                   </p>
-                  <p className="text-sm text-gray-500">মোট কোর্স</p>
+                  <p className="text-sm text-gray-500">মোট এনরোল</p>
                 </div>
               </div>
             </div>
             <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600">
-                  <Icons.progress />
+                  <Icons.clock />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
-                    {
-                      enrollments.filter((e) => {
-                        const p = e.progressData?.progress || e.progress || 0;
-                        return p > 0 && p < 100;
-                      }).length
-                    }
+                    {enrollments.filter((e) => e.status === "pending").length}
                   </p>
-                  <p className="text-sm text-gray-500">চলমান</p>
+                  <p className="text-sm text-gray-500">অপেক্ষমাণ</p>
                 </div>
               </div>
             </div>
@@ -306,32 +343,22 @@ export default function MyCoursesPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
-                    {
-                      enrollments.filter(
-                        (e) =>
-                          (e.progressData?.progress || e.progress || 0) === 100,
-                      ).length
-                    }
+                    {enrollments.filter((e) => e.status === "approved").length}
                   </p>
-                  <p className="text-sm text-gray-500">সম্পন্ন</p>
+                  <p className="text-sm text-gray-500">অনুমোদিত</p>
                 </div>
               </div>
             </div>
             <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-cyan-100 flex items-center justify-center text-cyan-600">
-                  <Icons.clock />
+                <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center text-red-600">
+                  <Icons.progress />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
-                    {formatDuration(
-                      enrollments.reduce(
-                        (acc, e) => acc + (e.course?.duration || 0),
-                        0,
-                      ),
-                    )}
+                    {enrollments.filter((e) => e.status === "rejected").length}
                   </p>
-                  <p className="text-sm text-gray-500">মোট সময়</p>
+                  <p className="text-sm text-gray-500">প্রত্যাখ্যাত</p>
                 </div>
               </div>
             </div>
@@ -375,43 +402,44 @@ export default function MyCoursesPage() {
                   enrollment.progressData?.totalVideos ||
                   course?.totalLessons ||
                   0;
+                const statusConfig = getStatusConfig(enrollment.status);
+                const isApproved = enrollment.status === "approved";
 
                 return (
                   <div
                     key={enrollment._id}
-                    className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow"
+                    className={`bg-white rounded-2xl overflow-hidden shadow-sm border hover:shadow-lg transition-shadow ${
+                      enrollment.status === "rejected" ? "border-red-200 opacity-75" : "border-gray-100"
+                    }`}
                   >
                     {/* Thumbnail */}
                     <div className="relative h-44 bg-gradient-to-br from-purple-100 to-cyan-100">
-                      {/* {course?.thumbnail ? (
-                        <Image
-                          src={course.thumbnail || "/tarifacademy-logo.png"}
-                          alt={course.title}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-5xl">📚</span>
-                        </div>
-                      )} */}
-                      <div className="absolute top-3 right-3">
+                      <div className="absolute top-3 left-3">
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            progress === 100
-                              ? "bg-emerald-500 text-white"
-                              : progress > 0
-                                ? "bg-amber-500 text-white"
-                                : "bg-gray-500 text-white"
-                          }`}
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border}`}
                         >
-                          {progress === 100
-                            ? "সম্পন্ন"
-                            : progress > 0
-                              ? `${Math.round(progress)}%`
-                              : "শুরু করুন"}
+                          {statusConfig.label}
                         </span>
                       </div>
+                      {isApproved && (
+                        <div className="absolute top-3 right-3">
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              progress === 100
+                                ? "bg-emerald-500 text-white"
+                                : progress > 0
+                                  ? "bg-amber-500 text-white"
+                                  : "bg-gray-500 text-white"
+                            }`}
+                          >
+                            {progress === 100
+                              ? "সম্পন্ন"
+                              : progress > 0
+                                ? `${Math.round(progress)}%`
+                                : "শুরু করুন"}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Content */}
@@ -420,41 +448,65 @@ export default function MyCoursesPage() {
                         {course?.title}
                       </h3>
 
-                      <p className="text-sm text-gray-500 mb-4">
+                      <p className="text-sm text-gray-500 mb-2">
                         এনরোল: {formatDate(enrollment.enrolledAt)}
                       </p>
 
-                      {/* Progress Bar */}
-                      <div className="mb-4">
-                        <div className="flex items-center justify-between text-sm mb-1">
-                          <span className="text-gray-600">অগ্রগতি</span>
-                          <span className="text-gray-900 font-medium">
-                            {completedVideos}/{totalVideos} ভিডিও
-                          </span>
-                        </div>
-                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full rounded-full transition-all ${
-                              progress === 100
-                                ? "bg-emerald-500"
-                                : "bg-gradient-to-r from-purple-500 to-cyan-500"
-                            }`}
-                            style={{ width: `${progress}%` }}
-                          />
-                        </div>
-                      </div>
+                      {enrollment.status === "pending" && (
+                        <p className="text-sm text-amber-600 mb-4">
+                          আপনার এনরোলমেন্ট অনুমোদনের অপেক্ষায় আছে
+                        </p>
+                      )}
 
-                      {/* Continue Button */}
-                      <Link href={`/learn/${course?._id}`}>
-                        <Button className="w-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600">
-                          <span className="flex items-center gap-2">
-                            <Icons.play />
-                            {progress > 0
-                              ? "কোর্স চালিয়ে যান"
-                              : "কোর্স শুরু করুন"}
-                          </span>
+                      {enrollment.status === "rejected" && (
+                        <p className="text-sm text-red-600 mb-4">
+                          {enrollment.rejectionReason || "এনরোলমেন্ট প্রত্যাখ্যাত হয়েছে"}
+                        </p>
+                      )}
+
+                      {/* Progress Bar - Only show for approved enrollments */}
+                      {isApproved && (
+                        <div className="mb-4">
+                          <div className="flex items-center justify-between text-sm mb-1">
+                            <span className="text-gray-600">অগ্রগতি</span>
+                            <span className="text-gray-900 font-medium">
+                              {completedVideos}/{totalVideos} ভিডিও
+                            </span>
+                          </div>
+                          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${
+                                progress === 100
+                                  ? "bg-emerald-500"
+                                  : "bg-gradient-to-r from-purple-500 to-cyan-500"
+                              }`}
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Continue Button - Only for approved enrollments */}
+                      {isApproved ? (
+                        <Link href={`/learn/${course?._id}`}>
+                          <Button className="w-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600">
+                            <span className="flex items-center gap-2">
+                              <Icons.play />
+                              {progress > 0
+                                ? "কোর্স চালিয়ে যান"
+                                : "কোর্স শুরু করুন"}
+                            </span>
+                          </Button>
+                        </Link>
+                      ) : enrollment.status === "pending" ? (
+                        <Button disabled className="w-full bg-amber-100 text-amber-700 cursor-not-allowed">
+                          অনুমোদনের অপেক্ষায়...
                         </Button>
-                      </Link>
+                      ) : (
+                        <Button disabled className="w-full bg-gray-100 text-gray-500 cursor-not-allowed">
+                          এক্সেস নেই
+                        </Button>
+                      )}
                     </div>
                   </div>
                 );
