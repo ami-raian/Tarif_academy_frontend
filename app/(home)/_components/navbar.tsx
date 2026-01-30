@@ -6,6 +6,13 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   GraduationCap,
   Menu,
   X,
@@ -70,14 +77,6 @@ export function Navbar() {
     return pathname.startsWith(href);
   };
 
-  const themeIcon =
-    mounted &&
-    (theme === "dark" ? (
-      <Sun className="w-5 h-5" />
-    ) : (
-      <Moon className="w-5 h-5" />
-    ));
-
   return (
     <nav className="fixed inset-x-0 top-0 z-50 bg-white/85 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-200/40 dark:border-slate-700/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -113,84 +112,128 @@ export function Navbar() {
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-2">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors duration-200"
-              aria-label="Toggle theme"
-            >
-              {themeIcon}
-            </button>
-
+          <div className="hidden md:flex items-center gap-3">
             {!mounted ? (
-              <div className="flex gap-2">
-                <div className="h-9 w-20 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse" />
-                <div className="h-9 w-24 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse" />
-              </div>
-            ) : isLoggedIn ? (
               <>
-                <Link href={dashboardPath}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800"
-                  >
-                    <User className="w-4 h-4 mr-1" />
-                    {dashboardLabel}
-                  </Button>
-                </Link>
-                <Button
-                  onClick={handleLogout}
-                  size="sm"
-                  variant="destructive"
-                  className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white"
-                >
-                  <LogOut className="w-4 h-4 mr-1" />
-                  লগআউট
-                </Button>
+                <div className="h-10 w-10 bg-slate-200 dark:bg-slate-700 rounded-full animate-pulse" />
+                <div className="h-10 w-10 bg-slate-200 dark:bg-slate-700 rounded-full animate-pulse" />
               </>
             ) : (
               <>
-                <Link href="/login">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800"
+                <button
+                  onClick={toggleTheme}
+                  className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center"
+                  aria-label="Toggle theme"
+                >
+                  {theme === "dark" ? (
+                    <Sun className="w-5 h-5" />
+                  ) : (
+                    <Moon className="w-5 h-5" />
+                  )}
+                </button>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-105 active:scale-95 transition-all duration-200">
+                      <User className="w-5 h-5" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-52 p-2 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
                   >
-                    <LogIn className="w-4 h-4 mr-1" />
-                    লগইন
-                  </Button>
-                </Link>
-                <Link href="/sign-up">
-                  <Button
-                    size="sm"
-                    className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 dark:from-indigo-500 dark:to-purple-500 dark:hover:from-indigo-600 dark:hover:to-purple-600 text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all duration-300"
-                  >
-                    <UserPlus className="w-4 h-4 mr-1" />
-                    সাইন আপ
-                  </Button>
-                </Link>
+                    {isLoggedIn ? (
+                      <>
+                        <DropdownMenuItem
+                          asChild
+                          className="rounded-lg px-3 py-2.5 cursor-pointer"
+                        >
+                          <Link
+                            href={dashboardPath}
+                            className="flex items-center gap-3"
+                          >
+                            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                              <User className="w-4 h-4" />
+                            </div>
+                            <span className="font-medium">{dashboardLabel}</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator className="my-2" />
+                        <DropdownMenuItem
+                          onClick={handleLogout}
+                          className="rounded-lg px-3 py-2.5 cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center">
+                              <LogOut className="w-4 h-4" />
+                            </div>
+                            <span className="font-medium">লগআউট</span>
+                          </div>
+                        </DropdownMenuItem>
+                      </>
+                    ) : (
+                      <>
+                        <DropdownMenuItem
+                          asChild
+                          className="rounded-lg px-3 py-2.5 cursor-pointer"
+                        >
+                          <Link
+                            href="/login"
+                            className="flex items-center gap-3"
+                          >
+                            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                              <LogIn className="w-4 h-4" />
+                            </div>
+                            <span className="font-medium">লগইন</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          asChild
+                          className="rounded-lg px-3 py-2.5 cursor-pointer"
+                        >
+                          <Link
+                            href="/sign-up"
+                            className="flex items-center gap-3"
+                          >
+                            <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                              <UserPlus className="w-4 h-4" />
+                            </div>
+                            <span className="font-medium">সাইন আপ</span>
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </>
             )}
           </div>
 
           {/* Mobile Actions */}
-          <div className="flex md:hidden items-center gap-1">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors duration-200"
-              aria-label="Toggle theme"
-            >
-              {themeIcon}
-            </button>
+          <div className="flex md:hidden items-center gap-2">
+            {!mounted ? (
+              <div className="w-9 h-9 bg-slate-200 dark:bg-slate-700 rounded-full animate-pulse" />
+            ) : (
+              <button
+                onClick={toggleTheme}
+                className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all duration-200 flex items-center justify-center"
+                aria-label="Toggle theme"
+              >
+                {theme === "dark" ? (
+                  <Sun className="w-5 h-5" />
+                ) : (
+                  <Moon className="w-5 h-5" />
+                )}
+              </button>
+            )}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors duration-200"
+              className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all duration-200 flex items-center justify-center"
             >
               {isMenuOpen ? (
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               ) : (
-                <Menu className="w-6 h-6" />
+                <Menu className="w-5 h-5" />
               )}
             </button>
           </div>
