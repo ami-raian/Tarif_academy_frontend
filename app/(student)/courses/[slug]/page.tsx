@@ -10,10 +10,10 @@ import {
   getCourseBySlug,
   getCourseVideos,
   checkEnrollment,
-  enrollInCourse,
+  createEnrollment,
   getCookie,
 } from "@/lib/api";
-import type { Course, VideoWithAccess } from "@/types";
+import type { Course, VideoWithAccess, EnrollmentStatus } from "@/types";
 
 // Icons
 const Icons = {
@@ -161,6 +161,7 @@ export default function CourseDetailPage({ params }: PageProps) {
     [key: string]: VideoWithAccess[];
   }>({});
   const [isEnrolled, setIsEnrolled] = useState(false);
+  const [enrollmentStatus, setEnrollmentStatus] = useState<EnrollmentStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
@@ -168,6 +169,11 @@ export default function CourseDetailPage({ params }: PageProps) {
   );
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userType, setUserType] = useState<string | null>(null);
+  const [showEnrollModal, setShowEnrollModal] = useState(false);
+  const [transactionId, setTransactionId] = useState("");
+
+  // bKash Payment Info
+  const BKASH_NUMBER = "01XXXXXXXXX"; // Change this to your bKash number
 
   useEffect(() => {
     const token = getCookie("accessToken");
@@ -203,6 +209,7 @@ export default function CourseDetailPage({ params }: PageProps) {
             const enrollRes = await checkEnrollment(courseRes.data._id);
             if (enrollRes.success) {
               setIsEnrolled(enrollRes.data.isEnrolled);
+              setEnrollmentStatus(enrollRes.data.status);
             }
           }
         }
@@ -216,7 +223,7 @@ export default function CourseDetailPage({ params }: PageProps) {
     fetchCourseData();
   }, [slug, isLoggedIn, userType]);
 
-  const handleEnroll = async () => {
+  const handleEnrollClick = () => {
     if (!isLoggedIn) {
       router.push("/login");
       return;
@@ -229,17 +236,31 @@ export default function CourseDetailPage({ params }: PageProps) {
 
     if (!course) return;
 
+    // Show enrollment modal
+    setShowEnrollModal(true);
+  };
+
+  const handleEnrollSubmit = async () => {
+    if (!course) return;
+
+    if (!transactionId.trim()) {
+      alert("ট্রানজেকশন আইডি দিন");
+      return;
+    }
+
     try {
       setEnrolling(true);
-      const res = await enrollInCourse(course._id);
+      const res = await createEnrollment({
+        courseId: course._id,
+        paymentAmount: course.discountPrice || course.price,
+        transactionId: transactionId.trim(),
+      });
+
       if (res.success) {
-        setIsEnrolled(true);
-        // Refresh videos to get unlocked content
-        const videosRes = await getCourseVideos(course._id);
-        if (videosRes.success) {
-          setSections(videosRes.data.sections || {});
-        }
-        alert("এনরোলমেন্ট সফল হয়েছে! এখন আপনি কোর্সটি দেখতে পারবেন।");
+        setEnrollmentStatus("pending");
+        setShowEnrollModal(false);
+        setTransactionId("");
+        alert("এনরোলমেন্ট রিকোয়েস্ট সফল হয়েছে! অ্যাডমিন অনুমোদন করলে আপনি কোর্সটি দেখতে পারবেন।");
       } else {
         alert(res.message || "এনরোলমেন্ট ব্যর্থ হয়েছে");
       }
@@ -607,9 +628,33 @@ export default function CourseDetailPage({ params }: PageProps) {
                         কোর্স শুরু করুন →
                       </Button>
                     </Link>
+                  ) : enrollmentStatus === "pending" ? (
+                    <div className="space-y-3">
+                      <Button
+                        disabled
+                        className="w-full py-6 text-lg bg-amber-100 text-amber-800 cursor-not-allowed"
+                      >
+                        অনুমোদনের অপেক্ষায়...
+                      </Button>
+                      <p className="text-sm text-amber-600 text-center">
+                        আপনার এনরোলমেন্ট রিকোয়েস্ট জমা হয়েছে। অ্যাডমিন অনুমোদন করলে আপনি কোর্সটি দেখতে পারবেন।
+                      </p>
+                    </div>
+                  ) : enrollmentStatus === "rejected" ? (
+                    <div className="space-y-3">
+                      <Button
+                        onClick={handleEnrollClick}
+                        className="w-full py-6 text-lg bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600"
+                      >
+                        পুনরায় এনরোল করুন
+                      </Button>
+                      <p className="text-sm text-red-600 text-center">
+                        আপনার আগের এনরোলমেন্ট প্রত্যাখ্যাত হয়েছে।
+                      </p>
+                    </div>
                   ) : (
                     <Button
-                      onClick={handleEnroll}
+                      onClick={handleEnrollClick}
                       disabled={enrolling}
                       className="w-full py-6 text-lg bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600"
                     >
@@ -660,6 +705,109 @@ export default function CourseDetailPage({ params }: PageProps) {
           </div>
         </div>
       </main>
+
+      {/* Enrollment Modal */}
+      {showEnrollModal && course && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
+              কোর্সে এনরোল করুন
+            </h3>
+
+            {/* Course Info */}
+            <div className="bg-gray-50 rounded-xl p-4 mb-6">
+              <h4 className="font-semibold text-gray-900 mb-2">{course.title}</h4>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">মূল্য:</span>
+                <span className="text-xl font-bold text-purple-600">
+                  ৳{course.discountPrice || course.price}
+                </span>
+              </div>
+            </div>
+
+            {/* Payment Instructions */}
+            <div className="bg-pink-50 border border-pink-200 rounded-xl p-4 mb-6">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-12 h-12 bg-pink-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">bKash</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">বিকাশে পেমেন্ট করুন</p>
+                  <p className="text-sm text-gray-600">Send Money</p>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between items-center bg-white rounded-lg px-3 py-2">
+                  <span className="text-gray-600">বিকাশ নম্বর:</span>
+                  <span className="font-bold text-pink-600 text-lg">{BKASH_NUMBER}</span>
+                </div>
+                <div className="flex justify-between items-center bg-white rounded-lg px-3 py-2">
+                  <span className="text-gray-600">পরিমাণ:</span>
+                  <span className="font-bold text-gray-900">৳{course.discountPrice || course.price}</span>
+                </div>
+              </div>
+
+              <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-amber-800 text-sm">
+                  <strong>নির্দেশনা:</strong>
+                </p>
+                <ol className="text-amber-700 text-sm mt-1 list-decimal list-inside space-y-1">
+                  <li>উপরের বিকাশ নম্বরে Send Money করুন</li>
+                  <li>পেমেন্ট করার পর Transaction ID নিচে দিন</li>
+                  <li>অ্যাডমিন ভেরিফাই করলে কোর্স অ্যাক্সেস পাবেন</li>
+                </ol>
+              </div>
+            </div>
+
+            {/* Transaction ID Input */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Transaction ID <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={transactionId}
+                onChange={(e) => setTransactionId(e.target.value)}
+                placeholder="যেমন: TXN1234567890"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                বিকাশ থেকে পাওয়া Transaction ID দিন
+              </p>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowEnrollModal(false);
+                  setTransactionId("");
+                }}
+                className="flex-1"
+                disabled={enrolling}
+              >
+                বাতিল
+              </Button>
+              <Button
+                onClick={handleEnrollSubmit}
+                disabled={enrolling || !transactionId.trim()}
+                className="flex-1 bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600"
+              >
+                {enrolling ? (
+                  <span className="flex items-center gap-2">
+                    <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                    জমা হচ্ছে...
+                  </span>
+                ) : (
+                  "এনরোল রিকোয়েস্ট জমা দিন"
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -90,14 +90,34 @@ export interface VideoStreamResponse {
 }
 
 // Enrollment types
+export type EnrollmentStatus = "pending" | "approved" | "rejected";
+
 export interface Enrollment {
   _id: string;
   student: string;
+  studentId?: {
+    _id: string;
+    fullName: string;
+    email: string;
+    phone?: string;
+  };
   course: Course;
+  courseId?: {
+    _id: string;
+    title: string;
+    price: number;
+    thumbnail?: string;
+  };
   enrolledAt: string;
   completedVideos: string[];
   progress: number;
   isActive: boolean;
+  status: EnrollmentStatus;
+  paymentAmount: number;
+  transactionId?: string;
+  approvedAt?: string;
+  rejectedAt?: string;
+  rejectionReason?: string;
 }
 
 export interface EnrollmentResponse {
@@ -119,7 +139,24 @@ export interface EnrollmentCheckResponse {
   statusCode: number;
   data: {
     isEnrolled: boolean;
+    status: EnrollmentStatus | null;
     enrollment?: Enrollment;
+  };
+}
+
+// Admin enrollment list response
+export interface AdminEnrollmentsResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    enrollments: Enrollment[];
+    pagination: {
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
   };
 }
 
