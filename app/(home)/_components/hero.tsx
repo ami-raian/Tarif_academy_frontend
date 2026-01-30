@@ -11,25 +11,8 @@ const stats = [
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-white dark:bg-gray-950">
-      {/* Light mode background */}
-      <div className="absolute inset-0 bg-linear-to-br from-violet-50 via-white to-cyan-50 dark:from-transparent dark:via-transparent dark:to-transparent" />
-
-      {/* Dark mode background with gradient mesh */}
-      <div className="absolute inset-0 hidden dark:block">
-        <div className="absolute inset-0 bg-linear-to-br from-gray-950 via-gray-900 to-gray-950" />
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-150 bg-violet-600/10 rounded-full blur-3xl" />
-      </div>
-
-      {/* Light mode decorative elements */}
-      <div className="absolute inset-0 overflow-hidden dark:hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200/50 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-200/50 rounded-full blur-3xl" />
-      </div>
-
-      <div className="container relative mx-auto px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+    <section className="relative">
+      <div className="container relative z-10 mx-auto px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
           {/* Content */}
           <div className="space-y-6">
@@ -45,20 +28,27 @@ export function Hero() {
             </h1>
 
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-xl leading-relaxed">
-              SSC ও HSC পরীক্ষার্থীদের জন্য সম্পূর্ণ বিষয়ভিত্তিক লেসন, নোট এবং অনুশীলন।
-              অভিজ্ঞ শিক্ষকদের গাইডেন্সে তোমার পড়াশোনাকে করো আরও সহজ।
+              SSC ও HSC পরীক্ষার্থীদের জন্য সম্পূর্ণ বিষয়ভিত্তিক লেসন, নোট এবং
+              অনুশীলন। অভিজ্ঞ শিক্ষকদের গাইডেন্সে তোমার পড়াশোনাকে করো আরও সহজ।
             </p>
 
             <div className="flex flex-wrap gap-4">
               <Link href="/courses">
-                <Button size="lg" className="bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 shadow-lg shadow-purple-500/25 dark:shadow-purple-500/30">
+                <Button
+                  size="lg"
+                  className="bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 shadow-lg shadow-purple-500/25 dark:shadow-purple-500/30"
+                >
                   <BookOpen className="w-5 h-5 mr-2" />
                   শুরু করুন
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
               <Link href="/courses">
-                <Button size="lg" variant="outline" className="border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-white/10 dark:text-white">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-white/10 dark:text-white"
+                >
                   কোর্স দেখুন
                 </Button>
               </Link>
@@ -71,7 +61,9 @@ export function Hero() {
                   <div className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
                     {stat.value}
                   </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    {stat.label}
+                  </div>
                 </div>
               ))}
             </div>
