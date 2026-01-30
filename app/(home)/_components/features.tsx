@@ -56,21 +56,19 @@ const subjects = [
 ];
 
 const features = [
-  { icon: Award, title: "অভিজ্ঞ শিক্ষক", description: "দেশসেরা শিক্ষকদের কাছ থেকে শিখুন" },
+  {
+    icon: Award,
+    title: "অভিজ্ঞ শিক্ষক",
+    description: "দেশসেরা শিক্ষকদের কাছ থেকে শিখুন",
+  },
   { icon: Target, title: "পরীক্ষা প্রস্তুতি", description: "MCQ, CQ অনুশীলন" },
   { icon: BookOpen, title: "ডিজিটাল নোট", description: "সহজে ডাউনলোড করুন" },
 ];
 
 export function Features() {
   return (
-    <section className="relative py-16 bg-gray-50 dark:bg-gray-900">
-      {/* Dark mode subtle gradient */}
-      <div className="absolute inset-0 hidden dark:block">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-600/5 rounded-full blur-3xl" />
-      </div>
-
-      <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative py-16">
+      <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
@@ -91,16 +89,20 @@ export function Features() {
             return (
               <Card
                 key={subject.title}
-                className="group hover:shadow-lg transition-all duration-300 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-500/50"
+                className="group hover:shadow-lg transition-all duration-300 bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm border-gray-200/50 dark:border-gray-700/50 hover:border-purple-300 dark:hover:border-purple-500/50"
               >
                 <CardContent className="p-5">
-                  <div className={`w-12 h-12 rounded-xl ${subject.bgColor} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
+                  <div
+                    className={`w-12 h-12 rounded-xl ${subject.bgColor} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}
+                  >
                     <Icon className={`w-6 h-6 ${subject.iconColor}`} />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                     {subject.title}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{subject.description}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {subject.description}
+                  </p>
                 </CardContent>
               </Card>
             );
@@ -113,12 +115,19 @@ export function Features() {
             {features.map((feature) => {
               const Icon = feature.icon;
               return (
-                <div key={feature.title} className="flex flex-col items-center text-center group">
+                <div
+                  key={feature.title}
+                  className="flex flex-col items-center text-center group"
+                >
                   <div className="w-14 h-14 rounded-full bg-linear-to-br from-purple-500 to-cyan-500 dark:from-purple-400 dark:to-cyan-400 flex items-center justify-center mb-3 shadow-lg shadow-purple-500/25 dark:shadow-purple-500/30 group-hover:scale-110 transition-transform">
                     <Icon className="w-7 h-7 text-white" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{feature.title}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{feature.description}</p>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                    {feature.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {feature.description}
+                  </p>
                 </div>
               );
             })}
