@@ -70,7 +70,13 @@ export function Navbar() {
     return pathname.startsWith(href);
   };
 
-  const themeIcon = mounted && (theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />);
+  const themeIcon =
+    mounted &&
+    (theme === "dark" ? (
+      <Sun className="w-5 h-5" />
+    ) : (
+      <Moon className="w-5 h-5" />
+    ));
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50">
@@ -124,12 +130,21 @@ export function Navbar() {
             ) : isLoggedIn ? (
               <>
                 <Link href={dashboardPath}>
-                  <Button variant="ghost" size="sm" className="text-gray-600 dark:text-gray-300">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-600 dark:text-gray-300"
+                  >
                     <User className="w-4 h-4 mr-1" />
                     {dashboardLabel}
                   </Button>
                 </Link>
-                <Button onClick={handleLogout} size="sm" variant="destructive">
+                <Button
+                  onClick={handleLogout}
+                  size="sm"
+                  variant="destructive"
+                  className="bg-white"
+                >
                   <LogOut className="w-4 h-4 mr-1" />
                   লগআউট
                 </Button>
@@ -137,13 +152,20 @@ export function Navbar() {
             ) : (
               <>
                 <Link href="/login">
-                  <Button variant="ghost" size="sm" className="text-gray-600 dark:text-gray-300">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-600 dark:text-gray-300"
+                  >
                     <LogIn className="w-4 h-4 mr-1" />
                     লগইন
                   </Button>
                 </Link>
                 <Link href="/sign-up">
-                  <Button size="sm" className="bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 shadow-md shadow-purple-500/25">
+                  <Button
+                    size="sm"
+                    className="bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 shadow-md shadow-purple-500/25"
+                  >
                     <UserPlus className="w-4 h-4 mr-1" />
                     সাইন আপ
                   </Button>
@@ -165,7 +187,11 @@ export function Navbar() {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
         </div>
@@ -200,12 +226,24 @@ export function Navbar() {
                 ) : isLoggedIn ? (
                   <>
                     <Link href={dashboardPath} onClick={closeMenu}>
-                      <Button variant="outline" size="sm" className="w-full dark:border-gray-700 dark:text-gray-300">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full dark:border-gray-700 dark:text-gray-300"
+                      >
                         <User className="w-4 h-4 mr-1" />
                         {dashboardLabel}
                       </Button>
                     </Link>
-                    <Button onClick={() => { handleLogout(); closeMenu(); }} size="sm" variant="destructive" className="w-full">
+                    <Button
+                      onClick={() => {
+                        handleLogout();
+                        closeMenu();
+                      }}
+                      size="sm"
+                      variant="destructive"
+                      className="w-full bg-white"
+                    >
                       <LogOut className="w-4 h-4 mr-1" />
                       লগআউট
                     </Button>
@@ -213,13 +251,20 @@ export function Navbar() {
                 ) : (
                   <>
                     <Link href="/login" onClick={closeMenu}>
-                      <Button variant="outline" size="sm" className="w-full dark:border-gray-700 dark:text-gray-300">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full dark:border-gray-700 dark:text-gray-300"
+                      >
                         <LogIn className="w-4 h-4 mr-1" />
                         লগইন
                       </Button>
                     </Link>
                     <Link href="/sign-up" onClick={closeMenu}>
-                      <Button size="sm" className="w-full bg-linear-to-r from-purple-600 to-cyan-500">
+                      <Button
+                        size="sm"
+                        className="w-full bg-linear-to-r from-purple-600 to-cyan-500"
+                      >
                         <UserPlus className="w-4 h-4 mr-1" />
                         সাইন আপ
                       </Button>
