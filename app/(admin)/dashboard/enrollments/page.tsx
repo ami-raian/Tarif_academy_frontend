@@ -240,7 +240,7 @@ export default function EnrollmentsPage() {
 
   if (loading && enrollments.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
           <div className="relative w-16 h-16 mx-auto mb-4">
             <div className="absolute inset-0 rounded-full border-4 border-slate-200"></div>
@@ -253,7 +253,7 @@ export default function EnrollmentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
       {/* Header */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -395,7 +395,7 @@ export default function EnrollmentsPage() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-2">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-white font-semibold">
+                          <div className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-white font-semibold">
                             {enrollment.studentId?.fullName?.charAt(0) || "S"}
                           </div>
                           <div>

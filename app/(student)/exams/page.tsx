@@ -179,7 +179,7 @@ export default function ExamsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50">
         <Navbar />
         <div className="pt-24 pb-16">
           <div className="container mx-auto px-4">
@@ -205,7 +205,7 @@ export default function ExamsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50">
       <Navbar />
 
       <main className="pt-24 pb-16">
@@ -352,7 +352,7 @@ export default function ExamsPage() {
                     className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow"
                   >
                     {/* Header */}
-                    <div className="relative h-32 bg-gradient-to-br from-purple-500 to-cyan-500 p-4">
+                    <div className="relative h-32 bg-linear-to-br from-purple-500 to-cyan-500 p-4">
                       <div className="absolute top-3 right-3 flex gap-2">
                         {isCompleted && submission && (
                           <span
@@ -470,7 +470,7 @@ export default function ExamsPage() {
                             );
                           }}
                         >
-                          <Button className="w-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600">
+                          <Button className="w-full bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600">
                             <span className="flex items-center gap-2">
                               <Icons.play />
                               পরীক্ষা শুরু করুন

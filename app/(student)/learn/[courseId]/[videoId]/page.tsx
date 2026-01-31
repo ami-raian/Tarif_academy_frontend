@@ -351,7 +351,7 @@ export default function VideoPlayerPage({ params }: PageProps) {
             <div className="hidden sm:flex items-center gap-2">
               <div className="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full"
+                  className="h-full bg-linear-to-r from-purple-500 to-cyan-500 rounded-full"
                   style={{ width: `${getProgress()}%` }}
                 />
               </div>
@@ -522,7 +522,7 @@ export default function VideoPlayerPage({ params }: PageProps) {
                         >
                           {/* Status Icon */}
                           <div
-                            className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
+                            className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
                               video.completed
                                 ? "bg-emerald-500/20 text-emerald-400"
                                 : video._id === videoId

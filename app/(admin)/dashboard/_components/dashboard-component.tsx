@@ -477,7 +477,7 @@ const DashboardComponent = () => {
   // Loading State
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
           <div className="relative w-16 h-16 mx-auto mb-4">
             <div className="absolute inset-0 rounded-full border-4 border-slate-200"></div>
@@ -492,7 +492,7 @@ const DashboardComponent = () => {
   // ==================== COURSE VIDEOS VIEW ====================
   if (selectedCourse) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
         {/* Top Header */}
         <div className="bg-white border-b sticky top-0 z-40 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -554,7 +554,7 @@ const DashboardComponent = () => {
             <div className="lg:col-span-2 space-y-4">
               {selectedVideo ? (
                 <Card className="overflow-hidden border-0 shadow-lg">
-                  <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-3 border-b">
+                  <div className="bg-linear-to-r from-primary/10 to-primary/5 px-4 py-3 border-b">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0 flex-1">
                         <h2 className="font-semibold text-slate-900 truncate">
@@ -581,7 +581,7 @@ const DashboardComponent = () => {
                         title={selectedVideo.title}
                       />
                     ) : selectedVideo.status === "processing" ? (
-                      <div className="aspect-video bg-gradient-to-br from-amber-50 to-amber-100 flex flex-col items-center justify-center">
+                      <div className="aspect-video bg-linear-to-br from-amber-50 to-amber-100 flex flex-col items-center justify-center">
                         <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center mb-4">
                           <div className="w-6 h-6 border-2 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
                         </div>
@@ -593,7 +593,7 @@ const DashboardComponent = () => {
                         </p>
                       </div>
                     ) : (
-                      <div className="aspect-video bg-gradient-to-br from-rose-50 to-rose-100 flex flex-col items-center justify-center">
+                      <div className="aspect-video bg-linear-to-br from-rose-50 to-rose-100 flex flex-col items-center justify-center">
                         <div className="w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center mb-4">
                           <Icons.close />
                         </div>
@@ -609,7 +609,7 @@ const DashboardComponent = () => {
                 </Card>
               ) : (
                 <Card className="overflow-hidden border-0 shadow-lg">
-                  <div className="aspect-video bg-gradient-to-br from-slate-100 to-slate-200 flex flex-col items-center justify-center">
+                  <div className="aspect-video bg-linear-to-br from-slate-100 to-slate-200 flex flex-col items-center justify-center">
                     <div className="w-16 h-16 rounded-full bg-white shadow-lg flex items-center justify-center mb-4">
                       <div className="text-slate-400 scale-150">
                         <Icons.play />
@@ -803,7 +803,7 @@ const DashboardComponent = () => {
 
   // ==================== DASHBOARD MAIN VIEW ====================
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
       {/* Header */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -819,8 +819,18 @@ const DashboardComponent = () => {
             <div className="flex gap-3">
               <Link href="/dashboard/mcq">
                 <Button variant="outline" className="gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   MCQ পরীক্ষা
                 </Button>
@@ -855,7 +865,7 @@ const DashboardComponent = () => {
                     {courses.length}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-violet-500/25">
+                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-violet-500 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-violet-500/25">
                   <Icons.chart />
                 </div>
               </div>
@@ -871,7 +881,7 @@ const DashboardComponent = () => {
                     {courses.filter((c) => c.isPublished).length}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/25">
+                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/25">
                   <Icons.checkCircle />
                 </div>
               </div>
@@ -887,7 +897,7 @@ const DashboardComponent = () => {
                     {courses.filter((c) => !c.isPublished).length}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-500/25">
+                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-500/25">
                   <Icons.draft />
                 </div>
               </div>
@@ -903,7 +913,7 @@ const DashboardComponent = () => {
                     {courses.reduce((acc, c) => acc + c.enrolledStudents, 0)}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center text-white shadow-lg shadow-sky-500/25">
+                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-sky-500 to-sky-600 flex items-center justify-center text-white shadow-lg shadow-sky-500/25">
                   <Icons.users />
                 </div>
               </div>
@@ -915,7 +925,14 @@ const DashboardComponent = () => {
         <Card className="border-0 shadow-lg">
           <CardHeader className="border-b bg-white">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <CardTitle className="text-lg">আপনার কোর্সসমূহ</CardTitle>
+              <div>
+                <CardTitle className="text-xl font-bold text-slate-900">
+                  আপনার কোর্সসমূহ
+                </CardTitle>
+                <p className="text-sm text-slate-500 mt-1">
+                  আপনার সকল কোর্স দেখুন এবং ম্যানেজ করুন
+                </p>
+              </div>
               <Tabs
                 defaultValue="all"
                 onValueChange={(value) =>
@@ -923,15 +940,24 @@ const DashboardComponent = () => {
                 }
                 className="w-full sm:w-auto"
               >
-                <TabsList className="grid grid-cols-3 w-full sm:w-auto">
-                  <TabsTrigger value="all" className="text-xs sm:text-sm">
-                    সকল
+                <TabsList className="grid grid-cols-3 w-full sm:w-auto bg-slate-100 p-1 rounded-lg">
+                  <TabsTrigger
+                    value="all"
+                    className="text-xs sm:text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm rounded-md transition-all"
+                  >
+                    📚 সকল
                   </TabsTrigger>
-                  <TabsTrigger value="true" className="text-xs sm:text-sm">
-                    প্রকাশিত
+                  <TabsTrigger
+                    value="true"
+                    className="text-xs sm:text-sm font-medium data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all"
+                  >
+                    ✅ প্রকাশিত
                   </TabsTrigger>
-                  <TabsTrigger value="false" className="text-xs sm:text-sm">
-                    ড্রাফট
+                  <TabsTrigger
+                    value="false"
+                    className="text-xs sm:text-sm font-medium data-[state=active]:bg-amber-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all"
+                  >
+                    📝 ড্রাফট
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -961,8 +987,8 @@ const DashboardComponent = () => {
                       className="group cursor-pointer border hover:border-primary/50 hover:shadow-xl transition-all duration-300 overflow-hidden"
                     >
                       {/* Course Thumbnail */}
-                      <div className="relative h-40 bg-gradient-to-br from-primary/20 to-primary/5 overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <div className="relative h-40 bg-linear-to-br from-primary/20 to-primary/5 overflow-hidden">
+                        <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent"></div>
 
                         {/* Status Badge */}
                         <div className="absolute top-3 right-3 flex gap-2">
