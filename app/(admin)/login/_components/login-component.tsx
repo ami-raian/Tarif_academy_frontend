@@ -13,16 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LoginFormData, LoginResponse } from "@/types";
-
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_TARIFACADEMY_API_URL ||
-  "http://localhost:5000/api/v1";
-
-function setCookie(name: string, value: string, days: number = 7) {
-  const expires = new Date();
-  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-  document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Strict`;
-}
+import { loginStudent, loginAdmin, setCookie } from "@/lib/api";
 
 export default function LoginComponent() {
   const [isAdminActive, setIsAdminActive] = useState(false);
@@ -56,21 +47,12 @@ export default function LoginComponent() {
     setError(null);
 
     const formData = type === "student" ? studentForm : adminForm;
-    const endpoint =
-      type === "student"
-        ? `${API_BASE_URL}/auth/student/login`
-        : `${API_BASE_URL}/auth/admin/login`;
 
     try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data: LoginResponse = await response.json();
+      const data: LoginResponse =
+        type === "student"
+          ? await loginStudent(formData.email, formData.password)
+          : await loginAdmin(formData.email, formData.password);
       console.log("Login Response:", data);
 
       if (data.success) {

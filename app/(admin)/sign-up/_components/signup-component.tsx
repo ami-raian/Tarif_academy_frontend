@@ -45,10 +45,7 @@ import {
   GUARDIAN_TYPE_NAMES,
   GENDER_NAMES,
 } from "@/lib/validations/signup";
-
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_TARIFACADEMY_API_URL ||
-  "http://localhost:5000/api/v1";
+import { registerStudent } from "@/lib/api";
 
 const STEPS = [
   { id: 1, title: "ব্যক্তিগত তথ্য", icon: User },
@@ -161,15 +158,7 @@ export default function SignUpComponent() {
     const { confirmPassword, ...submitData } = data;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/students/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(submitData),
-      });
-
-      const result = await response.json();
+      const result = await registerStudent(submitData);
 
       if (result.success) {
         setSuccess(true);
@@ -187,15 +176,15 @@ export default function SignUpComponent() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-r from-gray-100 to-purple-100 p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Check className="w-10 h-10 text-green-600" />
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-r from-gray-100 to-purple-100 dark:from-slate-900 dark:to-slate-800 p-4">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+          <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Check className="w-10 h-10 text-green-600 dark:text-green-400" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
             রেজিস্ট্রেশন সফল হয়েছে!
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-slate-400 mb-6">
             আপনার অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে। এখন লগইন করুন।
           </p>
           <Link href="/login">
@@ -209,8 +198,8 @@ export default function SignUpComponent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-r from-gray-100 to-purple-100 p-4 py-8">
-      <div className="bg-white rounded-2xl shadow-xl overflow-hidden w-full max-w-4xl">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-r from-gray-100 to-purple-100 dark:from-slate-900 dark:to-slate-800 p-4 py-8">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden w-full max-w-4xl">
         {/* Header */}
         <div className="bg-linear-to-r from-purple-600 to-cyan-500 p-6 text-white">
           <div className="flex items-center gap-3 mb-4">
@@ -261,7 +250,7 @@ export default function SignUpComponent() {
           {/* Step 1: Personal Info */}
           {currentStep === 1 && (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                 <User className="w-5 h-5 text-purple-600" />
                 ব্যক্তিগত তথ্য
               </h2>
@@ -434,7 +423,9 @@ export default function SignUpComponent() {
                   <Label htmlFor="gender">লিঙ্গ *</Label>
                   <Select
                     value={watch("gender")}
-                    onValueChange={(value) => setValue("gender", value as any)}
+                    onValueChange={(value) =>
+                      setValue("gender", value as (typeof GENDERS)[number])
+                    }
                   >
                     <SelectTrigger className="w-full h-10">
                       <SelectValue placeholder="নির্বাচন করুন" />
@@ -493,7 +484,7 @@ export default function SignUpComponent() {
           {/* Step 2: SSC Info */}
           {currentStep === 2 && (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-purple-600" />
                 SSC তথ্য
               </h2>
@@ -543,7 +534,10 @@ export default function SignUpComponent() {
                   <Select
                     value={watch("educationalInfo.ssc.board")}
                     onValueChange={(value) =>
-                      setValue("educationalInfo.ssc.board", value as any)
+                      setValue(
+                        "educationalInfo.ssc.board",
+                        value as (typeof BOARDS)[number],
+                      )
                     }
                   >
                     <SelectTrigger className="w-full h-10">
@@ -569,7 +563,10 @@ export default function SignUpComponent() {
                   <Select
                     value={watch("educationalInfo.ssc.group")}
                     onValueChange={(value) =>
-                      setValue("educationalInfo.ssc.group", value as any)
+                      setValue(
+                        "educationalInfo.ssc.group",
+                        value as (typeof GROUPS)[number],
+                      )
                     }
                   >
                     <SelectTrigger className="w-full h-10">
@@ -629,7 +626,7 @@ export default function SignUpComponent() {
           {/* Step 3: HSC Info */}
           {currentStep === 3 && (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                 <GraduationCap className="w-5 h-5 text-purple-600" />
                 HSC তথ্য
               </h2>
@@ -679,7 +676,10 @@ export default function SignUpComponent() {
                   <Select
                     value={watch("educationalInfo.hsc.board")}
                     onValueChange={(value) =>
-                      setValue("educationalInfo.hsc.board", value as any)
+                      setValue(
+                        "educationalInfo.hsc.board",
+                        value as (typeof BOARDS)[number],
+                      )
                     }
                   >
                     <SelectTrigger className="w-full h-10">
@@ -705,7 +705,10 @@ export default function SignUpComponent() {
                   <Select
                     value={watch("educationalInfo.hsc.group")}
                     onValueChange={(value) =>
-                      setValue("educationalInfo.hsc.group", value as any)
+                      setValue(
+                        "educationalInfo.hsc.group",
+                        value as (typeof GROUPS)[number],
+                      )
                     }
                   >
                     <SelectTrigger className="w-full h-10">
@@ -767,7 +770,7 @@ export default function SignUpComponent() {
             <div className="space-y-6">
               {/* Guardian Info */}
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                   <Users className="w-5 h-5 text-purple-600" />
                   অভিভাবকের তথ্য
                 </h2>
@@ -778,7 +781,10 @@ export default function SignUpComponent() {
                     <Select
                       value={watch("guardian.type")}
                       onValueChange={(value) =>
-                        setValue("guardian.type", value as any)
+                        setValue(
+                          "guardian.type",
+                          value as (typeof GUARDIAN_TYPES)[number],
+                        )
                       }
                     >
                       <SelectTrigger className="w-full h-10">
@@ -842,7 +848,7 @@ export default function SignUpComponent() {
 
               {/* Address Info */}
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-purple-600" />
                   ঠিকানা
                 </h2>
@@ -893,7 +899,7 @@ export default function SignUpComponent() {
 
           {/* Error Message */}
           {error && (
-            <div className="mt-4 p-3 rounded-lg bg-red-100 border border-red-300 text-red-600 text-sm">
+            <div className="mt-4 p-3 rounded-lg bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 text-sm">
               {error}
             </div>
           )}
@@ -943,11 +949,11 @@ export default function SignUpComponent() {
 
           {/* Login Link */}
           <div className="text-center mt-6">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-slate-400">
               ইতিমধ্যে অ্যাকাউন্ট আছে?{" "}
               <Link
                 href="/login"
-                className="text-purple-600 hover:text-purple-700 font-medium"
+                className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium"
               >
                 লগইন করুন
               </Link>

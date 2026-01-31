@@ -10,17 +10,19 @@ import { VideoPlayer } from "@/components/video-player";
 import { VideoUploadModal } from "./video-upload-modal";
 import { CommonBadge } from "@/components/common/common-badge";
 import { CreateCourseModal } from "./create-course-modal";
-import { toggleCoursePublish } from "@/lib/api";
+import {
+  toggleCoursePublish,
+  getCourses,
+  getCourseVideos,
+  syncAllVideos as syncAllVideosApi,
+} from "@/lib/api";
 import { Home } from "lucide-react";
 import type {
   Course,
-  CoursesResponse,
   Video,
   VideoWithAccess,
   CourseVideosResponse,
 } from "@/types";
-
-const API_BASE_URL = "http://localhost:5000/api/v1";
 
 // Icons as simple components
 const Icons = {
@@ -234,36 +236,14 @@ const DashboardComponent = () => {
   const [isCreateCourseModalOpen, setIsCreateCourseModalOpen] = useState(false);
   const [publishingCourse, setPublishingCourse] = useState<string | null>(null);
 
-  // Get auth token from localStorage or cookies
-  const getAuthToken = () => {
-    if (typeof window === "undefined") return null;
-    const ls = localStorage.getItem("accessToken");
-    if (ls) return ls;
-    const match = document.cookie.match(new RegExp("(^| )accessToken=([^;]+)"));
-    if (match) return decodeURIComponent(match[2]);
-    return null;
-  };
-
   // Fetch all courses
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchCoursesData = async () => {
       try {
         setLoading(true);
-        const token = getAuthToken();
-        const headers: Record<string, string> = {
-          "Content-Type": "application/json",
-        };
-        if (token) headers.Authorization = `Bearer ${token}`;
-
-        const response = await fetch(
-          `${API_BASE_URL}/courses?isPublished=${filter}`,
-          {
-            headers,
-            credentials: "include",
-          },
-        );
-
-        const data: CoursesResponse = await response.json();
+        const isPublished =
+          filter === "all" ? undefined : filter === "true" ? true : false;
+        const data = await getCourses({ isPublished });
         if (data.success) {
           setCourses(data.data);
         }
@@ -274,27 +254,14 @@ const DashboardComponent = () => {
       }
     };
 
-    fetchCourses();
+    fetchCoursesData();
   }, [filter]);
 
   // Fetch videos for selected course
   const fetchCourseVideos = async (courseId: string) => {
     try {
       setVideosLoading(true);
-      const token = getAuthToken();
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-      if (token) headers.Authorization = `Bearer ${token}`;
-
-      const response = await fetch(
-        `${API_BASE_URL}/videos/course/${courseId}`,
-        {
-          headers,
-          credentials: "include",
-        },
-      );
-      const data: CourseVideosResponse = await response.json();
+      const data: CourseVideosResponse = await getCourseVideos(courseId);
       if (data.success) {
         setSections(data.data.sections);
         setExpandedSections(new Set(Object.keys(data.data.sections)));
@@ -329,22 +296,10 @@ const DashboardComponent = () => {
   };
 
   // Sync all processing videos with Bunny
-  const syncAllVideos = async () => {
+  const handleSyncAllVideos = async () => {
     try {
       setSyncing(true);
-      const token = getAuthToken();
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-      if (token) headers.Authorization = `Bearer ${token}`;
-
-      const response = await fetch(`${API_BASE_URL}/webhooks/sync-all-videos`, {
-        method: "POST",
-        headers,
-        credentials: "include",
-      });
-
-      const data = await response.json();
+      const data = await syncAllVideosApi();
       if (data.success) {
         // Re-fetch videos to get updated status
         if (selectedCourse) {
@@ -525,7 +480,7 @@ const DashboardComponent = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={syncAllVideos}
+                onClick={handleSyncAllVideos}
                 disabled={syncing}
                 className="gap-2 shrink-0"
               >

@@ -11,8 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-const API_BASE_URL = "http://localhost:5000/api/v1";
+import { createCourse, getAuthToken } from "@/lib/api";
 
 interface CreateCourseModalProps {
   isOpen: boolean;
@@ -74,15 +73,6 @@ export const CreateCourseModal = ({
 
   const languages = ["Bangla", "English", "Hindi"];
 
-  const getAuthToken = () => {
-    if (typeof window === "undefined") return null;
-    const ls = localStorage.getItem("accessToken");
-    if (ls) return ls;
-    const match = document.cookie.match(new RegExp("(^| )accessToken=([^;]+)"));
-    if (match) return decodeURIComponent(match[2]);
-    return null;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -122,17 +112,7 @@ export const CreateCourseModal = ({
         isPublished,
       };
 
-      const response = await fetch(`${API_BASE_URL}/courses`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: "include",
-        body: JSON.stringify(courseData),
-      });
-
-      const data = await response.json();
+      const data = await createCourse(courseData);
 
       if (data.success) {
         setSuccess(true);
