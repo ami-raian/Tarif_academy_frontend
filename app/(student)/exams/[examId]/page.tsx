@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  getMcqExam,
+  getMcqExamForStudent,
   getMcqQuestionsForStudent,
   startMcqExam,
   saveMcqAnswer,
@@ -25,28 +25,78 @@ import {
 // Icons
 const Icons = {
   clock: () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
     </svg>
   ),
   warning: () => (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+    <svg
+      className="w-6 h-6"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+      />
     </svg>
   ),
   check: () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5 13l4 4L19 7"
+      />
     </svg>
   ),
   back: () => (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M15 19l-7-7 7-7"
+      />
     </svg>
   ),
   next: () => (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 5l7 7-7 7"
+      />
     </svg>
   ),
 };
@@ -87,8 +137,22 @@ export default function ExamPage() {
     const fetchExamData = async () => {
       try {
         setLoading(true);
+
+        // Try to get exam from localStorage first
+        let examData = null;
+        try {
+          const cachedExam = localStorage.getItem(`exam_${examId}`);
+          if (cachedExam) {
+            examData = JSON.parse(cachedExam);
+          }
+        } catch (e) {
+          console.error("Failed to load cached exam:", e);
+        }
+
         const [examRes, questionsRes, submissionRes] = await Promise.all([
-          getMcqExam(examId),
+          examData
+            ? Promise.resolve({ success: true, data: examData })
+            : getMcqExamForStudent(examId),
           getMcqQuestionsForStudent(examId),
           getMcqSubmission(examId),
         ]);
@@ -96,7 +160,10 @@ export default function ExamPage() {
         if (examRes.success) {
           setExam(examRes.data);
         } else {
-          alert("পরীক্ষা খুঁজে পাওয়া যায়নি");
+          console.error("Exam fetch error:", examRes);
+          alert(
+            `পরীক্ষা খুঁজে পাওয়া যায়নি: ${examRes.message || "Unknown error"}`,
+          );
           router.push("/exams");
           return;
         }
@@ -117,9 +184,14 @@ export default function ExamPage() {
 
           // Restore answers from submission
           const savedAnswers = new Map<string, number | null>();
-          sub.answers.forEach((ans: { questionId: string; selectedOptionIndex: number | null }) => {
-            savedAnswers.set(ans.questionId, ans.selectedOptionIndex);
-          });
+          sub.answers.forEach(
+            (ans: {
+              questionId: string;
+              selectedOptionIndex: number | null;
+            }) => {
+              savedAnswers.set(ans.questionId, ans.selectedOptionIndex);
+            },
+          );
           setAnswers(savedAnswers);
 
           // Calculate remaining time
@@ -294,26 +366,38 @@ export default function ExamPage() {
             <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
               <Icons.clock />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">{exam.title}</h1>
-            {exam.description && <p className="text-gray-600">{exam.description}</p>}
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              {exam.title}
+            </h1>
+            {exam.description && (
+              <p className="text-gray-600">{exam.description}</p>
+            )}
           </div>
 
           <div className="space-y-4 mb-8">
             <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
               <span className="text-gray-600">সময়কাল</span>
-              <span className="font-semibold text-gray-900">{exam.duration} মিনিট</span>
+              <span className="font-semibold text-gray-900">
+                {exam.duration} মিনিট
+              </span>
             </div>
             <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
               <span className="text-gray-600">মোট প্রশ্ন</span>
-              <span className="font-semibold text-gray-900">{exam.totalQuestions} টি</span>
+              <span className="font-semibold text-gray-900">
+                {exam.totalQuestions} টি
+              </span>
             </div>
             <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
               <span className="text-gray-600">মোট নম্বর</span>
-              <span className="font-semibold text-gray-900">{exam.totalMarks}</span>
+              <span className="font-semibold text-gray-900">
+                {exam.totalMarks}
+              </span>
             </div>
             <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
               <span className="text-gray-600">পাস নম্বর</span>
-              <span className="font-semibold text-gray-900">{exam.passingMarks}</span>
+              <span className="font-semibold text-gray-900">
+                {exam.passingMarks}
+              </span>
             </div>
           </div>
 
@@ -334,7 +418,11 @@ export default function ExamPage() {
           </div>
 
           <div className="flex gap-4">
-            <Button variant="outline" className="flex-1" onClick={() => router.push("/exams")}>
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => router.push("/exams")}
+            >
               বাতিল
             </Button>
             <Button
@@ -351,7 +439,9 @@ export default function ExamPage() {
 
   // Exam interface
   const currentQuestion = questions[currentQuestionIndex];
-  const currentAnswer = currentQuestion ? answers.get(currentQuestion._id) : null;
+  const currentAnswer = currentQuestion
+    ? answers.get(currentQuestion._id)
+    : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -360,7 +450,9 @@ export default function ExamPage() {
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="font-semibold text-gray-900 text-lg">{exam?.title}</h1>
+              <h1 className="font-semibold text-gray-900 text-lg">
+                {exam?.title}
+              </h1>
               <p className="text-sm text-gray-500">
                 প্রশ্ন {currentQuestionIndex + 1} / {questions.length}
               </p>
@@ -434,7 +526,9 @@ export default function ExamPage() {
                     </span>
                     <span
                       className={`flex-1 ${
-                        currentAnswer === index ? "text-purple-900 font-medium" : "text-gray-700"
+                        currentAnswer === index
+                          ? "text-purple-900 font-medium"
+                          : "text-gray-700"
                       }`}
                     >
                       {option.text}
@@ -452,7 +546,9 @@ export default function ExamPage() {
               <div className="flex justify-between mt-8 pt-6 border-t">
                 <Button
                   variant="outline"
-                  onClick={() => setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))}
+                  onClick={() =>
+                    setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))
+                  }
                   disabled={currentQuestionIndex === 0}
                   className="gap-2"
                 >
@@ -461,7 +557,9 @@ export default function ExamPage() {
                 </Button>
                 <Button
                   onClick={() =>
-                    setCurrentQuestionIndex((prev) => Math.min(questions.length - 1, prev + 1))
+                    setCurrentQuestionIndex((prev) =>
+                      Math.min(questions.length - 1, prev + 1),
+                    )
                   }
                   disabled={currentQuestionIndex === questions.length - 1}
                   className="gap-2"
@@ -502,7 +600,9 @@ export default function ExamPage() {
               <div className="pt-4 border-t space-y-2 text-sm">
                 <div className="flex items-center gap-2">
                   <span className="w-4 h-4 rounded bg-emerald-500"></span>
-                  <span className="text-gray-600">উত্তর দেওয়া হয়েছে ({getAnsweredCount()})</span>
+                  <span className="text-gray-600">
+                    উত্তর দেওয়া হয়েছে ({getAnsweredCount()})
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-4 h-4 rounded bg-gray-200"></span>
@@ -534,7 +634,9 @@ export default function ExamPage() {
               </div>
               <div className="flex justify-between mb-2">
                 <span className="text-gray-600">উত্তর দেওয়া হয়েছে:</span>
-                <span className="font-medium text-emerald-600">{getAnsweredCount()}</span>
+                <span className="font-medium text-emerald-600">
+                  {getAnsweredCount()}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">বাকি আছে:</span>
@@ -546,16 +648,25 @@ export default function ExamPage() {
 
             {getAnsweredCount() < questions.length && (
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
-                আপনি সব প্রশ্নের উত্তর দেননি। জমা দিলে বাকি প্রশ্নগুলো খালি থাকবে।
+                আপনি সব প্রশ্নের উত্তর দেননি। জমা দিলে বাকি প্রশ্নগুলো খালি
+                থাকবে।
               </div>
             )}
           </div>
 
           <div className="flex gap-3">
-            <Button variant="outline" onClick={() => setShowConfirmSubmit(false)} className="flex-1">
+            <Button
+              variant="outline"
+              onClick={() => setShowConfirmSubmit(false)}
+              className="flex-1"
+            >
               বাতিল
             </Button>
-            <Button onClick={handleSubmit} disabled={submitting} className="flex-1">
+            <Button
+              onClick={handleSubmit}
+              disabled={submitting}
+              className="flex-1"
+            >
               {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
             </Button>
           </div>

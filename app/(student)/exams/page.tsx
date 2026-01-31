@@ -5,28 +5,74 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/app/(home)/_components/navbar";
 import { Button } from "@/components/ui/button";
-import { getPublishedMcqExams, getMyMcqExams, getCookie, type McqExam, type McqSubmission } from "@/lib/api";
+import {
+  getPublishedMcqExams,
+  getMyMcqExams,
+  getCookie,
+  type McqExam,
+  type McqSubmission,
+} from "@/lib/api";
 
 // Icons
 const Icons = {
   clock: () => (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
     </svg>
   ),
   questions: () => (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
     </svg>
   ),
   check: () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5 13l4 4L19 7"
+      />
     </svg>
   ),
   x: () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M6 18L18 6M6 6l12 12"
+      />
     </svg>
   ),
   play: () => (
@@ -35,13 +81,33 @@ const Icons = {
     </svg>
   ),
   trophy: () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
     </svg>
   ),
   emptyBox: () => (
-    <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <svg
+      className="w-16 h-16"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
     </svg>
   ),
 };
@@ -88,13 +154,25 @@ export default function ExamsPage() {
 
   const getSubmissionForExam = (examId: string) => {
     return mySubmissions.find(
-      (s) => (typeof s.examId === "string" ? s.examId : s.examId._id) === examId
+      (s) =>
+        (typeof s.examId === "string" ? s.examId : s.examId._id) === examId,
     );
+  };
+
+  // Check if student passed based on exam's passing marks
+  const checkIfPassed = (submission: McqSubmission, exam: McqExam) => {
+    // First check if isPassed is explicitly set
+    if (submission.isPassed !== undefined) {
+      return submission.isPassed;
+    }
+    // Fallback: calculate based on passingMarks
+    return submission.obtainedMarks >= exam.passingMarks;
   };
 
   const filteredExams = exams.filter((exam) => {
     const submission = getSubmissionForExam(exam._id);
-    if (filter === "new") return !submission || submission.status === "in_progress";
+    if (filter === "new")
+      return !submission || submission.status === "in_progress";
     if (filter === "completed") return submission?.status === "evaluated";
     return true;
   });
@@ -107,7 +185,10 @@ export default function ExamsPage() {
           <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-white rounded-2xl overflow-hidden animate-pulse">
+                <div
+                  key={i}
+                  className="bg-white rounded-2xl overflow-hidden animate-pulse"
+                >
                   <div className="h-32 bg-gray-200" />
                   <div className="p-5 space-y-3">
                     <div className="h-4 bg-gray-200 rounded w-3/4" />
@@ -133,7 +214,9 @@ export default function ExamsPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">MCQ পরীক্ষা</h1>
-              <p className="text-gray-600 mt-1">প্রকাশিত পরীক্ষাগুলোতে অংশগ্রহণ করুন</p>
+              <p className="text-gray-600 mt-1">
+                প্রকাশিত পরীক্ষাগুলোতে অংশগ্রহণ করুন
+              </p>
             </div>
 
             {/* Filters */}
@@ -179,7 +262,9 @@ export default function ExamsPage() {
                   <Icons.questions />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{exams.length}</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {exams.length}
+                  </p>
                   <p className="text-sm text-gray-500">মোট পরীক্ষা</p>
                 </div>
               </div>
@@ -191,7 +276,10 @@ export default function ExamsPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
-                    {mySubmissions.filter((s) => s.status === "evaluated").length}
+                    {
+                      mySubmissions.filter((s) => s.status === "evaluated")
+                        .length
+                    }
                   </p>
                   <p className="text-sm text-gray-500">সম্পন্ন</p>
                 </div>
@@ -204,7 +292,18 @@ export default function ExamsPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
-                    {mySubmissions.filter((s) => s.isPassed).length}
+                    {
+                      mySubmissions.filter((s) => {
+                        const exam = exams.find(
+                          (e) =>
+                            e._id ===
+                            (typeof s.examId === "string"
+                              ? s.examId
+                              : s.examId._id),
+                        );
+                        return exam && checkIfPassed(s, exam);
+                      }).length
+                    }
                   </p>
                   <p className="text-sm text-gray-500">পাস</p>
                 </div>
@@ -235,7 +334,9 @@ export default function ExamsPage() {
                 কোনো পরীক্ষা পাওয়া যায়নি
               </h3>
               <p className="text-gray-600">
-                {filter !== "all" ? "অন্য ফিল্টার ব্যবহার করে দেখুন" : "শীঘ্রই নতুন পরীক্ষা যোগ হবে"}
+                {filter !== "all"
+                  ? "অন্য ফিল্টার ব্যবহার করে দেখুন"
+                  : "শীঘ্রই নতুন পরীক্ষা যোগ হবে"}
               </p>
             </div>
           ) : (
@@ -253,15 +354,15 @@ export default function ExamsPage() {
                     {/* Header */}
                     <div className="relative h-32 bg-gradient-to-br from-purple-500 to-cyan-500 p-4">
                       <div className="absolute top-3 right-3 flex gap-2">
-                        {isCompleted && (
+                        {isCompleted && submission && (
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              submission.isPassed
+                              checkIfPassed(submission, exam)
                                 ? "bg-emerald-500 text-white"
                                 : "bg-rose-500 text-white"
                             }`}
                           >
-                            {submission.isPassed ? "পাস" : "ফেল"}
+                            {checkIfPassed(submission, exam) ? "পাস" : "ফেল"}
                           </span>
                         )}
                         {isInProgress && (
@@ -271,14 +372,18 @@ export default function ExamsPage() {
                         )}
                       </div>
                       <div className="absolute bottom-4 left-4 right-4">
-                        <h3 className="font-semibold text-white text-lg line-clamp-2">{exam.title}</h3>
+                        <h3 className="font-semibold text-white text-lg line-clamp-2">
+                          {exam.title}
+                        </h3>
                       </div>
                     </div>
 
                     {/* Content */}
                     <div className="p-5">
                       {exam.description && (
-                        <p className="text-sm text-gray-500 mb-4 line-clamp-2">{exam.description}</p>
+                        <p className="text-sm text-gray-500 mb-4 line-clamp-2">
+                          {exam.description}
+                        </p>
                       )}
 
                       <div className="flex flex-wrap gap-3 text-sm text-gray-600 mb-4">
@@ -297,15 +402,20 @@ export default function ExamsPage() {
                       {isCompleted && exam.isResultPublished && (
                         <div className="mb-4 p-3 rounded-lg bg-gray-50">
                           <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-600">প্রাপ্ত নম্বর:</span>
+                            <span className="text-sm text-gray-600">
+                              প্রাপ্ত নম্বর:
+                            </span>
                             <span className="font-bold text-lg">
-                              {submission.obtainedMarks} / {submission.totalMarks}
+                              {submission.obtainedMarks} /{" "}
+                              {submission.totalMarks}
                             </span>
                           </div>
                           <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
                             <div
                               className={`h-full rounded-full ${
-                                submission.isPassed ? "bg-emerald-500" : "bg-rose-500"
+                                checkIfPassed(submission, exam)
+                                  ? "bg-emerald-500"
+                                  : "bg-rose-500"
                               }`}
                               style={{ width: `${submission.percentage}%` }}
                             />
@@ -334,7 +444,10 @@ export default function ExamsPage() {
                             </Button>
                           </Link>
                         ) : (
-                          <Button disabled className="w-full bg-gray-100 text-gray-500 cursor-not-allowed">
+                          <Button
+                            disabled
+                            className="w-full bg-gray-100 text-gray-500 cursor-not-allowed"
+                          >
                             ফলাফল প্রকাশের অপেক্ষায়
                           </Button>
                         )
@@ -348,7 +461,15 @@ export default function ExamsPage() {
                           </Button>
                         </Link>
                       ) : (
-                        <Link href={`/exams/${exam._id}`}>
+                        <Link
+                          href={`/exams/${exam._id}`}
+                          onClick={() => {
+                            localStorage.setItem(
+                              `exam_${exam._id}`,
+                              JSON.stringify(exam),
+                            );
+                          }}
+                        >
                           <Button className="w-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600">
                             <span className="flex items-center gap-2">
                               <Icons.play />
