@@ -382,3 +382,379 @@ export async function syncAllVideos() {
   });
   return response.json();
 }
+
+// ========================
+// MCQ EXAM API
+// ========================
+
+// Types
+export interface McqOption {
+  text: string;
+  isCorrect?: boolean;
+}
+
+export interface McqQuestion {
+  _id: string;
+  examId: string;
+  questionText: string;
+  options: McqOption[];
+  marks: number;
+  order: number;
+}
+
+export interface McqExam {
+  _id: string;
+  title: string;
+  description?: string;
+  duration: number;
+  totalQuestions: number;
+  totalMarks: number;
+  passingMarks: number;
+  isPublished: boolean;
+  isResultPublished: boolean;
+  startTime?: string;
+  endTime?: string;
+  createdBy?: { name: string; email: string };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StudentAnswer {
+  questionId: string;
+  selectedOptionIndex: number | null;
+  isCorrect?: boolean;
+  marksObtained?: number;
+}
+
+export interface McqSubmission {
+  _id: string;
+  examId: McqExam | string;
+  studentId: { _id: string; fullName: string; email: string } | string;
+  answers: StudentAnswer[];
+  totalMarks: number;
+  obtainedMarks: number;
+  percentage: number;
+  isPassed: boolean;
+  startedAt: string;
+  submittedAt?: string;
+  isAutoSubmitted: boolean;
+  status: "in_progress" | "submitted" | "evaluated";
+}
+
+// Admin: Get all exams
+export async function getMcqExams(params?: {
+  page?: number;
+  limit?: number;
+  isPublished?: boolean;
+  search?: string;
+}) {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.set("page", params.page.toString());
+  if (params?.limit) searchParams.set("limit", params.limit.toString());
+  if (params?.isPublished !== undefined)
+    searchParams.set("isPublished", params.isPublished.toString());
+  if (params?.search) searchParams.set("search", params.search);
+
+  const response = await fetch(
+    `${API_BASE_URL}/mcq/exams?${searchParams.toString()}`,
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+  return response.json();
+}
+
+// Student: Get published exams
+export async function getPublishedMcqExams(params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+}) {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.set("page", params.page.toString());
+  if (params?.limit) searchParams.set("limit", params.limit.toString());
+  if (params?.search) searchParams.set("search", params.search);
+
+  const response = await fetch(
+    `${API_BASE_URL}/mcq/exams/published?${searchParams.toString()}`,
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+  return response.json();
+}
+
+// Get single exam (Admin)
+export async function getMcqExam(examId: string) {
+  const response = await fetch(`${API_BASE_URL}/mcq/exams/${examId}`, {
+    headers: getAuthHeaders(),
+  });
+  return response.json();
+}
+
+// Get single exam (Student - Published only)
+export async function getMcqExamForStudent(examId: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/mcq/exams/published/${examId}`,
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+  return response.json();
+}
+
+// Admin: Create exam
+export async function createMcqExam(data: {
+  title: string;
+  description?: string;
+  duration: number;
+  passingMarks: number;
+  startTime?: string;
+  endTime?: string;
+}) {
+  const response = await fetch(`${API_BASE_URL}/mcq/exams`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
+// Admin: Update exam
+export async function updateMcqExam(
+  examId: string,
+  data: {
+    title?: string;
+    description?: string;
+    duration?: number;
+    passingMarks?: number;
+    startTime?: string;
+    endTime?: string;
+  },
+) {
+  const response = await fetch(`${API_BASE_URL}/mcq/exams/${examId}`, {
+    method: "PUT",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
+// Admin: Delete exam
+export async function deleteMcqExam(examId: string) {
+  const response = await fetch(`${API_BASE_URL}/mcq/exams/${examId}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+  return response.json();
+}
+
+// Admin: Toggle publish
+export async function toggleMcqExamPublish(examId: string) {
+  const response = await fetch(`${API_BASE_URL}/mcq/exams/${examId}/publish`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+  });
+  return response.json();
+}
+
+// Admin: Publish results
+export async function publishMcqResults(examId: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/mcq/exams/${examId}/publish-results`,
+    {
+      method: "PATCH",
+      headers: getAuthHeaders(),
+    },
+  );
+  return response.json();
+}
+
+// Admin: Unpublish results
+export async function unpublishMcqResults(examId: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/mcq/exams/${examId}/unpublish-results`,
+    {
+      method: "PATCH",
+      headers: getAuthHeaders(),
+    },
+  );
+  return response.json();
+}
+
+// ========================
+// MCQ QUESTION API
+// ========================
+
+// Admin: Get questions with answers
+export async function getMcqQuestions(examId: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/mcq/exams/${examId}/questions`,
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+  return response.json();
+}
+
+// Student: Get questions without answers
+export async function getMcqQuestionsForStudent(examId: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/mcq/exams/${examId}/questions/student`,
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+  return response.json();
+}
+
+// Admin: Create question
+export async function createMcqQuestion(data: {
+  examId: string;
+  questionText: string;
+  options: { text: string; isCorrect: boolean }[];
+  marks?: number;
+  order?: number;
+}) {
+  const response = await fetch(`${API_BASE_URL}/mcq/questions`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
+// Admin: Update question
+export async function updateMcqQuestion(
+  questionId: string,
+  data: {
+    questionText?: string;
+    options?: { text: string; isCorrect: boolean }[];
+    marks?: number;
+    order?: number;
+  },
+) {
+  const response = await fetch(`${API_BASE_URL}/mcq/questions/${questionId}`, {
+    method: "PUT",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
+// Admin: Delete question
+export async function deleteMcqQuestion(questionId: string) {
+  const response = await fetch(`${API_BASE_URL}/mcq/questions/${questionId}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+  return response.json();
+}
+
+// Admin: Bulk create questions
+export async function bulkCreateMcqQuestions(
+  examId: string,
+  questions: {
+    questionText: string;
+    options: { text: string; isCorrect: boolean }[];
+    marks?: number;
+  }[],
+) {
+  const response = await fetch(
+    `${API_BASE_URL}/mcq/exams/${examId}/questions/bulk`,
+    {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ questions }),
+    },
+  );
+  return response.json();
+}
+
+// ========================
+// MCQ SUBMISSION API
+// ========================
+
+// Student: Start exam
+export async function startMcqExam(examId: string) {
+  const response = await fetch(`${API_BASE_URL}/mcq/exams/${examId}/start`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+  });
+  return response.json();
+}
+
+// Student: Get current submission
+export async function getMcqSubmission(examId: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/mcq/exams/${examId}/submission`,
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+  return response.json();
+}
+
+// Student: Save answer
+export async function saveMcqAnswer(
+  examId: string,
+  data: {
+    questionId: string;
+    selectedOptionIndex: number | null;
+  },
+) {
+  const response = await fetch(`${API_BASE_URL}/mcq/exams/${examId}/answer`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
+// Student: Submit exam
+export async function submitMcqExam(examId: string, isAutoSubmit = false) {
+  const response = await fetch(`${API_BASE_URL}/mcq/exams/${examId}/submit`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ isAutoSubmit }),
+  });
+  return response.json();
+}
+
+// Student: Get my exams
+export async function getMyMcqExams() {
+  const response = await fetch(`${API_BASE_URL}/mcq/my-exams`, {
+    headers: getAuthHeaders(),
+  });
+  return response.json();
+}
+
+// Student: Get exam result
+export async function getMcqExamResult(examId: string) {
+  const response = await fetch(`${API_BASE_URL}/mcq/exams/${examId}/result`, {
+    headers: getAuthHeaders(),
+  });
+  return response.json();
+}
+
+// Admin: Get exam submissions
+export async function getMcqExamSubmissions(examId: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/mcq/exams/${examId}/submissions`,
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+  return response.json();
+}
+
+// Get leaderboard
+export async function getMcqLeaderboard(examId: string, limit = 10) {
+  const response = await fetch(
+    `${API_BASE_URL}/mcq/exams/${examId}/leaderboard?limit=${limit}`,
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+  return response.json();
+}

@@ -1,0 +1,1112 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  getMcqExams,
+  createMcqExam,
+  deleteMcqExam,
+  toggleMcqExamPublish,
+  publishMcqResults,
+  unpublishMcqResults,
+  getMcqQuestions,
+  createMcqQuestion,
+  deleteMcqQuestion,
+  getMcqExamSubmissions,
+  type McqExam,
+  type McqQuestion,
+  type McqSubmission,
+} from "@/lib/api";
+
+// Icons
+const Icons = {
+  back: () => (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M15 19l-7-7 7-7"
+      />
+    </svg>
+  ),
+  plus: () => (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 4v16m8-8H4"
+      />
+    </svg>
+  ),
+  trash: () => (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+      />
+    </svg>
+  ),
+  clock: () => (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  ),
+  users: () => (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+      />
+    </svg>
+  ),
+  check: () => (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5 13l4 4L19 7"
+      />
+    </svg>
+  ),
+  x: () => (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M6 18L18 6M6 6l12 12"
+      />
+    </svg>
+  ),
+  eye: () => (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+      />
+    </svg>
+  ),
+  questions: () => (
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  ),
+  results: () => (
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+      />
+    </svg>
+  ),
+};
+
+const McqManagement = () => {
+  const [exams, setExams] = useState<McqExam[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedExam, setSelectedExam] = useState<McqExam | null>(null);
+  const [questions, setQuestions] = useState<McqQuestion[]>([]);
+  const [submissions, setSubmissions] = useState<McqSubmission[]>([]);
+  const [questionsLoading, setQuestionsLoading] = useState(false);
+  const [view, setView] = useState<"list" | "questions" | "results">("list");
+
+  // Modal states
+  const [isCreateExamModalOpen, setIsCreateExamModalOpen] = useState(false);
+  const [isAddQuestionModalOpen, setIsAddQuestionModalOpen] = useState(false);
+
+  // Form states
+  const [examForm, setExamForm] = useState({
+    title: "",
+    description: "",
+    duration: "30",
+    passingMarks: "40",
+  });
+
+  const [questionForm, setQuestionForm] = useState({
+    questionText: "",
+    options: [
+      { text: "", isCorrect: false },
+      { text: "", isCorrect: false },
+    ],
+    marks: 1,
+  });
+
+  // Fetch exams
+  useEffect(() => {
+    fetchExams();
+  }, []);
+
+  const fetchExams = async () => {
+    try {
+      setLoading(true);
+      const response = await getMcqExams();
+      if (response.success) {
+        setExams(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch exams:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchQuestions = async (examId: string) => {
+    try {
+      setQuestionsLoading(true);
+      const response = await getMcqQuestions(examId);
+      if (response.success) {
+        setQuestions(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch questions:", error);
+    } finally {
+      setQuestionsLoading(false);
+    }
+  };
+
+  const fetchSubmissions = async (examId: string) => {
+    try {
+      setQuestionsLoading(true);
+      const response = await getMcqExamSubmissions(examId);
+      if (response.success) {
+        setSubmissions(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch submissions:", error);
+    } finally {
+      setQuestionsLoading(false);
+    }
+  };
+
+  const handleCreateExam = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const duration = parseInt(examForm.duration) || 30;
+    const passingMarks = parseInt(examForm.passingMarks) || 40;
+
+    if (duration < 1) {
+      alert("সময়কাল কমপক্ষে ১ মিনিট হতে হবে");
+      return;
+    }
+
+    try {
+      const response = await createMcqExam({
+        ...examForm,
+        duration,
+        passingMarks,
+      });
+      if (response.success) {
+        setIsCreateExamModalOpen(false);
+        setExamForm({
+          title: "",
+          description: "",
+          duration: "30",
+          passingMarks: "40",
+        });
+        fetchExams();
+      } else {
+        alert(response.message || "পরীক্ষা তৈরি করতে সমস্যা হয়েছে");
+      }
+    } catch (error) {
+      console.error("Failed to create exam:", error);
+      alert("পরীক্ষা তৈরি করতে সমস্যা হয়েছে");
+    }
+  };
+
+  const handleDeleteExam = async (examId: string) => {
+    if (!confirm("আপনি কি নিশ্চিত এই পরীক্ষা মুছে ফেলতে চান?")) return;
+
+    try {
+      const response = await deleteMcqExam(examId);
+      if (response.success) {
+        fetchExams();
+      } else {
+        alert(response.message || "পরীক্ষা মুছতে সমস্যা হয়েছে");
+      }
+    } catch (error) {
+      console.error("Failed to delete exam:", error);
+    }
+  };
+
+  const handleTogglePublish = async (examId: string) => {
+    try {
+      const response = await toggleMcqExamPublish(examId);
+      if (response.success) {
+        fetchExams();
+      }
+    } catch (error) {
+      console.error("Failed to toggle publish:", error);
+    }
+  };
+
+  const handlePublishResults = async (examId: string) => {
+    try {
+      const response = await publishMcqResults(examId);
+      if (response.success) {
+        fetchExams();
+        alert("ফলাফল প্রকাশ করা হয়েছে");
+      }
+    } catch (error) {
+      console.error("Failed to publish results:", error);
+    }
+  };
+
+  const handleUnpublishResults = async (examId: string) => {
+    try {
+      const response = await unpublishMcqResults(examId);
+      if (response.success) {
+        fetchExams();
+        alert("ফলাফল লুকানো হয়েছে");
+      }
+    } catch (error) {
+      console.error("Failed to unpublish results:", error);
+    }
+  };
+
+  const handleAddQuestion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedExam) return;
+
+    // Validate at least one correct option
+    const hasCorrect = questionForm.options.some((opt) => opt.isCorrect);
+    if (!hasCorrect) {
+      alert("অন্তত একটি সঠিক উত্তর নির্বাচন করুন");
+      return;
+    }
+
+    try {
+      const response = await createMcqQuestion({
+        examId: selectedExam._id,
+        ...questionForm,
+      });
+      if (response.success) {
+        setIsAddQuestionModalOpen(false);
+        setQuestionForm({
+          questionText: "",
+          options: [
+            { text: "", isCorrect: false },
+            { text: "", isCorrect: false },
+          ],
+          marks: 1,
+        });
+        fetchQuestions(selectedExam._id);
+      } else {
+        alert(response.message || "প্রশ্ন যোগ করতে সমস্যা হয়েছে");
+      }
+    } catch (error) {
+      console.error("Failed to add question:", error);
+    }
+  };
+
+  const handleDeleteQuestion = async (questionId: string) => {
+    if (!confirm("আপনি কি নিশ্চিত এই প্রশ্ন মুছে ফেলতে চান?")) return;
+
+    try {
+      const response = await deleteMcqQuestion(questionId);
+      if (response.success && selectedExam) {
+        fetchQuestions(selectedExam._id);
+      }
+    } catch (error) {
+      console.error("Failed to delete question:", error);
+    }
+  };
+
+  const addOption = () => {
+    if (questionForm.options.length < 4) {
+      setQuestionForm({
+        ...questionForm,
+        options: [...questionForm.options, { text: "", isCorrect: false }],
+      });
+    }
+  };
+
+  const removeOption = (index: number) => {
+    if (questionForm.options.length > 2) {
+      const newOptions = questionForm.options.filter((_, i) => i !== index);
+      setQuestionForm({ ...questionForm, options: newOptions });
+    }
+  };
+
+  const updateOption = (
+    index: number,
+    field: "text" | "isCorrect",
+    value: string | boolean,
+  ) => {
+    const newOptions = [...questionForm.options];
+    newOptions[index] = { ...newOptions[index], [field]: value };
+    setQuestionForm({ ...questionForm, options: newOptions });
+  };
+
+  const handleViewQuestions = (exam: McqExam) => {
+    setSelectedExam(exam);
+    setView("questions");
+    fetchQuestions(exam._id);
+  };
+
+  const handleViewResults = (exam: McqExam) => {
+    setSelectedExam(exam);
+    setView("results");
+    fetchSubmissions(exam._id);
+  };
+
+  const handleBack = () => {
+    setView("list");
+    setSelectedExam(null);
+    setQuestions([]);
+    setSubmissions([]);
+  };
+
+  // Loading State
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative w-16 h-16 mx-auto mb-4">
+            <div className="absolute inset-0 rounded-full border-4 border-slate-200"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+          </div>
+          <p className="text-slate-600 font-medium">লোড হচ্ছে...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Questions View
+  if (view === "questions" && selectedExam) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="bg-white border-b sticky top-0 z-40 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleBack}
+                className="gap-2"
+              >
+                <Icons.back />
+                ফিরে যান
+              </Button>
+              <div className="h-6 w-px bg-slate-200"></div>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-lg font-bold text-slate-900 truncate">
+                  {selectedExam.title}
+                </h1>
+                <p className="text-sm text-slate-500">
+                  {questions.length} টি প্রশ্ন
+                </p>
+              </div>
+              <Button
+                onClick={() => setIsAddQuestionModalOpen(true)}
+                className="gap-2"
+              >
+                <Icons.plus />
+                প্রশ্ন যোগ করুন
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
+          {questionsLoading ? (
+            <div className="flex justify-center py-12">
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : questions.length === 0 ? (
+            <Card className="border-0 shadow-md">
+              <CardContent className="py-12 text-center">
+                <Icons.questions />
+                <p className="text-slate-500 mt-2">কোনো প্রশ্ন পাওয়া যায়নি</p>
+                <Button
+                  onClick={() => setIsAddQuestionModalOpen(true)}
+                  className="mt-4 gap-2"
+                >
+                  <Icons.plus />
+                  প্রথম প্রশ্ন যোগ করুন
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            questions.map((question, index) => (
+              <Card key={question._id} className="border-0 shadow-md">
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="bg-primary text-white text-xs font-medium px-2 py-0.5 rounded">
+                          প্রশ্ন {index + 1}
+                        </span>
+                        <span className="text-xs text-slate-500">
+                          মার্কস: {question.marks}
+                        </span>
+                      </div>
+                      <p className="font-medium text-slate-900">
+                        {question.questionText}
+                      </p>
+                      <div className="mt-3 space-y-2">
+                        {question.options.map((option, optIndex) => (
+                          <div
+                            key={optIndex}
+                            className={`flex items-center gap-2 p-2 rounded ${
+                              option.isCorrect
+                                ? "bg-emerald-50 border border-emerald-200"
+                                : "bg-slate-50"
+                            }`}
+                          >
+                            <span className="w-6 h-6 rounded-full bg-white border flex items-center justify-center text-xs font-medium">
+                              {String.fromCharCode(65 + optIndex)}
+                            </span>
+                            <span
+                              className={
+                                option.isCorrect
+                                  ? "text-emerald-700 font-medium"
+                                  : "text-slate-700"
+                              }
+                            >
+                              {option.text}
+                            </span>
+                            {option.isCorrect && (
+                              <span className="ml-auto text-emerald-600">
+                                <Icons.check />
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteQuestion(question._id)}
+                      className="text-rose-500 hover:text-rose-700 hover:bg-rose-50"
+                    >
+                      <Icons.trash />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
+
+        {/* Add Question Modal */}
+        <Dialog
+          open={isAddQuestionModalOpen}
+          onOpenChange={setIsAddQuestionModalOpen}
+        >
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>নতুন প্রশ্ন যোগ করুন</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleAddQuestion} className="space-y-4">
+              <div>
+                <Label>প্রশ্ন</Label>
+                <Textarea
+                  value={questionForm.questionText}
+                  onChange={(e) =>
+                    setQuestionForm({
+                      ...questionForm,
+                      questionText: e.target.value,
+                    })
+                  }
+                  placeholder="প্রশ্ন লিখুন..."
+                  required
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label>অপশনসমূহ (সঠিক উত্তর টিক দিন)</Label>
+                  {questionForm.options.length < 4 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={addOption}
+                    >
+                      <Icons.plus />
+                      অপশন যোগ করুন
+                    </Button>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  {questionForm.options.map((option, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={option.isCorrect}
+                        onChange={(e) =>
+                          updateOption(index, "isCorrect", e.target.checked)
+                        }
+                        className="w-5 h-5 rounded border-slate-300"
+                      />
+                      <span className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-sm font-medium">
+                        {String.fromCharCode(65 + index)}
+                      </span>
+                      <Input
+                        value={option.text}
+                        onChange={(e) =>
+                          updateOption(index, "text", e.target.value)
+                        }
+                        placeholder={`অপশন ${String.fromCharCode(65 + index)}`}
+                        required
+                        className="flex-1"
+                      />
+                      {questionForm.options.length > 2 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeOption(index)}
+                          className="text-rose-500"
+                        >
+                          <Icons.x />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Label>মার্কস</Label>
+                <Input
+                  type="number"
+                  min="1"
+                  value={questionForm.marks}
+                  onChange={(e) =>
+                    setQuestionForm({
+                      ...questionForm,
+                      marks: parseInt(e.target.value) || 1,
+                    })
+                  }
+                  className="mt-1 w-24"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsAddQuestionModalOpen(false)}
+                  className="flex-1"
+                >
+                  বাতিল
+                </Button>
+                <Button type="submit" className="flex-1">
+                  প্রশ্ন যোগ করুন
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  }
+
+  // Results View
+  if (view === "results" && selectedExam) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="bg-white border-b sticky top-0 z-40 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleBack}
+                className="gap-2"
+              >
+                <Icons.back />
+                ফিরে যান
+              </Button>
+              <div className="h-6 w-px bg-slate-200"></div>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-lg font-bold text-slate-900 truncate">
+                  {selectedExam.title} - ফলাফল
+                </h1>
+                <p className="text-sm text-slate-500">
+                  {submissions.length} জন পরীক্ষার্থী
+                </p>
+              </div>
+              {selectedExam.isResultPublished ? (
+                <Button
+                  variant="outline"
+                  onClick={() => handleUnpublishResults(selectedExam._id)}
+                >
+                  ফলাফল লুকান
+                </Button>
+              ) : (
+                <Button onClick={() => handlePublishResults(selectedExam._id)}>
+                  ফলাফল প্রকাশ করুন
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          {questionsLoading ? (
+            <div className="flex justify-center py-12">
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : submissions.length === 0 ? (
+            <Card className="border-0 shadow-md">
+              <CardContent className="py-12 text-center">
+                <Icons.results />
+                <p className="text-slate-500 mt-2">কেউ এখনও পরীক্ষা দেয়নি</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="border-0 shadow-md overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-slate-50 border-b">
+                    <tr>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600">
+                        #
+                      </th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600">
+                        শিক্ষার্থী
+                      </th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600">
+                        প্রাপ্ত নম্বর
+                      </th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600">
+                        শতাংশ
+                      </th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600">
+                        স্ট্যাটাস
+                      </th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600">
+                        সময়
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {submissions.map((submission, index) => {
+                      const student = submission.studentId as {
+                        _id: string;
+                        fullName: string;
+                        email: string;
+                      };
+                      return (
+                        <tr key={submission._id} className="hover:bg-slate-50">
+                          <td className="px-4 py-3 text-sm">{index + 1}</td>
+                          <td className="px-4 py-3">
+                            <p className="font-medium text-slate-900">
+                              {student?.fullName || "অজানা"}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {student?.email || ""}
+                            </p>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className="font-medium">
+                              {submission.obtainedMarks} /{" "}
+                              {submission.totalMarks}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`font-medium ${submission.isPassed ? "text-emerald-600" : "text-rose-600"}`}
+                            >
+                              {submission.percentage}%
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            {submission.isPassed ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
+                                <Icons.check /> পাস
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700">
+                                <Icons.x /> ফেল
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-slate-500">
+                            {submission.submittedAt
+                              ? new Date(submission.submittedAt).toLocaleString(
+                                  "bn-BD",
+                                )
+                              : "-"}
+                            {submission.isAutoSubmitted && (
+                              <span className="block text-xs text-amber-600">
+                                অটো সাবমিট
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Main List View
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      {/* Header */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <Icons.back />
+                  ড্যাশবোর্ড
+                </Button>
+              </Link>
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900">
+                  MCQ পরীক্ষা
+                </h1>
+                <p className="text-slate-500 mt-1">
+                  পরীক্ষা তৈরি এবং ম্যানেজ করুন
+                </p>
+              </div>
+            </div>
+            <Button
+              onClick={() => setIsCreateExamModalOpen(true)}
+              className="gap-2 shadow-lg shadow-primary/25"
+            >
+              <Icons.plus />
+              নতুন পরীক্ষা তৈরি করুন
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <Card className="border-0 shadow-md">
+            <CardContent className="p-4">
+              <p className="text-sm text-slate-500">মোট পরীক্ষা</p>
+              <p className="text-2xl font-bold text-slate-900 mt-1">
+                {exams.length}
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-md">
+            <CardContent className="p-4">
+              <p className="text-sm text-slate-500">প্রকাশিত</p>
+              <p className="text-2xl font-bold text-emerald-600 mt-1">
+                {exams.filter((e) => e.isPublished).length}
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-md">
+            <CardContent className="p-4">
+              <p className="text-sm text-slate-500">ড্রাফট</p>
+              <p className="text-2xl font-bold text-amber-600 mt-1">
+                {exams.filter((e) => !e.isPublished).length}
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-md">
+            <CardContent className="p-4">
+              <p className="text-sm text-slate-500">ফলাফল প্রকাশিত</p>
+              <p className="text-2xl font-bold text-sky-600 mt-1">
+                {exams.filter((e) => e.isResultPublished).length}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Exams Grid */}
+        {exams.length === 0 ? (
+          <Card className="border-0 shadow-md">
+            <CardContent className="py-12 text-center">
+              <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                <Icons.questions />
+              </div>
+              <p className="text-slate-500 font-medium">
+                কোনো পরীক্ষা পাওয়া যায়নি
+              </p>
+              <Button
+                onClick={() => setIsCreateExamModalOpen(true)}
+                className="mt-4 gap-2"
+              >
+                <Icons.plus />
+                প্রথম পরীক্ষা তৈরি করুন
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {exams.map((exam) => (
+              <Card
+                key={exam._id}
+                className="border-0 shadow-md hover:shadow-lg transition-shadow"
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <h3 className="font-semibold text-slate-900 line-clamp-2">
+                      {exam.title}
+                    </h3>
+                    <div className="flex gap-1">
+                      <span
+                        className={`shrink-0 px-2 py-0.5 rounded text-xs font-medium ${
+                          exam.isPublished
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-slate-100 text-slate-600"
+                        }`}
+                      >
+                        {exam.isPublished ? "প্রকাশিত" : "ড্রাফট"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {exam.description && (
+                    <p className="text-sm text-slate-500 line-clamp-2 mb-3">
+                      {exam.description}
+                    </p>
+                  )}
+
+                  <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-4">
+                    <span className="flex items-center gap-1">
+                      <Icons.clock />
+                      {exam.duration} মিনিট
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Icons.questions />
+                      {exam.totalQuestions} প্রশ্ন
+                    </span>
+                    <span>মোট: {exam.totalMarks} নম্বর</span>
+                    <span>পাস: {exam.passingMarks} নম্বর</span>
+                  </div>
+
+                  {exam.isResultPublished && (
+                    <div className="mb-3 px-2 py-1 bg-sky-50 text-sky-700 text-xs font-medium rounded inline-block">
+                      ফলাফল প্রকাশিত
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap gap-2 pt-3 border-t">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleViewQuestions(exam)}
+                      className="gap-1"
+                    >
+                      <Icons.questions />
+                      প্রশ্ন
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleViewResults(exam)}
+                      className="gap-1"
+                    >
+                      <Icons.results />
+                      ফলাফল
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleTogglePublish(exam._id)}
+                      className={
+                        exam.isPublished ? "text-amber-600" : "text-emerald-600"
+                      }
+                    >
+                      {exam.isPublished ? "আনপাবলিশ" : "পাবলিশ"}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteExam(exam._id)}
+                      className="text-rose-500 hover:text-rose-700 hover:bg-rose-50"
+                    >
+                      <Icons.trash />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Create Exam Modal */}
+      <Dialog
+        open={isCreateExamModalOpen}
+        onOpenChange={setIsCreateExamModalOpen}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>নতুন পরীক্ষা তৈরি করুন</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleCreateExam} className="space-y-4">
+            <div>
+              <Label>পরীক্ষার নাম</Label>
+              <Input
+                value={examForm.title}
+                onChange={(e) =>
+                  setExamForm({ ...examForm, title: e.target.value })
+                }
+                placeholder="যেমন: অধ্যায় ১ - MCQ টেস্ট"
+                required
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label>বিবরণ (ঐচ্ছিক)</Label>
+              <Textarea
+                value={examForm.description}
+                onChange={(e) =>
+                  setExamForm({ ...examForm, description: e.target.value })
+                }
+                placeholder="পরীক্ষা সম্পর্কে কিছু লিখুন..."
+                className="mt-1"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>সময়কাল (মিনিট)</Label>
+                <Input
+                  type="number"
+                  min="1"
+                  value={examForm.duration}
+                  onChange={(e) =>
+                    setExamForm({
+                      ...examForm,
+                      duration: e.target.value,
+                    })
+                  }
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>পাস মার্কস</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={examForm.passingMarks}
+                  onChange={(e) =>
+                    setExamForm({
+                      ...examForm,
+                      passingMarks: e.target.value,
+                    })
+                  }
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsCreateExamModalOpen(false)}
+                className="flex-1"
+              >
+                বাতিল
+              </Button>
+              <Button type="submit" className="flex-1">
+                পরীক্ষা তৈরি করুন
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default McqManagement;
