@@ -410,11 +410,11 @@ export default function VideoPlayerPage({ params }: PageProps) {
       <div className="pt-14 flex min-h-screen">
         {/* Main Video Area */}
         <main
-          className={`flex-1 flex flex-col transition-all duration-300 ${sidebarOpen ? "lg:mr-[340px]" : ""}`}
+          className={`flex-1 flex flex-col transition-all duration-300 ${sidebarOpen ? "lg:mr-85" : ""}`}
         >
           {/* Video Player Container */}
           <div className="bg-black w-full">
-            <div className="max-w-[1280px] mx-auto">
+            <div className="max-w-7xl mx-auto">
               {videoLoading ? (
                 <div className="aspect-video flex items-center justify-center bg-black">
                   <div className="flex flex-col items-center gap-4">
@@ -450,7 +450,7 @@ export default function VideoPlayerPage({ params }: PageProps) {
 
           {/* Video Info Section */}
           <div className="flex-1 bg-[#0f0f0f]">
-            <div className="max-w-[1280px] mx-auto p-4 sm:p-6">
+            <div className="max-w-7xl mx-auto p-4 sm:p-6">
               {/* Title */}
               <h2 className="text-lg sm:text-xl font-semibold text-white mb-3 leading-tight">
                 {currentVideo?.title}
@@ -530,7 +530,7 @@ export default function VideoPlayerPage({ params }: PageProps) {
 
         {/* Sidebar - Course Content */}
         <aside
-          className={`fixed right-0 top-14 bottom-0 w-[340px] bg-[#0f0f0f] border-l border-white/5 overflow-hidden flex flex-col transform transition-transform duration-300 z-40 ${
+          className={`fixed right-0 top-14 bottom-0 w-85 bg-[#0f0f0f] border-l border-white/5 overflow-hidden flex flex-col transform transition-transform duration-300 z-40 ${
             sidebarOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
@@ -637,11 +637,11 @@ export default function VideoPlayerPage({ params }: PageProps) {
 
                           {/* Now Playing Indicator */}
                           {video._id === videoId && (
-                            <div className="flex items-end gap-[2px] h-4">
-                              <span className="w-[3px] h-2 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_infinite]"></span>
-                              <span className="w-[3px] h-3 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_0.1s_infinite]"></span>
-                              <span className="w-[3px] h-4 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_0.2s_infinite]"></span>
-                              <span className="w-[3px] h-2 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_0.3s_infinite]"></span>
+                            <div className="flex items-end gap-0.5 h-4">
+                              <span className="w-0.75 h-2 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_infinite]"></span>
+                              <span className="w-0.75 h-3 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_0.1s_infinite]"></span>
+                              <span className="w-0.75 h-4 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_0.2s_infinite]"></span>
+                              <span className="w-0.75 h-2 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_0.3s_infinite]"></span>
                             </div>
                           )}
                         </button>
