@@ -1,3 +1,4 @@
+// app/(student)/courses/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -221,27 +222,27 @@ export default function CoursesPage() {
   // };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
       <Navbar />
 
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               আমাদের কোর্স সমূহ
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               আপনার দক্ষতা উন্নত করুন আমাদের বিশেষজ্ঞ-নির্দেশিত কোর্স দিয়ে
             </p>
           </div>
 
           {/* Filters */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-8">
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Search */}
               <div className="flex-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 dark:text-gray-500">
                   <Icons.search />
                 </div>
                 <Input
@@ -249,7 +250,7 @@ export default function CoursesPage() {
                   placeholder="কোর্স খুঁজুন..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
 
@@ -296,13 +297,13 @@ export default function CoursesPage() {
               {[...Array(8)].map((_, i) => (
                 <div
                   key={i}
-                  className="bg-white rounded-2xl overflow-hidden animate-pulse"
+                  className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden animate-pulse"
                 >
-                  <div className="h-48 bg-gray-200" />
+                  <div className="h-48 bg-gray-200 dark:bg-gray-700" />
                   <div className="p-5 space-y-3">
-                    <div className="h-4 bg-gray-200 rounded w-3/4" />
-                    <div className="h-3 bg-gray-200 rounded w-1/2" />
-                    <div className="h-3 bg-gray-200 rounded w-full" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full" />
                   </div>
                 </div>
               ))}
@@ -310,10 +311,10 @@ export default function CoursesPage() {
           ) : filteredCourses.length === 0 ? (
             <div className="text-center py-16">
               <div className="text-6xl mb-4">📚</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 কোন কোর্স পাওয়া যায়নি
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-400">
                 আপনার অনুসন্ধান পরিবর্তন করে আবার চেষ্টা করুন
               </p>
             </div>
@@ -325,7 +326,7 @@ export default function CoursesPage() {
                   <Link
                     key={course._id}
                     href={`/courses/${course.slug}`}
-                    className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-purple-200"
+                    className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-purple-200 dark:hover:border-purple-500"
                   >
                     {/* Thumbnail */}
                     {/* <div className="relative h-48 overflow-hidden bg-linear-to-br from-purple-100 to-cyan-100">
@@ -354,16 +355,16 @@ export default function CoursesPage() {
 
                     {/* Content */}
                     <div className="p-5">
-                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-purple-600 transition-colors">
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                         {course.title}
                       </h3>
 
-                      <p className="text-sm text-gray-500 mb-4 line-clamp-2">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">
                         {course.description}
                       </p>
 
                       {/* Stats */}
-                      <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+                      <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-4">
                         <div className="flex items-center gap-1">
                           <Icons.clock />
                           <span>{formatDuration(course.duration)}</span>
@@ -378,42 +379,42 @@ export default function CoursesPage() {
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-1 text-amber-500">
                           <Icons.star />
-                          <span className="font-medium text-gray-900">
+                          <span className="font-medium text-gray-900 dark:text-white">
                             {course.rating.toFixed(1)}
                           </span>
-                          <span className="text-gray-400">
+                          <span className="text-gray-400 dark:text-gray-500">
                             ({course.totalReviews})
                           </span>
                         </div>
-                        <div className="flex items-center gap-1 text-gray-500">
+                        <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                           <Icons.users />
                           <span>{course.enrolledStudents}</span>
                         </div>
                       </div>
 
                       {/* Price */}
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                         <div>
                           {course.discountPrice > 0 ? (
                             <div className="flex items-center gap-2">
-                              <span className="text-xl font-bold text-purple-600">
+                              <span className="text-xl font-bold text-purple-600 dark:text-purple-400">
                                 ৳{course.discountPrice}
                               </span>
-                              <span className="text-sm text-gray-400 line-through">
+                              <span className="text-sm text-gray-400 dark:text-gray-500 line-through">
                                 ৳{course.price}
                               </span>
                             </div>
                           ) : course.price === 0 ? (
-                            <span className="text-xl font-bold text-emerald-600">
+                            <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
                               বিনামূল্যে
                             </span>
                           ) : (
-                            <span className="text-xl font-bold text-purple-600">
+                            <span className="text-xl font-bold text-purple-600 dark:text-purple-400">
                               ৳{course.price}
                             </span>
                           )}
                         </div>
-                        <span className="px-4 py-2 bg-purple-50 text-purple-600 rounded-lg text-sm font-medium group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                        <span className="px-4 py-2 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg text-sm font-medium group-hover:bg-purple-600 group-hover:text-white transition-colors">
                           বিস্তারিত →
                         </span>
                       </div>
