@@ -47,7 +47,7 @@ export function Hero() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-white/10 dark:text-white"
+                  className="border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-white/10 dark:text-black/80"
                 >
                   কোর্স দেখুন
                 </Button>
