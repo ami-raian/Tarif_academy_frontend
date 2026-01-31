@@ -164,6 +164,7 @@ export default function VideoPlayerPage({ params }: PageProps) {
   );
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [completingVideo, setCompletingVideo] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Get all videos in order
   const getAllVideos = (): VideoWithAccess[] => {
@@ -193,11 +194,15 @@ export default function VideoPlayerPage({ params }: PageProps) {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setError(null);
 
         // Fetch course
         const courseRes = await getCourse(courseId);
         if (courseRes.success) {
           setCourse(courseRes.data);
+        } else {
+          setError(courseRes.message || "কোর্স লোড করা যায়নি");
+          return;
         }
 
         // Fetch videos
@@ -222,10 +227,18 @@ export default function VideoPlayerPage({ params }: PageProps) {
 
           if (foundVideo) {
             setCurrentVideo(foundVideo);
+          } else {
+            setError("ভিডিও পাওয়া যায়নি");
           }
+        } else {
+          setError(
+            videosRes.message ||
+              "ভিডিও লোড করা যায়নি। আপনার এনরোলমেন্ট অনুমোদিত কিনা চেক করুন।",
+          );
         }
       } catch (error) {
         console.error("Failed to fetch data:", error);
+        setError("কিছু সমস্যা হয়েছে। আবার চেষ্টা করুন।");
       } finally {
         setLoading(false);
       }
@@ -322,6 +335,28 @@ export default function VideoPlayerPage({ params }: PageProps) {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
           <p className="text-gray-400">লোড হচ্ছে...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if video not found
+  if (!currentVideo || error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="text-center">
+          <div className="text-6xl mb-4">😕</div>
+          <h1 className="text-2xl font-bold text-white mb-2">
+            ভিডিও পাওয়া যায়নি
+          </h1>
+          <p className="text-gray-400 mb-6">
+            {error || "এই ভিডিওটি বিদ্যমান নেই বা আপনার এক্সেস নেই"}
+          </p>
+          <Link href="/my-courses">
+            <Button className="bg-purple-600 hover:bg-purple-700">
+              আমার কোর্সে ফিরে যান
+            </Button>
+          </Link>
         </div>
       </div>
     );
