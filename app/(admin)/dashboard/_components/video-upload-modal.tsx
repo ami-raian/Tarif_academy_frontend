@@ -404,8 +404,11 @@ export const VideoUploadModal = ({
                   id="order"
                   type="number"
                   min={1}
-                  value={order}
-                  onChange={(e) => setOrder(parseInt(e.target.value) || 1)}
+                  value={order || ""}
+                  onChange={(e) => setOrder(parseInt(e.target.value) || 0)}
+                  onBlur={() => {
+                    if (order < 1) setOrder(1);
+                  }}
                   disabled={uploading}
                 />
               </div>

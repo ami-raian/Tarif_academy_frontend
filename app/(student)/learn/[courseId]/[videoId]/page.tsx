@@ -363,119 +363,141 @@ export default function VideoPlayerPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-[#0f0f0f]">
       {/* Top Navigation */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-gray-800 border-b border-gray-700">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#0f0f0f]/95 backdrop-blur-md border-b border-white/5">
         <div className="flex items-center justify-between h-14 px-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <Link
               href="/my-courses"
-              className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
+              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
             >
-              <Icons.back />
-              <span className="hidden sm:inline">ফিরে যান</span>
+              <div className="p-2 rounded-full group-hover:bg-white/10 transition-colors">
+                <Icons.back />
+              </div>
             </Link>
-            <div className="h-6 w-px bg-gray-700" />
-            <h1 className="text-white font-medium truncate max-w-xs sm:max-w-md">
+            <div className="h-4 w-px bg-white/10" />
+            <h1 className="text-white font-medium truncate max-w-xs sm:max-w-lg text-sm">
               {course?.title}
             </h1>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Progress */}
-            <div className="hidden sm:flex items-center gap-2">
-              <div className="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+          <div className="flex items-center gap-3">
+            {/* Progress Badge */}
+            <div className="hidden sm:flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+              <div className="w-20 h-1 bg-white/10 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-linear-to-r from-purple-500 to-cyan-500 rounded-full"
+                  className="h-full bg-linear-to-r from-purple-500 to-cyan-400 rounded-full transition-all duration-700 ease-out"
                   style={{ width: `${getProgress()}%` }}
                 />
               </div>
-              <span className="text-sm text-gray-400">{getProgress()}%</span>
+              <span className="text-xs font-medium text-white/70">
+                {getProgress()}%
+              </span>
             </div>
 
-            {/* Toggle Sidebar */}
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 text-gray-400 hover:text-white transition-colors lg:hidden"
+            {/* Close Button */}
+            <Link
+              href="/my-courses"
+              className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
             >
-              {sidebarOpen ? <Icons.close /> : <Icons.menu />}
-            </button>
+              <Icons.close />
+            </Link>
           </div>
         </div>
       </header>
 
-      <div className="pt-14 flex">
+      <div className="pt-14 flex min-h-screen">
         {/* Main Video Area */}
         <main
-          className={`flex-1 transition-all ${sidebarOpen ? "lg:mr-80" : ""}`}
+          className={`flex-1 flex flex-col transition-all duration-300 ${sidebarOpen ? "lg:mr-[340px]" : ""}`}
         >
-          {/* Video Player */}
-          <div className="bg-black">
-            {videoLoading ? (
-              <div className="aspect-video flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
-              </div>
-            ) : embedUrl ? (
-              <div className="aspect-video">
-                <iframe
-                  src={embedUrl}
-                  title={currentVideo?.title || "Video"}
-                  className="w-full h-full"
-                  allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            ) : (
-              <div className="aspect-video flex items-center justify-center bg-gray-800">
-                <p className="text-gray-400">ভিডিও লোড করা যায়নি</p>
-              </div>
-            )}
+          {/* Video Player Container */}
+          <div className="bg-black w-full">
+            <div className="max-w-[1280px] mx-auto">
+              {videoLoading ? (
+                <div className="aspect-video flex items-center justify-center bg-black">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="relative">
+                      <div className="w-12 h-12 rounded-full border-2 border-purple-500/20"></div>
+                      <div className="absolute inset-0 w-12 h-12 rounded-full border-2 border-purple-500 border-t-transparent animate-spin"></div>
+                    </div>
+                    <p className="text-white/40 text-sm">ভিডিও লোড হচ্ছে...</p>
+                  </div>
+                </div>
+              ) : embedUrl ? (
+                <div className="aspect-video bg-black">
+                  <iframe
+                    src={embedUrl}
+                    title={currentVideo?.title || "Video"}
+                    className="w-full h-full"
+                    allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              ) : (
+                <div className="aspect-video flex items-center justify-center bg-black">
+                  <div className="text-center">
+                    <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4 border border-white/10">
+                      <Icons.play />
+                    </div>
+                    <p className="text-white/40">ভিডিও লোড করা যায়নি</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Video Info & Controls */}
-          <div className="p-4 sm:p-6 bg-gray-800 border-t border-gray-700">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">
+          {/* Video Info Section */}
+          <div className="flex-1 bg-[#0f0f0f]">
+            <div className="max-w-[1280px] mx-auto p-4 sm:p-6">
+              {/* Title */}
+              <h2 className="text-lg sm:text-xl font-semibold text-white mb-3 leading-tight">
                 {currentVideo?.title}
               </h2>
+
+              {/* Description */}
               {currentVideo?.description && (
-                <p className="text-gray-400 mb-4">{currentVideo.description}</p>
+                <p className="text-white/50 text-sm leading-relaxed mb-6">
+                  {currentVideo.description}
+                </p>
               )}
 
-              {/* Navigation & Complete Button */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
-                  {prevVideo && !prevVideo.locked && (
-                    <Button
-                      variant="outline"
-                      onClick={() =>
-                        router.push(`/learn/${courseId}/${prevVideo._id}`)
-                      }
-                      className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
-                    >
-                      <Icons.prev />
-                      <span className="hidden sm:inline ml-2">আগের ভিডিও</span>
-                    </Button>
-                  )}
-                  {nextVideo && !nextVideo.locked && (
-                    <Button
-                      variant="outline"
-                      onClick={() =>
-                        router.push(`/learn/${courseId}/${nextVideo._id}`)
-                      }
-                      className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
-                    >
-                      <span className="hidden sm:inline mr-2">পরের ভিডিও</span>
-                      <Icons.next />
-                    </Button>
-                  )}
-                </div>
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3">
+                {prevVideo && !prevVideo.locked && (
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      router.push(`/learn/${courseId}/${prevVideo._id}`)
+                    }
+                    className="bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20 rounded-full px-5 transition-all"
+                  >
+                    <Icons.prev />
+                    <span className="ml-2">আগের ভিডিও</span>
+                  </Button>
+                )}
+                {nextVideo && !nextVideo.locked && (
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      router.push(`/learn/${courseId}/${nextVideo._id}`)
+                    }
+                    className="bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20 rounded-full px-5 transition-all"
+                  >
+                    <span className="mr-2">পরের ভিডিও</span>
+                    <Icons.next />
+                  </Button>
+                )}
 
+                <div className="flex-1" />
+
+                {/* Complete Button */}
                 {currentVideo && !currentVideo.completed && (
                   <Button
                     onClick={handleMarkComplete}
                     disabled={completingVideo}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                    className="bg-emerald-500 hover:bg-emerald-400 text-white rounded-full px-6 shadow-lg shadow-emerald-500/25 transition-all hover:shadow-emerald-500/40"
                   >
                     {completingVideo ? (
                       <span className="flex items-center gap-2">
@@ -492,9 +514,13 @@ export default function VideoPlayerPage({ params }: PageProps) {
                 )}
 
                 {currentVideo?.completed && (
-                  <div className="flex items-center gap-2 text-emerald-400">
-                    <Icons.check />
-                    <span>সম্পন্ন!</span>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                    <div className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center">
+                      <Icons.check />
+                    </div>
+                    <span className="text-emerald-400 text-sm font-medium">
+                      সম্পন্ন!
+                    </span>
                   </div>
                 )}
               </div>
@@ -504,67 +530,82 @@ export default function VideoPlayerPage({ params }: PageProps) {
 
         {/* Sidebar - Course Content */}
         <aside
-          className={`fixed right-0 top-14 bottom-0 w-80 bg-gray-800 border-l border-gray-700 overflow-y-auto transform transition-transform lg:transform-none ${
-            sidebarOpen
-              ? "translate-x-0"
-              : "translate-x-full lg:translate-x-full"
+          className={`fixed right-0 top-14 bottom-0 w-[340px] bg-[#0f0f0f] border-l border-white/5 overflow-hidden flex flex-col transform transition-transform duration-300 z-40 ${
+            sidebarOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
-          <div className="p-4 border-b border-gray-700">
-            <h3 className="font-semibold text-white">কোর্স কনটেন্ট</h3>
-            <p className="text-sm text-gray-400 mt-1">
-              {allVideos.filter((v) => v.completed).length}/{allVideos.length}{" "}
-              সম্পন্ন
-            </p>
+          {/* Sidebar Header */}
+          <div className="p-4 border-b border-white/5">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-white">কোর্স কনটেন্ট</h3>
+              <span className="text-xs text-white/40">
+                {allVideos.filter((v) => v.completed).length}/{allVideos.length}
+              </span>
+            </div>
+            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-linear-to-r from-purple-500 to-cyan-400 rounded-full transition-all duration-700"
+                style={{
+                  width: `${(allVideos.filter((v) => v.completed).length / allVideos.length) * 100}%`,
+                }}
+              />
+            </div>
           </div>
 
-          <div className="divide-y divide-gray-700">
+          {/* Sections - Scrollable */}
+          <div className="flex-1 overflow-y-auto">
             {Object.entries(sections).map(([sectionTitle, videos]) => (
-              <div key={sectionTitle}>
+              <div key={sectionTitle} className="border-b border-white/5">
                 {/* Section Header */}
                 <button
                   onClick={() => toggleSection(sectionTitle)}
-                  className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-700/50 transition-colors"
+                  className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
                 >
-                  <span className="font-medium text-white text-sm truncate pr-2">
-                    {sectionTitle}
-                  </span>
-                  <span
-                    className={`transform transition-transform text-gray-400 ${
-                      expandedSections.has(sectionTitle) ? "rotate-180" : ""
-                    }`}
-                  >
-                    <Icons.chevronDown />
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`transform transition-transform duration-200 text-white/40 ${
+                        expandedSections.has(sectionTitle) ? "rotate-180" : ""
+                      }`}
+                    >
+                      <Icons.chevronDown />
+                    </span>
+                    <span className="font-medium text-white/90 text-sm">
+                      {sectionTitle}
+                    </span>
+                  </div>
+                  <span className="text-xs text-white/30 bg-white/5 px-2 py-0.5 rounded">
+                    {videos.length} ভিডিও
                   </span>
                 </button>
 
                 {/* Videos */}
                 {expandedSections.has(sectionTitle) && (
-                  <div className="bg-gray-900/50">
+                  <div className="pb-2">
                     {[...videos]
                       .sort((a, b) => a.order - b.order)
-                      .map((video) => (
+                      .map((video, index) => (
                         <button
                           key={video._id}
                           onClick={() => handleVideoSelect(video)}
-                          className={`w-full px-4 py-3 flex items-center gap-3 text-left transition-colors ${
+                          disabled={video.locked}
+                          className={`w-full px-4 py-2.5 flex items-center gap-3 text-left transition-all ${
                             video._id === videoId
-                              ? "bg-purple-600/20 border-l-2 border-purple-500"
+                              ? "bg-white/10"
                               : video.locked
-                                ? "opacity-50"
-                                : "hover:bg-gray-700/50"
+                                ? "opacity-40 cursor-not-allowed"
+                                : "hover:bg-white/5"
                           }`}
                         >
-                          {/* Status Icon */}
+                          {/* Status Circle */}
                           <div
-                            className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
+                            className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-medium transition-all ${
                               video.completed
-                                ? "bg-emerald-500/20 text-emerald-400"
+                                ? "bg-emerald-500 text-white"
                                 : video._id === videoId
-                                  ? "bg-purple-500/20 text-purple-400"
+                                  ? "bg-purple-500 text-white"
                                   : video.locked
-                                    ? "bg-gray-600 text-gray-400"
-                                    : "bg-gray-600 text-gray-300"
+                                    ? "bg-white/10 text-white/30"
+                                    : "bg-white/10 text-white/60"
                             }`}
                           >
                             {video.completed ? (
@@ -572,7 +613,7 @@ export default function VideoPlayerPage({ params }: PageProps) {
                             ) : video.locked ? (
                               <Icons.lock />
                             ) : (
-                              <Icons.play />
+                              index + 1
                             )}
                           </div>
 
@@ -581,16 +622,28 @@ export default function VideoPlayerPage({ params }: PageProps) {
                             <p
                               className={`text-sm truncate ${
                                 video._id === videoId
-                                  ? "text-purple-300"
-                                  : "text-gray-300"
+                                  ? "text-white font-medium"
+                                  : video.completed
+                                    ? "text-white/50"
+                                    : "text-white/70"
                               }`}
                             >
                               {video.title}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-white/30 mt-0.5">
                               {formatDuration(video.duration)}
                             </p>
                           </div>
+
+                          {/* Now Playing Indicator */}
+                          {video._id === videoId && (
+                            <div className="flex items-end gap-[2px] h-4">
+                              <span className="w-[3px] h-2 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_infinite]"></span>
+                              <span className="w-[3px] h-3 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_0.1s_infinite]"></span>
+                              <span className="w-[3px] h-4 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_0.2s_infinite]"></span>
+                              <span className="w-[3px] h-2 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_0.3s_infinite]"></span>
+                            </div>
+                          )}
                         </button>
                       ))}
                   </div>
@@ -601,14 +654,12 @@ export default function VideoPlayerPage({ params }: PageProps) {
         </aside>
       </div>
 
-      {/* Mobile Sidebar Toggle */}
+      {/* Sidebar Toggle Button - Desktop */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className={`fixed bottom-4 right-4 w-12 h-12 rounded-full bg-purple-600 text-white shadow-lg flex items-center justify-center lg:hidden z-50 ${
-          sidebarOpen ? "hidden" : ""
-        }`}
+        className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white shadow-xl flex items-center justify-center z-50 transition-all hover:scale-105 backdrop-blur-sm border border-white/10"
       >
-        <Icons.menu />
+        {sidebarOpen ? <Icons.close /> : <Icons.menu />}
       </button>
     </div>
   );
