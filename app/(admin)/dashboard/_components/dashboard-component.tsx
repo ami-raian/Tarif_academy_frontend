@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { VideoPlayer } from "@/components/video-player";
 import { VideoUploadModal } from "./video-upload-modal";
+import { CommonBadge } from "@/components/common/common-badge";
 import { CreateCourseModal } from "./create-course-modal";
 import { toggleCoursePublish } from "@/lib/api";
 import type {
@@ -994,20 +995,19 @@ const DashboardComponent = () => {
                           <button
                             onClick={(e) => handleTogglePublish(e, course)}
                             disabled={publishingCourse === course._id}
-                            className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-colors ${
-                              course.isPublished
-                                ? "bg-emerald-500 hover:bg-emerald-600 text-white"
-                                : "bg-slate-700 hover:bg-slate-800 text-white"
-                            } ${publishingCourse === course._id ? "opacity-70 cursor-wait" : ""}`}
+                            className="transition-opacity hover:opacity-80"
                           >
                             {publishingCourse === course._id ? (
-                              <span className="flex items-center gap-1">
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-slate-700 text-white text-xs">
                                 <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                               </span>
-                            ) : course.isPublished ? (
-                              "প্রকাশিত ✓"
                             ) : (
-                              "ড্রাফট"
+                              <CommonBadge
+                                status={
+                                  course.isPublished ? "প্রকাশিত ✓" : "ড্রাফট"
+                                }
+                                size="sm"
+                              />
                             )}
                           </button>
                         </div>
