@@ -1,3 +1,4 @@
+// app/(admin)/dashboard/enrollments/page.tsx
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -227,22 +228,22 @@ export default function EnrollmentsPage() {
 
   if (loading && enrollments.length === 0) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="relative w-16 h-16 mx-auto mb-4">
-            <div className="absolute inset-0 rounded-full border-4 border-slate-200"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-gray-700"></div>
             <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
           </div>
-          <p className="text-slate-600 font-medium">লোড হচ্ছে...</p>
+          <p className="text-slate-600 dark:text-gray-300 font-medium">লোড হচ্ছে...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -256,10 +257,10 @@ export default function EnrollmentsPage() {
                 ড্যাশবোর্ড
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
                   এনরোলমেন্ট ম্যানেজমেন্ট
                 </h1>
-                <p className="text-slate-500 mt-1">
+                <p className="text-slate-500 dark:text-gray-400 mt-1">
                   শিক্ষার্থীদের এনরোলমেন্ট অনুমোদন করুন
                 </p>
               </div>
@@ -281,61 +282,61 @@ export default function EnrollmentsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 shadow-md dark:bg-gray-800">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500">মোট</p>
-                  <p className="text-2xl font-bold text-slate-900">
+                  <p className="text-sm text-slate-500 dark:text-gray-400">মোট</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">
                     {pagination.total}
                   </p>
                 </div>
-                <div className="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center text-violet-600">
+                <div className="w-10 h-10 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
                   <Icons.user />
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 shadow-md dark:bg-gray-800">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500">অপেক্ষমাণ</p>
-                  <p className="text-2xl font-bold text-amber-600">
+                  <p className="text-sm text-slate-500 dark:text-gray-400">অপেক্ষমাণ</p>
+                  <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
                     {enrollments.filter((e) => e.status === "pending").length}
                   </p>
                 </div>
-                <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600">
+                <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400">
                   <Icons.clock />
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 shadow-md dark:bg-gray-800">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500">অনুমোদিত</p>
-                  <p className="text-2xl font-bold text-emerald-600">
+                  <p className="text-sm text-slate-500 dark:text-gray-400">অনুমোদিত</p>
+                  <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                     {enrollments.filter((e) => e.status === "approved").length}
                   </p>
                 </div>
-                <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600">
+                <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                   <Icons.check />
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 shadow-md dark:bg-gray-800">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500">প্রত্যাখ্যাত</p>
-                  <p className="text-2xl font-bold text-red-600">
+                  <p className="text-sm text-slate-500 dark:text-gray-400">প্রত্যাখ্যাত</p>
+                  <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                     {enrollments.filter((e) => e.status === "rejected").length}
                   </p>
                 </div>
-                <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center text-red-600">
+                <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
                   <Icons.x />
                 </div>
               </div>
@@ -344,10 +345,10 @@ export default function EnrollmentsPage() {
         </div>
 
         {/* Filter Tabs */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader className="border-b bg-white">
+        <Card className="border-0 shadow-lg dark:bg-gray-800">
+          <CardHeader className="border-b dark:border-gray-700 bg-white dark:bg-gray-800">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <CardTitle className="text-lg">এনরোলমেন্ট তালিকা</CardTitle>
+              <CardTitle className="text-lg dark:text-white">এনরোলমেন্ট তালিকা</CardTitle>
               <Tabs
                 value={filter}
                 defaultValue="pending"
@@ -365,19 +366,19 @@ export default function EnrollmentsPage() {
           <CardContent className="p-0">
             {enrollments.length === 0 ? (
               <div className="text-center py-16">
-                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
                   <Icons.user />
                 </div>
-                <p className="text-slate-500 font-medium">
+                <p className="text-slate-500 dark:text-gray-400 font-medium">
                   কোনো এনরোলমেন্ট পাওয়া যায়নি
                 </p>
               </div>
             ) : (
-              <div className="divide-y">
+              <div className="divide-y dark:divide-gray-700">
                 {enrollments.map((enrollment) => (
                   <div
                     key={enrollment._id}
-                    className="p-4 hover:bg-slate-50 transition-colors"
+                    className="p-4 hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="flex-1 min-w-0">
@@ -386,30 +387,30 @@ export default function EnrollmentsPage() {
                             {enrollment.studentId?.fullName?.charAt(0) || "S"}
                           </div>
                           <div>
-                            <p className="font-semibold text-slate-900">
+                            <p className="font-semibold text-slate-900 dark:text-white">
                               {enrollment.studentId?.fullName ||
                                 "Unknown Student"}
                             </p>
-                            <p className="text-sm text-slate-500">
+                            <p className="text-sm text-slate-500 dark:text-gray-400">
                               {enrollment.studentId?.email}
                             </p>
                           </div>
                         </div>
                         <div className="ml-13 space-y-1">
-                          <p className="text-sm text-slate-700">
+                          <p className="text-sm text-slate-700 dark:text-gray-300">
                             <span className="font-medium">কোর্স:</span>{" "}
                             {enrollment.courseId?.title || "Unknown Course"}
                           </p>
-                          <p className="text-sm text-slate-500">
+                          <p className="text-sm text-slate-500 dark:text-gray-400">
                             <span className="font-medium">পেমেন্ট:</span> ৳
                             {enrollment.paymentAmount}{" "}
                             {enrollment.transactionId && (
-                              <span className="text-slate-400">
+                              <span className="text-slate-400 dark:text-gray-500">
                                 (TxID: {enrollment.transactionId})
                               </span>
                             )}
                           </p>
-                          <p className="text-sm text-slate-500">
+                          <p className="text-sm text-slate-500 dark:text-gray-400">
                             <span className="font-medium">তারিখ:</span>{" "}
                             {formatDate(enrollment.enrolledAt)}
                           </p>
@@ -449,8 +450,8 @@ export default function EnrollmentsPage() {
 
             {/* Pagination */}
             {pagination.totalPages > 1 && (
-              <div className="flex items-center justify-between p-4 border-t">
-                <p className="text-sm text-slate-500">
+              <div className="flex items-center justify-between p-4 border-t dark:border-gray-700">
+                <p className="text-sm text-slate-500 dark:text-gray-400">
                   পেজ {pagination.page} / {pagination.totalPages}
                 </p>
                 <div className="flex gap-2">
@@ -484,16 +485,16 @@ export default function EnrollmentsPage() {
       {/* Reject Modal */}
       {showRejectModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
               এনরোলমেন্ট প্রত্যাখ্যান
             </h3>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-2">
                 প্রত্যাখ্যানের কারণ (ঐচ্ছিক)
               </label>
               <textarea
-                className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full p-3 border border-slate-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 rows={3}
                 placeholder="কারণ লিখুন..."
                 value={rejectReason}
