@@ -1,47 +1,54 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 interface TabsContextValue {
-  value: string
-  onValueChange: (value: string) => void
+  value: string;
+  onValueChange: (value: string) => void;
 }
 
-const TabsContext = React.createContext<TabsContextValue | undefined>(undefined)
+const TabsContext = React.createContext<TabsContextValue | undefined>(
+  undefined,
+);
 
 function useTabsContext() {
-  const context = React.useContext(TabsContext)
+  const context = React.useContext(TabsContext);
   if (!context) {
-    throw new Error("Tabs components must be used within a Tabs provider")
+    throw new Error("Tabs components must be used within a Tabs provider");
   }
-  return context
+  return context;
 }
 
 interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
-  defaultValue: string
-  value?: string
-  onValueChange?: (value: string) => void
+  defaultValue: string;
+  value?: string;
+  onValueChange?: (value: string) => void;
 }
 
 const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
-  ({ className, defaultValue, value, onValueChange, children, ...props }, ref) => {
-    const [internalValue, setInternalValue] = React.useState(defaultValue)
+  (
+    { className, defaultValue, value, onValueChange, children, ...props },
+    ref,
+  ) => {
+    const [internalValue, setInternalValue] = React.useState(defaultValue);
 
-    const currentValue = value ?? internalValue
-    const handleValueChange = onValueChange ?? setInternalValue
+    const currentValue = value ?? internalValue;
+    const handleValueChange = onValueChange ?? setInternalValue;
 
     return (
-      <TabsContext.Provider value={{ value: currentValue, onValueChange: handleValueChange }}>
+      <TabsContext.Provider
+        value={{ value: currentValue, onValueChange: handleValueChange }}
+      >
         <div ref={ref} className={cn("w-full", className)} {...props}>
           {children}
         </div>
       </TabsContext.Provider>
-    )
-  }
-)
-Tabs.displayName = "Tabs"
+    );
+  },
+);
+Tabs.displayName = "Tabs";
 
 const TabsList = React.forwardRef<
   HTMLDivElement,
@@ -51,21 +58,21 @@ const TabsList = React.forwardRef<
     ref={ref}
     className={cn(
       "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground w-full",
-      className
+      className,
     )}
     {...props}
   />
-))
-TabsList.displayName = "TabsList"
+));
+TabsList.displayName = "TabsList";
 
 interface TabsTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  value: string
+  value: string;
 }
 
 const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
   ({ className, value, ...props }, ref) => {
-    const context = useTabsContext()
-    const isActive = context.value === value
+    const context = useTabsContext();
+    const isActive = context.value === value;
 
     return (
       <button
@@ -79,25 +86,25 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
           isActive
             ? "bg-background text-foreground shadow-sm"
             : "hover:bg-background/50 hover:text-foreground",
-          className
+          className,
         )}
         {...props}
       />
-    )
-  }
-)
-TabsTrigger.displayName = "TabsTrigger"
+    );
+  },
+);
+TabsTrigger.displayName = "TabsTrigger";
 
 interface TabsContentProps extends React.HTMLAttributes<HTMLDivElement> {
-  value: string
+  value: string;
 }
 
 const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
   ({ className, value, ...props }, ref) => {
-    const context = useTabsContext()
-    const isActive = context.value === value
+    const context = useTabsContext();
+    const isActive = context.value === value;
 
-    if (!isActive) return null
+    if (!isActive) return null;
 
     return (
       <div
@@ -105,13 +112,13 @@ const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
         role="tabpanel"
         className={cn(
           "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          className
+          className,
         )}
         {...props}
       />
-    )
-  }
-)
-TabsContent.displayName = "TabsContent"
+    );
+  },
+);
+TabsContent.displayName = "TabsContent";
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }
+export { Tabs, TabsList, TabsTrigger, TabsContent };

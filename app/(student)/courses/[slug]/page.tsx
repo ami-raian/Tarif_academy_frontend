@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/app/(home)/_components/navbar";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   getCourseBySlug,
   getCourseVideos,
@@ -772,18 +774,17 @@ export default function CourseDetailPage({ params }: PageProps) {
             </div>
 
             {/* Transaction ID Input */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="mb-6 space-y-2">
+              <Label>
                 Transaction ID <span className="text-red-500">*</span>
-              </label>
-              <input
+              </Label>
+              <Input
                 type="text"
                 value={transactionId}
                 onChange={(e) => setTransactionId(e.target.value)}
                 placeholder="যেমন: TXN1234567890"
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500">
                 বিকাশ থেকে পাওয়া Transaction ID দিন
               </p>
             </div>

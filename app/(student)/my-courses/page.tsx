@@ -1,3 +1,4 @@
+// app/(student)/my-courses/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -264,49 +265,51 @@ export default function MyCoursesPage() {
 
             {/* Filters */}
             <div className="flex gap-2 flex-wrap">
-              <button
+              <Button
                 onClick={() => setFilter("all")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  filter === "all"
-                    ? "bg-purple-600 text-white"
-                    : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
-                }`}
+                variant={filter === "all" ? "default" : "outline"}
+                size="sm"
+                className={
+                  filter === "all" ? "bg-purple-600 hover:bg-purple-700" : ""
+                }
               >
                 সব ({enrollments.length})
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setFilter("pending")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  filter === "pending"
-                    ? "bg-amber-500 text-white"
-                    : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
-                }`}
+                variant={filter === "pending" ? "default" : "outline"}
+                size="sm"
+                className={
+                  filter === "pending" ? "bg-amber-500 hover:bg-amber-600" : ""
+                }
               >
                 অপেক্ষমাণ (
                 {enrollments.filter((e) => e.status === "pending").length})
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setFilter("approved")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                variant={filter === "approved" ? "default" : "outline"}
+                size="sm"
+                className={
                   filter === "approved"
-                    ? "bg-emerald-500 text-white"
-                    : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
-                }`}
+                    ? "bg-emerald-500 hover:bg-emerald-600"
+                    : ""
+                }
               >
                 অনুমোদিত (
                 {enrollments.filter((e) => e.status === "approved").length})
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setFilter("rejected")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  filter === "rejected"
-                    ? "bg-red-500 text-white"
-                    : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
-                }`}
+                variant={filter === "rejected" ? "default" : "outline"}
+                size="sm"
+                className={
+                  filter === "rejected" ? "bg-red-500 hover:bg-red-600" : ""
+                }
               >
                 প্রত্যাখ্যাত (
                 {enrollments.filter((e) => e.status === "rejected").length})
-              </button>
+              </Button>
             </div>
           </div>
 

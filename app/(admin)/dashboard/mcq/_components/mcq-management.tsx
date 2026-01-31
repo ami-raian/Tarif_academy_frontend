@@ -1,3 +1,4 @@
+// app/(admin)/dashboard/mcq/_components/mcq-management.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -447,13 +449,13 @@ const McqManagement = () => {
   // Loading State
   if (loading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="relative w-16 h-16 mx-auto mb-4">
-            <div className="absolute inset-0 rounded-full border-4 border-slate-200"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-gray-700"></div>
             <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
           </div>
-          <p className="text-slate-600 font-medium">লোড হচ্ছে...</p>
+          <p className="text-slate-600 dark:text-gray-300 font-medium">লোড হচ্ছে...</p>
         </div>
       </div>
     );
@@ -462,8 +464,8 @@ const McqManagement = () => {
   // Questions View
   if (view === "questions" && selectedExam) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
-        <div className="bg-white border-b sticky top-0 z-40 shadow-sm">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
+        <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-40 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
               <Button
@@ -475,12 +477,12 @@ const McqManagement = () => {
                 <Icons.back />
                 ফিরে যান
               </Button>
-              <div className="h-6 w-px bg-slate-200"></div>
+              <div className="h-6 w-px bg-slate-200 dark:bg-gray-600"></div>
               <div className="flex-1 min-w-0">
-                <h1 className="text-lg font-bold text-slate-900 truncate">
+                <h1 className="text-lg font-bold text-slate-900 dark:text-white truncate">
                   {selectedExam.title}
                 </h1>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-slate-500 dark:text-gray-400">
                   {questions.length} টি প্রশ্ন
                 </p>
               </div>
@@ -501,10 +503,10 @@ const McqManagement = () => {
               <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
             </div>
           ) : questions.length === 0 ? (
-            <Card className="border-0 shadow-md">
+            <Card className="border-0 shadow-md dark:bg-gray-800">
               <CardContent className="py-12 text-center">
                 <Icons.questions />
-                <p className="text-slate-500 mt-2">কোনো প্রশ্ন পাওয়া যায়নি</p>
+                <p className="text-slate-500 dark:text-gray-400 mt-2">কোনো প্রশ্ন পাওয়া যায়নি</p>
                 <Button
                   onClick={() => setIsAddQuestionModalOpen(true)}
                   className="mt-4 gap-2"
@@ -516,7 +518,7 @@ const McqManagement = () => {
             </Card>
           ) : (
             questions.map((question, index) => (
-              <Card key={question._id} className="border-0 shadow-md">
+              <Card key={question._id} className="border-0 shadow-md dark:bg-gray-800">
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
@@ -524,11 +526,11 @@ const McqManagement = () => {
                         <span className="bg-primary text-white text-xs font-medium px-2 py-0.5 rounded">
                           প্রশ্ন {index + 1}
                         </span>
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-slate-500 dark:text-gray-400">
                           মার্কস: {question.marks}
                         </span>
                       </div>
-                      <p className="font-medium text-slate-900">
+                      <p className="font-medium text-slate-900 dark:text-white">
                         {question.questionText}
                       </p>
                       <div className="mt-3 space-y-2">
@@ -537,24 +539,24 @@ const McqManagement = () => {
                             key={optIndex}
                             className={`flex items-center gap-2 p-2 rounded ${
                               option.isCorrect
-                                ? "bg-emerald-50 border border-emerald-200"
-                                : "bg-slate-50"
+                                ? "bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700"
+                                : "bg-slate-50 dark:bg-gray-700"
                             }`}
                           >
-                            <span className="w-6 h-6 rounded-full bg-white border flex items-center justify-center text-xs font-medium">
+                            <span className="w-6 h-6 rounded-full bg-white dark:bg-gray-600 border dark:border-gray-500 flex items-center justify-center text-xs font-medium dark:text-white">
                               {String.fromCharCode(65 + optIndex)}
                             </span>
                             <span
                               className={
                                 option.isCorrect
-                                  ? "text-emerald-700 font-medium"
-                                  : "text-slate-700"
+                                  ? "text-emerald-700 dark:text-emerald-300 font-medium"
+                                  : "text-slate-700 dark:text-gray-300"
                               }
                             >
                               {option.text}
                             </span>
                             {option.isCorrect && (
-                              <span className="ml-auto text-emerald-600">
+                              <span className="ml-auto text-emerald-600 dark:text-emerald-400">
                                 <Icons.check />
                               </span>
                             )}
@@ -621,15 +623,13 @@ const McqManagement = () => {
                 <div className="space-y-2">
                   {questionForm.options.map((option, index) => (
                     <div key={index} className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         checked={option.isCorrect}
-                        onChange={(e) =>
-                          updateOption(index, "isCorrect", e.target.checked)
+                        onCheckedChange={(checked) =>
+                          updateOption(index, "isCorrect", checked as boolean)
                         }
-                        className="w-5 h-5 rounded border-slate-300"
                       />
-                      <span className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-sm font-medium">
+                      <span className="w-8 h-8 rounded-full bg-slate-100 dark:bg-gray-700 flex items-center justify-center text-sm font-medium dark:text-white">
                         {String.fromCharCode(65 + index)}
                       </span>
                       <Input
@@ -696,8 +696,8 @@ const McqManagement = () => {
   // Results View
   if (view === "results" && selectedExam) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
-        <div className="bg-white border-b sticky top-0 z-40 shadow-sm">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
+        <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-40 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
               <Button
@@ -709,12 +709,12 @@ const McqManagement = () => {
                 <Icons.back />
                 ফিরে যান
               </Button>
-              <div className="h-6 w-px bg-slate-200"></div>
+              <div className="h-6 w-px bg-slate-200 dark:bg-gray-600"></div>
               <div className="flex-1 min-w-0">
-                <h1 className="text-lg font-bold text-slate-900 truncate">
+                <h1 className="text-lg font-bold text-slate-900 dark:text-white truncate">
                   {selectedExam.title} - ফলাফল
                 </h1>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-slate-500 dark:text-gray-400">
                   {submissions.length} জন পরীক্ষার্থী
                 </p>
               </div>
@@ -740,39 +740,39 @@ const McqManagement = () => {
               <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
             </div>
           ) : submissions.length === 0 ? (
-            <Card className="border-0 shadow-md">
+            <Card className="border-0 shadow-md dark:bg-gray-800">
               <CardContent className="py-12 text-center">
                 <Icons.results />
-                <p className="text-slate-500 mt-2">কেউ এখনও পরীক্ষা দেয়নি</p>
+                <p className="text-slate-500 dark:text-gray-400 mt-2">কেউ এখনও পরীক্ষা দেয়নি</p>
               </CardContent>
             </Card>
           ) : (
-            <Card className="border-0 shadow-md overflow-hidden">
+            <Card className="border-0 shadow-md overflow-hidden dark:bg-gray-800">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-slate-50 border-b">
+                  <thead className="bg-slate-50 dark:bg-gray-700 border-b dark:border-gray-600">
                     <tr>
-                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600">
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">
                         #
                       </th>
-                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600">
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">
                         শিক্ষার্থী
                       </th>
-                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600">
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">
                         প্রাপ্ত নম্বর
                       </th>
-                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600">
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">
                         শতাংশ
                       </th>
-                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600">
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">
                         স্ট্যাটাস
                       </th>
-                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600">
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">
                         সময়
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y">
+                  <tbody className="divide-y dark:divide-gray-700">
                     {submissions.map((submission, index) => {
                       const student = submission.studentId as {
                         _id: string;
@@ -780,48 +780,48 @@ const McqManagement = () => {
                         email: string;
                       };
                       return (
-                        <tr key={submission._id} className="hover:bg-slate-50">
-                          <td className="px-4 py-3 text-sm">{index + 1}</td>
+                        <tr key={submission._id} className="hover:bg-slate-50 dark:hover:bg-gray-700">
+                          <td className="px-4 py-3 text-sm dark:text-gray-300">{index + 1}</td>
                           <td className="px-4 py-3">
-                            <p className="font-medium text-slate-900">
+                            <p className="font-medium text-slate-900 dark:text-white">
                               {student?.fullName || "অজানা"}
                             </p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-slate-500 dark:text-gray-400">
                               {student?.email || ""}
                             </p>
                           </td>
                           <td className="px-4 py-3">
-                            <span className="font-medium">
+                            <span className="font-medium dark:text-white">
                               {submission.obtainedMarks} /{" "}
                               {submission.totalMarks}
                             </span>
                           </td>
                           <td className="px-4 py-3">
                             <span
-                              className={`font-medium ${submission.isPassed ? "text-emerald-600" : "text-rose-600"}`}
+                              className={`font-medium ${submission.isPassed ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}
                             >
                               {submission.percentage}%
                             </span>
                           </td>
                           <td className="px-4 py-3">
                             {submission.isPassed ? (
-                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
+                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
                                 <Icons.check /> পাস
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700">
+                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300">
                                 <Icons.x /> ফেল
                               </span>
                             )}
                           </td>
-                          <td className="px-4 py-3 text-sm text-slate-500">
+                          <td className="px-4 py-3 text-sm text-slate-500 dark:text-gray-400">
                             {submission.submittedAt
                               ? new Date(submission.submittedAt).toLocaleString(
                                   "bn-BD",
                                 )
                               : "-"}
                             {submission.isAutoSubmitted && (
-                              <span className="block text-xs text-amber-600">
+                              <span className="block text-xs text-amber-600 dark:text-amber-400">
                                 অটো সাবমিট
                               </span>
                             )}
@@ -841,9 +841,9 @@ const McqManagement = () => {
 
   // Main List View
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -854,10 +854,10 @@ const McqManagement = () => {
                 </Button>
               </Link>
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
                   MCQ পরীক্ষা
                 </h1>
-                <p className="text-slate-500 mt-1">
+                <p className="text-slate-500 dark:text-gray-400 mt-1">
                   পরীক্ষা তৈরি এবং ম্যানেজ করুন
                 </p>
               </div>
@@ -876,34 +876,34 @@ const McqManagement = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 shadow-md dark:bg-gray-800">
             <CardContent className="p-4">
-              <p className="text-sm text-slate-500">মোট পরীক্ষা</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">
+              <p className="text-sm text-slate-500 dark:text-gray-400">মোট পরীক্ষা</p>
+              <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
                 {exams.length}
               </p>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 shadow-md dark:bg-gray-800">
             <CardContent className="p-4">
-              <p className="text-sm text-slate-500">প্রকাশিত</p>
-              <p className="text-2xl font-bold text-emerald-600 mt-1">
+              <p className="text-sm text-slate-500 dark:text-gray-400">প্রকাশিত</p>
+              <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
                 {exams.filter((e) => e.isPublished).length}
               </p>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 shadow-md dark:bg-gray-800">
             <CardContent className="p-4">
-              <p className="text-sm text-slate-500">ড্রাফট</p>
-              <p className="text-2xl font-bold text-amber-600 mt-1">
+              <p className="text-sm text-slate-500 dark:text-gray-400">ড্রাফট</p>
+              <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">
                 {exams.filter((e) => !e.isPublished).length}
               </p>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 shadow-md dark:bg-gray-800">
             <CardContent className="p-4">
-              <p className="text-sm text-slate-500">ফলাফল প্রকাশিত</p>
-              <p className="text-2xl font-bold text-sky-600 mt-1">
+              <p className="text-sm text-slate-500 dark:text-gray-400">ফলাফল প্রকাশিত</p>
+              <p className="text-2xl font-bold text-sky-600 dark:text-sky-400 mt-1">
                 {exams.filter((e) => e.isResultPublished).length}
               </p>
             </CardContent>
@@ -912,12 +912,12 @@ const McqManagement = () => {
 
         {/* Exams Grid */}
         {exams.length === 0 ? (
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 shadow-md dark:bg-gray-800">
             <CardContent className="py-12 text-center">
-              <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
                 <Icons.questions />
               </div>
-              <p className="text-slate-500 font-medium">
+              <p className="text-slate-500 dark:text-gray-400 font-medium">
                 কোনো পরীক্ষা পাওয়া যায়নি
               </p>
               <Button
@@ -934,19 +934,19 @@ const McqManagement = () => {
             {exams.map((exam) => (
               <Card
                 key={exam._id}
-                className="border-0 shadow-md hover:shadow-lg transition-shadow"
+                className="border-0 shadow-md hover:shadow-lg transition-shadow dark:bg-gray-800"
               >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-2 mb-3">
-                    <h3 className="font-semibold text-slate-900 line-clamp-2">
+                    <h3 className="font-semibold text-slate-900 dark:text-white line-clamp-2">
                       {exam.title}
                     </h3>
                     <div className="flex gap-1">
                       <span
                         className={`shrink-0 px-2 py-0.5 rounded text-xs font-medium ${
                           exam.isPublished
-                            ? "bg-emerald-100 text-emerald-700"
-                            : "bg-slate-100 text-slate-600"
+                            ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300"
+                            : "bg-slate-100 dark:bg-gray-700 text-slate-600 dark:text-gray-300"
                         }`}
                       >
                         {exam.isPublished ? "প্রকাশিত" : "ড্রাফট"}
@@ -955,12 +955,12 @@ const McqManagement = () => {
                   </div>
 
                   {exam.description && (
-                    <p className="text-sm text-slate-500 line-clamp-2 mb-3">
+                    <p className="text-sm text-slate-500 dark:text-gray-400 line-clamp-2 mb-3">
                       {exam.description}
                     </p>
                   )}
 
-                  <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-4">
+                  <div className="flex flex-wrap gap-2 text-xs text-slate-500 dark:text-gray-400 mb-4">
                     <span className="flex items-center gap-1">
                       <Icons.clock />
                       {exam.duration} মিনিট
@@ -974,12 +974,12 @@ const McqManagement = () => {
                   </div>
 
                   {exam.isResultPublished && (
-                    <div className="mb-3 px-2 py-1 bg-sky-50 text-sky-700 text-xs font-medium rounded inline-block">
+                    <div className="mb-3 px-2 py-1 bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 text-xs font-medium rounded inline-block">
                       ফলাফল প্রকাশিত
                     </div>
                   )}
 
-                  <div className="flex flex-wrap gap-2 pt-3 border-t">
+                  <div className="flex flex-wrap gap-2 pt-3 border-t dark:border-gray-700">
                     <Button
                       variant="outline"
                       size="sm"

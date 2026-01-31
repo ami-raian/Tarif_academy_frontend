@@ -12,7 +12,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-const API_BASE_URL = "http://localhost:5000/api/v1";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_TARIFACADEMY_API_URL ||
+  "http://localhost:5000/api/v1";
 
 interface VideoUploadModalProps {
   isOpen: boolean;
@@ -271,7 +273,7 @@ export const VideoUploadModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-125 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl">ভিডিও আপলোড করুন</DialogTitle>
           <p className="text-sm text-slate-500 mt-1">{courseTitle}</p>
@@ -311,7 +313,7 @@ export const VideoUploadModal = ({
                     <Icons.file />
                   </div>
                   <div className="text-left">
-                    <p className="font-medium text-slate-900 truncate max-w-[250px]">
+                    <p className="font-medium text-slate-900 truncate max-w-62.5">
                       {selectedFile.name}
                     </p>
                     <p className="text-sm text-slate-500">
@@ -402,8 +404,11 @@ export const VideoUploadModal = ({
                   id="order"
                   type="number"
                   min={1}
-                  value={order}
-                  onChange={(e) => setOrder(parseInt(e.target.value) || 1)}
+                  value={order || ""}
+                  onChange={(e) => setOrder(parseInt(e.target.value) || 0)}
+                  onBlur={() => {
+                    if (order < 1) setOrder(1);
+                  }}
                   disabled={uploading}
                 />
               </div>

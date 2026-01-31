@@ -10,16 +10,19 @@ import { VideoPlayer } from "@/components/video-player";
 import { VideoUploadModal } from "./video-upload-modal";
 import { CommonBadge } from "@/components/common/common-badge";
 import { CreateCourseModal } from "./create-course-modal";
-import { toggleCoursePublish } from "@/lib/api";
+import {
+  toggleCoursePublish,
+  getCourses,
+  getCourseVideos,
+  syncAllVideos as syncAllVideosApi,
+} from "@/lib/api";
+import { Home } from "lucide-react";
 import type {
   Course,
-  CoursesResponse,
   Video,
   VideoWithAccess,
   CourseVideosResponse,
 } from "@/types";
-
-const API_BASE_URL = "http://localhost:5000/api/v1";
 
 // Icons as simple components
 const Icons = {
@@ -233,36 +236,14 @@ const DashboardComponent = () => {
   const [isCreateCourseModalOpen, setIsCreateCourseModalOpen] = useState(false);
   const [publishingCourse, setPublishingCourse] = useState<string | null>(null);
 
-  // Get auth token from localStorage or cookies
-  const getAuthToken = () => {
-    if (typeof window === "undefined") return null;
-    const ls = localStorage.getItem("accessToken");
-    if (ls) return ls;
-    const match = document.cookie.match(new RegExp("(^| )accessToken=([^;]+)"));
-    if (match) return decodeURIComponent(match[2]);
-    return null;
-  };
-
   // Fetch all courses
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchCoursesData = async () => {
       try {
         setLoading(true);
-        const token = getAuthToken();
-        const headers: Record<string, string> = {
-          "Content-Type": "application/json",
-        };
-        if (token) headers.Authorization = `Bearer ${token}`;
-
-        const response = await fetch(
-          `${API_BASE_URL}/courses?isPublished=${filter}`,
-          {
-            headers,
-            credentials: "include",
-          },
-        );
-
-        const data: CoursesResponse = await response.json();
+        const isPublished =
+          filter === "all" ? undefined : filter === "true" ? true : false;
+        const data = await getCourses({ isPublished });
         if (data.success) {
           setCourses(data.data);
         }
@@ -273,27 +254,14 @@ const DashboardComponent = () => {
       }
     };
 
-    fetchCourses();
+    fetchCoursesData();
   }, [filter]);
 
   // Fetch videos for selected course
   const fetchCourseVideos = async (courseId: string) => {
     try {
       setVideosLoading(true);
-      const token = getAuthToken();
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-      if (token) headers.Authorization = `Bearer ${token}`;
-
-      const response = await fetch(
-        `${API_BASE_URL}/videos/course/${courseId}`,
-        {
-          headers,
-          credentials: "include",
-        },
-      );
-      const data: CourseVideosResponse = await response.json();
+      const data: CourseVideosResponse = await getCourseVideos(courseId);
       if (data.success) {
         setSections(data.data.sections);
         setExpandedSections(new Set(Object.keys(data.data.sections)));
@@ -328,22 +296,10 @@ const DashboardComponent = () => {
   };
 
   // Sync all processing videos with Bunny
-  const syncAllVideos = async () => {
+  const handleSyncAllVideos = async () => {
     try {
       setSyncing(true);
-      const token = getAuthToken();
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-      if (token) headers.Authorization = `Bearer ${token}`;
-
-      const response = await fetch(`${API_BASE_URL}/webhooks/sync-all-videos`, {
-        method: "POST",
-        headers,
-        credentials: "include",
-      });
-
-      const data = await response.json();
+      const data = await syncAllVideosApi();
       if (data.success) {
         // Re-fetch videos to get updated status
         if (selectedCourse) {
@@ -411,30 +367,30 @@ const DashboardComponent = () => {
     switch (level) {
       case "beginner":
         return {
-          bg: "bg-emerald-50",
-          text: "text-emerald-700",
-          border: "border-emerald-200",
+          bg: "bg-emerald-50 dark:bg-emerald-900/30",
+          text: "text-emerald-700 dark:text-emerald-300",
+          border: "border-emerald-200 dark:border-emerald-700",
           label: "শুরু",
         };
       case "intermediate":
         return {
-          bg: "bg-amber-50",
-          text: "text-amber-700",
-          border: "border-amber-200",
+          bg: "bg-amber-50 dark:bg-amber-900/30",
+          text: "text-amber-700 dark:text-amber-300",
+          border: "border-amber-200 dark:border-amber-700",
           label: "মধ্যম",
         };
       case "advanced":
         return {
-          bg: "bg-rose-50",
-          text: "text-rose-700",
-          border: "border-rose-200",
+          bg: "bg-rose-50 dark:bg-rose-900/30",
+          text: "text-rose-700 dark:text-rose-300",
+          border: "border-rose-200 dark:border-rose-700",
           label: "উন্নত",
         };
       default:
         return {
-          bg: "bg-slate-50",
-          text: "text-slate-700",
-          border: "border-slate-200",
+          bg: "bg-slate-50 dark:bg-slate-800",
+          text: "text-slate-700 dark:text-slate-300",
+          border: "border-slate-200 dark:border-slate-600",
           label: level,
         };
     }
@@ -476,13 +432,13 @@ const DashboardComponent = () => {
   // Loading State
   if (loading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="relative w-16 h-16 mx-auto mb-4">
-            <div className="absolute inset-0 rounded-full border-4 border-slate-200"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-gray-700"></div>
             <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
           </div>
-          <p className="text-slate-600 font-medium">লোড হচ্ছে...</p>
+          <p className="text-slate-600 dark:text-gray-300 font-medium">লোড হচ্ছে...</p>
         </div>
       </div>
     );
@@ -491,26 +447,26 @@ const DashboardComponent = () => {
   // ==================== COURSE VIDEOS VIEW ====================
   if (selectedCourse) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
         {/* Top Header */}
-        <div className="bg-white border-b sticky top-0 z-40 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-40 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleBackToCourses}
-                className="gap-2 text-slate-600 hover:text-slate-900"
+                className="gap-2 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white"
               >
                 <Icons.back />
                 <span className="hidden sm:inline">ফিরে যান</span>
               </Button>
-              <div className="h-6 w-px bg-slate-200"></div>
+              <div className="h-6 w-px bg-slate-200 dark:bg-gray-600"></div>
               <div className="flex-1 min-w-0">
-                <h1 className="text-lg sm:text-xl font-bold text-slate-900 truncate">
+                <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white truncate">
                   {selectedCourse.title}
                 </h1>
-                <div className="flex items-center gap-3 text-sm text-slate-500 mt-0.5">
+                <div className="flex items-center gap-3 text-sm text-slate-500 dark:text-gray-400 mt-0.5">
                   <span className="flex items-center gap-1">
                     <Icons.video />
                     {getTotalVideos()} টি ভিডিও
@@ -524,7 +480,7 @@ const DashboardComponent = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={syncAllVideos}
+                onClick={handleSyncAllVideos}
                 disabled={syncing}
                 className="gap-2 shrink-0"
               >
@@ -556,10 +512,10 @@ const DashboardComponent = () => {
                   <div className="bg-linear-to-r from-primary/10 to-primary/5 px-4 py-3 border-b">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0 flex-1">
-                        <h2 className="font-semibold text-slate-900 truncate">
+                        <h2 className="font-semibold text-slate-900 dark:text-white truncate">
                           {selectedVideo.title}
                         </h2>
-                        <p className="text-sm text-slate-500 mt-0.5 line-clamp-1">
+                        <p className="text-sm text-slate-500 dark:text-gray-400 mt-0.5 line-clamp-1">
                           {selectedVideo.description}
                         </p>
                       </div>
@@ -567,7 +523,7 @@ const DashboardComponent = () => {
                         variant="ghost"
                         size="sm"
                         onClick={handleCloseVideo}
-                        className="shrink-0 text-slate-500 hover:text-slate-900"
+                        className="shrink-0 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
                       >
                         <Icons.close />
                       </Button>
@@ -607,17 +563,17 @@ const DashboardComponent = () => {
                   </CardContent>
                 </Card>
               ) : (
-                <Card className="overflow-hidden border-0 shadow-lg">
-                  <div className="aspect-video bg-linear-to-br from-slate-100 to-slate-200 flex flex-col items-center justify-center">
-                    <div className="w-16 h-16 rounded-full bg-white shadow-lg flex items-center justify-center mb-4">
-                      <div className="text-slate-400 scale-150">
+                <Card className="overflow-hidden border-0 shadow-lg dark:bg-gray-800">
+                  <div className="aspect-video bg-linear-to-br from-slate-100 to-slate-200 dark:from-gray-700 dark:to-gray-800 flex flex-col items-center justify-center">
+                    <div className="w-16 h-16 rounded-full bg-white dark:bg-gray-600 shadow-lg flex items-center justify-center mb-4">
+                      <div className="text-slate-400 dark:text-gray-300 scale-150">
                         <Icons.play />
                       </div>
                     </div>
-                    <p className="text-slate-600 font-medium">
+                    <p className="text-slate-600 dark:text-gray-300 font-medium">
                       একটি ভিডিও সিলেক্ট করুন
                     </p>
-                    <p className="text-slate-400 text-sm mt-1">
+                    <p className="text-slate-400 dark:text-gray-500 text-sm mt-1">
                       ডান পাশের তালিকা থেকে ভিডিও বেছে নিন
                     </p>
                   </div>
@@ -625,12 +581,12 @@ const DashboardComponent = () => {
               )}
 
               {/* Course Info Card */}
-              <Card className="border-0 shadow-md">
+              <Card className="border-0 shadow-md dark:bg-gray-800">
                 <CardContent className="p-4">
-                  <h3 className="font-semibold text-slate-900 mb-2">
+                  <h3 className="font-semibold text-slate-900 dark:text-white mb-2">
                     কোর্স সম্পর্কে
                   </h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">
+                  <p className="text-slate-600 dark:text-gray-300 text-sm leading-relaxed">
                     {selectedCourse.description}
                   </p>
                   <div className="flex flex-wrap gap-2 mt-4">
@@ -644,10 +600,10 @@ const DashboardComponent = () => {
                         </span>
                       );
                     })()}
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-violet-50 text-violet-700 border border-violet-200">
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-700">
                       {selectedCourse.category}
                     </span>
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-sky-50 text-sky-700 border border-sky-200">
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-700">
                       {selectedCourse.language}
                     </span>
                   </div>
@@ -657,11 +613,11 @@ const DashboardComponent = () => {
 
             {/* Video List Sidebar */}
             <div className="lg:col-span-1">
-              <Card className="border-0 shadow-lg sticky top-24">
-                <CardHeader className="pb-3 border-b bg-slate-50/50">
-                  <CardTitle className="text-base flex items-center justify-between">
+              <Card className="border-0 shadow-lg sticky top-24 dark:bg-gray-800">
+                <CardHeader className="pb-3 border-b dark:border-gray-700 bg-slate-50/50 dark:bg-gray-800/50">
+                  <CardTitle className="text-base flex items-center justify-between dark:text-white">
                     <span>কোর্স কনটেন্ট</span>
-                    <span className="text-sm font-normal text-slate-500">
+                    <span className="text-sm font-normal text-slate-500 dark:text-gray-400">
                       {Object.keys(sections).length} সেকশন
                     </span>
                   </CardTitle>
@@ -673,20 +629,20 @@ const DashboardComponent = () => {
                     </div>
                   ) : Object.keys(sections).length === 0 ? (
                     <div className="text-center py-12 px-4">
-                      <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
+                      <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-3">
                         <Icons.video />
                       </div>
-                      <p className="text-slate-500">কোনো ভিডিও পাওয়া যায়নি</p>
+                      <p className="text-slate-500 dark:text-gray-400">কোনো ভিডিও পাওয়া যায়নি</p>
                     </div>
                   ) : (
-                    <div className="divide-y">
+                    <div className="divide-y dark:divide-gray-700">
                       {Object.entries(sections).map(
                         ([sectionTitle, videos], sectionIndex) => (
                           <div key={sectionTitle}>
                             {/* Section Header */}
                             <button
                               onClick={() => toggleSection(sectionTitle)}
-                              className="w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-50 transition-colors"
+                              className="w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors"
                             >
                               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                                 <span className="text-primary font-semibold text-sm">
@@ -694,15 +650,15 @@ const DashboardComponent = () => {
                                 </span>
                               </div>
                               <div className="flex-1 text-left min-w-0">
-                                <p className="font-medium text-slate-900 text-sm truncate">
+                                <p className="font-medium text-slate-900 dark:text-white text-sm truncate">
                                   {sectionTitle}
                                 </p>
-                                <p className="text-xs text-slate-500">
+                                <p className="text-xs text-slate-500 dark:text-gray-400">
                                   {videos.length} টি ভিডিও
                                 </p>
                               </div>
                               <div
-                                className={`transition-transform ${expandedSections.has(sectionTitle) ? "rotate-180" : ""}`}
+                                className={`transition-transform text-slate-500 dark:text-gray-400 ${expandedSections.has(sectionTitle) ? "rotate-180" : ""}`}
                               >
                                 <Icons.chevronDown />
                               </div>
@@ -710,7 +666,7 @@ const DashboardComponent = () => {
 
                             {/* Videos List */}
                             {expandedSections.has(sectionTitle) && (
-                              <div className="bg-slate-50/50">
+                              <div className="bg-slate-50/50 dark:bg-gray-900/50">
                                 {videos.map((video, videoIndex) => {
                                   const isSelected =
                                     selectedVideo?._id === video._id;
@@ -725,14 +681,14 @@ const DashboardComponent = () => {
                                       className={`w-full px-4 py-3 flex items-start gap-3 transition-all border-l-2 ${
                                         isSelected
                                           ? "bg-primary/5 border-l-primary"
-                                          : "border-l-transparent hover:bg-white"
+                                          : "border-l-transparent hover:bg-white dark:hover:bg-gray-700"
                                       }`}
                                     >
                                       <div
                                         className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
                                           isSelected
                                             ? "bg-primary text-white"
-                                            : "bg-slate-200 text-slate-600"
+                                            : "bg-slate-200 dark:bg-gray-600 text-slate-600 dark:text-gray-300"
                                         }`}
                                       >
                                         {isSelected ? (
@@ -748,7 +704,7 @@ const DashboardComponent = () => {
                                           className={`text-sm truncate ${
                                             isSelected
                                               ? "font-medium text-primary"
-                                              : "text-slate-700"
+                                              : "text-slate-700 dark:text-gray-300"
                                           }`}
                                         >
                                           {video.title}
@@ -765,7 +721,7 @@ const DashboardComponent = () => {
                                               ফ্রি
                                             </span>
                                           )}
-                                          <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                                          <span className="text-[10px] text-slate-400 dark:text-gray-500 flex items-center gap-1">
                                             <Icons.clock />
                                             {formatDuration(video.duration)}
                                           </span>
@@ -802,20 +758,26 @@ const DashboardComponent = () => {
 
   // ==================== DASHBOARD MAIN VIEW ====================
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
                 ড্যাশবোর্ড
               </h1>
-              <p className="text-slate-500 mt-1">
+              <p className="text-slate-500 dark:text-gray-400 mt-1">
                 আপনার কোর্স এবং কনটেন্ট ম্যানেজ করুন
               </p>
             </div>
             <div className="flex gap-3">
+              <Link href="/">
+                <Button variant="outline" className="gap-2">
+                  <Home className="w-4 h-4" />
+                  হোম
+                </Button>
+              </Link>
               <Link href="/dashboard/mcq">
                 <Button variant="outline" className="gap-2">
                   <svg
@@ -855,12 +817,12 @@ const DashboardComponent = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+          <Card className="border-0 shadow-md hover:shadow-lg transition-shadow dark:bg-gray-800">
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500">মোট কোর্স</p>
-                  <p className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
+                  <p className="text-sm text-slate-500 dark:text-gray-400">মোট কোর্স</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1">
                     {courses.length}
                   </p>
                 </div>
@@ -871,12 +833,12 @@ const DashboardComponent = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+          <Card className="border-0 shadow-md hover:shadow-lg transition-shadow dark:bg-gray-800">
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500">প্রকাশিত</p>
-                  <p className="text-2xl sm:text-3xl font-bold text-emerald-600 mt-1">
+                  <p className="text-sm text-slate-500 dark:text-gray-400">প্রকাশিত</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
                     {courses.filter((c) => c.isPublished).length}
                   </p>
                 </div>
@@ -887,12 +849,12 @@ const DashboardComponent = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+          <Card className="border-0 shadow-md hover:shadow-lg transition-shadow dark:bg-gray-800">
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500">ড্রাফট</p>
-                  <p className="text-2xl sm:text-3xl font-bold text-amber-600 mt-1">
+                  <p className="text-sm text-slate-500 dark:text-gray-400">ড্রাফট</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-amber-600 dark:text-amber-400 mt-1">
                     {courses.filter((c) => !c.isPublished).length}
                   </p>
                 </div>
@@ -903,12 +865,12 @@ const DashboardComponent = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+          <Card className="border-0 shadow-md hover:shadow-lg transition-shadow dark:bg-gray-800">
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500">মোট শিক্ষার্থী</p>
-                  <p className="text-2xl sm:text-3xl font-bold text-sky-600 mt-1">
+                  <p className="text-sm text-slate-500 dark:text-gray-400">মোট শিক্ষার্থী</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-sky-600 dark:text-sky-400 mt-1">
                     {courses.reduce((acc, c) => acc + c.enrolledStudents, 0)}
                   </p>
                 </div>
@@ -921,14 +883,14 @@ const DashboardComponent = () => {
         </div>
 
         {/* Courses Section */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader className="border-b bg-white">
+        <Card className="border-0 shadow-lg dark:bg-gray-800">
+          <CardHeader className="border-b dark:border-gray-700 bg-white dark:bg-gray-800">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <CardTitle className="text-xl font-bold text-slate-900">
+                <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">
                   আপনার কোর্সসমূহ
                 </CardTitle>
-                <p className="text-sm text-slate-500 mt-1">
+                <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">
                   আপনার সকল কোর্স দেখুন এবং ম্যানেজ করুন
                 </p>
               </div>
@@ -940,10 +902,10 @@ const DashboardComponent = () => {
                 }
                 className="w-full sm:w-auto"
               >
-                <TabsList className="grid grid-cols-3 w-full sm:w-auto bg-slate-100 p-1 rounded-lg">
+                <TabsList className="grid grid-cols-3 w-full sm:w-auto bg-slate-100 dark:bg-gray-700 p-1 rounded-lg">
                   <TabsTrigger
                     value="all"
-                    className="text-xs sm:text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm rounded-md transition-all"
+                    className="text-xs sm:text-sm font-medium data-[state=active]:bg-white dark:data-[state=active]:bg-gray-600 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all"
                   >
                     📚 সকল
                   </TabsTrigger>
@@ -966,13 +928,13 @@ const DashboardComponent = () => {
           <CardContent className="p-4 sm:p-6">
             {courses.length === 0 ? (
               <div className="text-center py-12">
-                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
                   <Icons.book />
                 </div>
-                <p className="text-slate-500 font-medium">
+                <p className="text-slate-500 dark:text-gray-400 font-medium">
                   কোনো কোর্স পাওয়া যায়নি
                 </p>
-                <p className="text-slate-400 text-sm mt-1">
+                <p className="text-slate-400 dark:text-gray-500 text-sm mt-1">
                   নতুন কোর্স যোগ করুন
                 </p>
               </div>
@@ -984,7 +946,7 @@ const DashboardComponent = () => {
                     <Card
                       key={course._id}
                       onClick={() => handleCourseSelect(course)}
-                      className="group cursor-pointer border hover:border-primary/50 hover:shadow-xl transition-all duration-300 overflow-hidden"
+                      className="group cursor-pointer border dark:border-gray-700 hover:border-primary/50 dark:hover:border-primary/50 hover:shadow-xl transition-all duration-300 overflow-hidden dark:bg-gray-800"
                     >
                       {/* Course Thumbnail */}
                       <div className="relative h-40 bg-linear-to-br from-primary/20 to-primary/5 overflow-hidden">
@@ -1038,12 +1000,12 @@ const DashboardComponent = () => {
 
                       <CardContent className="p-4">
                         {/* Title */}
-                        <h3 className="font-semibold text-slate-900 line-clamp-2 group-hover:text-primary transition-colors">
+                        <h3 className="font-semibold text-slate-900 dark:text-white line-clamp-2 group-hover:text-primary transition-colors">
                           {course.title}
                         </h3>
 
                         {/* Description */}
-                        <p className="text-sm text-slate-500 line-clamp-2 mt-2">
+                        <p className="text-sm text-slate-500 dark:text-gray-400 line-clamp-2 mt-2">
                           {course.description}
                         </p>
 
@@ -1054,17 +1016,17 @@ const DashboardComponent = () => {
                           >
                             {levelConfig.label}
                           </span>
-                          <span className="px-2 py-0.5 rounded text-xs font-medium bg-violet-50 text-violet-700">
+                          <span className="px-2 py-0.5 rounded text-xs font-medium bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300">
                             {course.category}
                           </span>
-                          <span className="px-2 py-0.5 rounded text-xs font-medium bg-sky-50 text-sky-700">
+                          <span className="px-2 py-0.5 rounded text-xs font-medium bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300">
                             {course.language}
                           </span>
                         </div>
 
                         {/* Stats */}
-                        <div className="flex items-center justify-between mt-4 pt-3 border-t">
-                          <div className="flex items-center gap-3 text-xs text-slate-500">
+                        <div className="flex items-center justify-between mt-4 pt-3 border-t dark:border-gray-700">
+                          <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-gray-400">
                             <span className="flex items-center gap-1">
                               <Icons.book />
                               {course.totalLessons} লেসন
@@ -1075,7 +1037,7 @@ const DashboardComponent = () => {
                             </span>
                           </div>
                           {course.rating > 0 && (
-                            <span className="flex items-center gap-1 text-xs text-amber-600">
+                            <span className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
                               <Icons.star />
                               {course.rating.toFixed(1)}
                             </span>
