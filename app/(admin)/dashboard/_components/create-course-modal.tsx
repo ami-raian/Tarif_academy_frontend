@@ -1,3 +1,4 @@
+// app/(admin)/dashboard/_components/create-course-modal.tsx
 "use client";
 
 import { useState } from "react";
@@ -157,13 +158,15 @@ export const CreateCourseModal = ({
 
         {success ? (
           <div className="py-12 text-center">
-            <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4 text-emerald-600">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mx-auto mb-4 text-emerald-600 dark:text-emerald-400">
               <Icons.check />
             </div>
-            <h3 className="text-lg font-semibold text-slate-900">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
               Course Created Successfully!
             </h3>
-            <p className="text-slate-500 mt-1">Your course has been created</p>
+            <p className="text-slate-500 dark:text-gray-400 mt-1">
+              Your course has been created
+            </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
@@ -275,7 +278,7 @@ export const CreateCourseModal = ({
                       }
                       disabled={loading}
                     />
-                    <span className="text-sm text-slate-600">
+                    <span className="text-sm text-slate-600 dark:text-slate-300">
                       Publish immediately
                     </span>
                   </label>
@@ -285,7 +288,7 @@ export const CreateCourseModal = ({
 
             {/* Error Message */}
             {error && (
-              <div className="p-3 rounded-lg bg-rose-50 text-rose-600 text-sm">
+              <div className="p-3 rounded-lg bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 text-sm">
                 {error}
               </div>
             )}
