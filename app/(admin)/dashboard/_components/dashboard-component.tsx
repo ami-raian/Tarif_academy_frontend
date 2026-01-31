@@ -226,9 +226,7 @@ const DashboardComponent = () => {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(),
   );
-  const [filter, setFilter] = useState<"all" | "published" | "unpublished">(
-    "all",
-  );
+  const [filter, setFilter] = useState<"all" | "true" | "false">("all");
   const [syncing, setSyncing] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isCreateCourseModalOpen, setIsCreateCourseModalOpen] = useState(false);
@@ -935,8 +933,9 @@ const DashboardComponent = () => {
               </div>
               <Tabs
                 defaultValue="all"
+                value={filter}
                 onValueChange={(value) =>
-                  setFilter(value as "all" | "published" | "unpublished")
+                  setFilter(value as "all" | "true" | "false")
                 }
                 className="w-full sm:w-auto"
               >
