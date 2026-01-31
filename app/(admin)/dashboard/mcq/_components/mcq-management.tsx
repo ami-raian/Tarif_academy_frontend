@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -621,13 +622,11 @@ const McqManagement = () => {
                 <div className="space-y-2">
                   {questionForm.options.map((option, index) => (
                     <div key={index} className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         checked={option.isCorrect}
-                        onChange={(e) =>
-                          updateOption(index, "isCorrect", e.target.checked)
+                        onCheckedChange={(checked) =>
+                          updateOption(index, "isCorrect", checked as boolean)
                         }
-                        className="w-5 h-5 rounded border-slate-300"
                       />
                       <span className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-sm font-medium">
                         {String.fromCharCode(65 + index)}

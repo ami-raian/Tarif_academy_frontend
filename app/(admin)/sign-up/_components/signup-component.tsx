@@ -26,6 +26,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   signupSchema,
   SignupFormData,
   BLOOD_GROUPS,
@@ -63,6 +70,8 @@ export default function SignUpComponent() {
     handleSubmit,
     formState: { errors },
     trigger,
+    watch,
+    setValue,
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     mode: "onChange",
@@ -423,18 +432,21 @@ export default function SignUpComponent() {
                 {/* Gender */}
                 <div className="space-y-1">
                   <Label htmlFor="gender">লিঙ্গ *</Label>
-                  <select
-                    id="gender"
-                    {...register("gender")}
-                    className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  <Select
+                    value={watch("gender")}
+                    onValueChange={(value) => setValue("gender", value as any)}
                   >
-                    <option value="">নির্বাচন করুন</option>
-                    {GENDERS.map((g) => (
-                      <option key={g} value={g}>
-                        {GENDER_NAMES[g]}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="w-full h-10">
+                      <SelectValue placeholder="নির্বাচন করুন" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {GENDERS.map((g) => (
+                        <SelectItem key={g} value={g}>
+                          {GENDER_NAMES[g]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   {errors.gender && (
                     <p className="text-xs text-red-500">
                       {errors.gender.message}
@@ -445,21 +457,29 @@ export default function SignUpComponent() {
                 {/* Blood Group */}
                 <div className="space-y-1">
                   <Label htmlFor="bloodGroup">রক্তের গ্রুপ *</Label>
-                  <div className="relative">
-                    <Droplet className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <select
-                      id="bloodGroup"
-                      {...register("bloodGroup")}
-                      className="w-full h-10 pl-10 pr-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                    >
-                      <option value="">নির্বাচন করুন</option>
+                  <Select
+                    value={watch("bloodGroup")}
+                    onValueChange={(value) =>
+                      setValue(
+                        "bloodGroup",
+                        value as (typeof BLOOD_GROUPS)[number],
+                      )
+                    }
+                  >
+                    <SelectTrigger className="w-full h-10">
+                      <div className="flex items-center gap-2">
+                        <Droplet className="w-4 h-4 text-gray-400" />
+                        <SelectValue placeholder="নির্বাচন করুন" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
                       {BLOOD_GROUPS.map((bg) => (
-                        <option key={bg} value={bg}>
+                        <SelectItem key={bg} value={bg}>
                           {bg}
-                        </option>
+                        </SelectItem>
                       ))}
-                    </select>
-                  </div>
+                    </SelectContent>
+                  </Select>
                   {errors.bloodGroup && (
                     <p className="text-xs text-red-500">
                       {errors.bloodGroup.message}
@@ -520,17 +540,23 @@ export default function SignUpComponent() {
 
                 <div className="space-y-1">
                   <Label>বোর্ড *</Label>
-                  <select
-                    {...register("educationalInfo.ssc.board")}
-                    className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  <Select
+                    value={watch("educationalInfo.ssc.board")}
+                    onValueChange={(value) =>
+                      setValue("educationalInfo.ssc.board", value as any)
+                    }
                   >
-                    <option value="">বোর্ড নির্বাচন করুন</option>
-                    {BOARDS.map((b) => (
-                      <option key={b} value={b}>
-                        {BOARD_NAMES[b]}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="w-full h-10">
+                      <SelectValue placeholder="বোর্ড নির্বাচন করুন" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BOARDS.map((b) => (
+                        <SelectItem key={b} value={b}>
+                          {BOARD_NAMES[b]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   {errors.educationalInfo?.ssc?.board && (
                     <p className="text-xs text-red-500">
                       {errors.educationalInfo.ssc.board.message}
@@ -540,17 +566,23 @@ export default function SignUpComponent() {
 
                 <div className="space-y-1">
                   <Label>বিভাগ *</Label>
-                  <select
-                    {...register("educationalInfo.ssc.group")}
-                    className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  <Select
+                    value={watch("educationalInfo.ssc.group")}
+                    onValueChange={(value) =>
+                      setValue("educationalInfo.ssc.group", value as any)
+                    }
                   >
-                    <option value="">বিভাগ নির্বাচন করুন</option>
-                    {GROUPS.map((g) => (
-                      <option key={g} value={g}>
-                        {GROUP_NAMES[g]}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="w-full h-10">
+                      <SelectValue placeholder="বিভাগ নির্বাচন করুন" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {GROUPS.map((g) => (
+                        <SelectItem key={g} value={g}>
+                          {GROUP_NAMES[g]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   {errors.educationalInfo?.ssc?.group && (
                     <p className="text-xs text-red-500">
                       {errors.educationalInfo.ssc.group.message}
@@ -644,17 +676,23 @@ export default function SignUpComponent() {
 
                 <div className="space-y-1">
                   <Label>বোর্ড *</Label>
-                  <select
-                    {...register("educationalInfo.hsc.board")}
-                    className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  <Select
+                    value={watch("educationalInfo.hsc.board")}
+                    onValueChange={(value) =>
+                      setValue("educationalInfo.hsc.board", value as any)
+                    }
                   >
-                    <option value="">বোর্ড নির্বাচন করুন</option>
-                    {BOARDS.map((b) => (
-                      <option key={b} value={b}>
-                        {BOARD_NAMES[b]}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="w-full h-10">
+                      <SelectValue placeholder="বোর্ড নির্বাচন করুন" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BOARDS.map((b) => (
+                        <SelectItem key={b} value={b}>
+                          {BOARD_NAMES[b]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   {errors.educationalInfo?.hsc?.board && (
                     <p className="text-xs text-red-500">
                       {errors.educationalInfo.hsc.board.message}
@@ -664,17 +702,23 @@ export default function SignUpComponent() {
 
                 <div className="space-y-1">
                   <Label>বিভাগ *</Label>
-                  <select
-                    {...register("educationalInfo.hsc.group")}
-                    className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  <Select
+                    value={watch("educationalInfo.hsc.group")}
+                    onValueChange={(value) =>
+                      setValue("educationalInfo.hsc.group", value as any)
+                    }
                   >
-                    <option value="">বিভাগ নির্বাচন করুন</option>
-                    {GROUPS.map((g) => (
-                      <option key={g} value={g}>
-                        {GROUP_NAMES[g]}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="w-full h-10">
+                      <SelectValue placeholder="বিভাগ নির্বাচন করুন" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {GROUPS.map((g) => (
+                        <SelectItem key={g} value={g}>
+                          {GROUP_NAMES[g]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   {errors.educationalInfo?.hsc?.group && (
                     <p className="text-xs text-red-500">
                       {errors.educationalInfo.hsc.group.message}
@@ -731,17 +775,23 @@ export default function SignUpComponent() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <Label>অভিভাবকের ধরন *</Label>
-                    <select
-                      {...register("guardian.type")}
-                      className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    <Select
+                      value={watch("guardian.type")}
+                      onValueChange={(value) =>
+                        setValue("guardian.type", value as any)
+                      }
                     >
-                      <option value="">নির্বাচন করুন</option>
-                      {GUARDIAN_TYPES.map((t) => (
-                        <option key={t} value={t}>
-                          {GUARDIAN_TYPE_NAMES[t]}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger className="w-full h-10">
+                        <SelectValue placeholder="নির্বাচন করুন" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {GUARDIAN_TYPES.map((t) => (
+                          <SelectItem key={t} value={t}>
+                            {GUARDIAN_TYPE_NAMES[t]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     {errors.guardian?.type && (
                       <p className="text-xs text-red-500">
                         {errors.guardian.type.message}

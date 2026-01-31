@@ -11,6 +11,7 @@ import { VideoUploadModal } from "./video-upload-modal";
 import { CommonBadge } from "@/components/common/common-badge";
 import { CreateCourseModal } from "./create-course-modal";
 import { toggleCoursePublish } from "@/lib/api";
+import { Home } from "lucide-react";
 import type {
   Course,
   CoursesResponse,
@@ -816,6 +817,12 @@ const DashboardComponent = () => {
               </p>
             </div>
             <div className="flex gap-3">
+              <Link href="/">
+                <Button variant="outline" className="gap-2">
+                  <Home className="w-4 h-4" />
+                  হোম
+                </Button>
+              </Link>
               <Link href="/dashboard/mcq">
                 <Button variant="outline" className="gap-2">
                   <svg

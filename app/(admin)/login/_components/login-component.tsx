@@ -10,6 +10,8 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { LoginFormData, LoginResponse } from "@/types";
 
 const API_BASE_URL =
@@ -126,33 +128,33 @@ export default function LoginComponent() {
             </span>
 
             <div className="relative w-full mb-2">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
+              <Input
                 type="email"
                 name="email"
                 placeholder="Email"
                 value={studentForm.email}
                 onChange={handleStudentInputChange}
                 required
-                className="w-full bg-gray-100 border-none py-2.5 px-10 text-sm rounded-lg outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full bg-gray-100 border-none py-2.5 pl-10 text-sm rounded-lg"
               />
             </div>
 
             <div className="relative w-full mb-2">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
+              <Input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
                 value={studentForm.password}
                 onChange={handleStudentInputChange}
                 required
-                className="w-full bg-gray-100 border-none py-2.5 px-10 text-sm rounded-lg outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full bg-gray-100 border-none py-2.5 pl-10 pr-10 text-sm rounded-lg"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 z-10"
               >
                 {showPassword ? (
                   <EyeOff className="w-4 h-4" />
@@ -175,10 +177,10 @@ export default function LoginComponent() {
               </div>
             )}
 
-            <button
+            <Button
               type="submit"
               disabled={isLoading}
-              className="bg-purple-600 text-white text-xs py-2.5 px-11 border border-transparent rounded-lg font-semibold uppercase tracking-wide mt-2 cursor-pointer hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+              className="bg-purple-600 text-white text-xs py-2.5 px-11 rounded-lg font-semibold uppercase tracking-wide mt-2 hover:bg-purple-700"
             >
               {isLoading && !isAdminActive ? (
                 <>
@@ -188,7 +190,7 @@ export default function LoginComponent() {
               ) : (
                 "Sign In"
               )}
-            </button>
+            </Button>
           </form>
         </div>
 
@@ -213,33 +215,33 @@ export default function LoginComponent() {
             </span>
 
             <div className="relative w-full mb-2">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
+              <Input
                 type="email"
                 name="email"
                 placeholder="Admin Email"
                 value={adminForm.email}
                 onChange={handleAdminInputChange}
                 required
-                className="w-full bg-gray-100 border-none py-2.5 px-10 text-sm rounded-lg outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full bg-gray-100 border-none py-2.5 pl-10 text-sm rounded-lg"
               />
             </div>
 
             <div className="relative w-full mb-2">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
+              <Input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
                 value={adminForm.password}
                 onChange={handleAdminInputChange}
                 required
-                className="w-full bg-gray-100 border-none py-2.5 px-10 text-sm rounded-lg outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full bg-gray-100 border-none py-2.5 pl-10 pr-10 text-sm rounded-lg"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 z-10"
               >
                 {showPassword ? (
                   <EyeOff className="w-4 h-4" />
@@ -262,10 +264,10 @@ export default function LoginComponent() {
               </div>
             )}
 
-            <button
+            <Button
               type="submit"
               disabled={isLoading}
-              className="bg-purple-600 text-white text-xs py-2.5 px-11 border border-transparent rounded-lg font-semibold uppercase tracking-wide mt-2 cursor-pointer hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+              className="bg-purple-600 text-white text-xs py-2.5 px-11 rounded-lg font-semibold uppercase tracking-wide mt-2 hover:bg-purple-700"
             >
               {isLoading && isAdminActive ? (
                 <>
@@ -275,7 +277,7 @@ export default function LoginComponent() {
               ) : (
                 "Sign In"
               )}
-            </button>
+            </Button>
           </form>
         </div>
 

@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { FormField } from "@/components/common/form-field";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -188,127 +188,112 @@ export const CreateCourseModal = ({
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
             {/* Title */}
-            <div className="space-y-2">
-              <Label htmlFor="title">Course Title *</Label>
-              <Input
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g., Complete JavaScript Course 2026"
-                disabled={loading}
-              />
-            </div>
+            <FormField
+              type="input"
+              id="title"
+              label="Course Title"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g., Complete JavaScript Course 2026"
+              disabled={loading}
+            />
 
             {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="description">Description *</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe what students will learn..."
-                rows={3}
-                disabled={loading}
-              />
-            </div>
+            <FormField
+              type="textarea"
+              id="description"
+              label="Description"
+              required
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Describe what students will learn..."
+              rows={3}
+              disabled={loading}
+            />
 
             {/* Price & Discount Price */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="price">Price (BDT) *</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  min="0"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  placeholder="1500"
-                  disabled={loading}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="discountPrice">Discount Price (BDT)</Label>
-                <Input
-                  id="discountPrice"
-                  type="number"
-                  min="0"
-                  value={discountPrice}
-                  onChange={(e) => setDiscountPrice(e.target.value)}
-                  placeholder="999"
-                  disabled={loading}
-                />
-              </div>
+              <FormField
+                type="input"
+                inputType="number"
+                id="price"
+                label="Price (BDT)"
+                required
+                min="0"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="1500"
+                disabled={loading}
+              />
+              <FormField
+                type="input"
+                inputType="number"
+                id="discountPrice"
+                label="Discount Price (BDT)"
+                min="0"
+                value={discountPrice}
+                onChange={(e) => setDiscountPrice(e.target.value)}
+                placeholder="999"
+                disabled={loading}
+              />
             </div>
 
             {/* Category & Level */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <select
-                  id="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  disabled={loading}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="level">Level</Label>
-                <select
-                  id="level"
-                  value={level}
-                  onChange={(e) =>
-                    setLevel(
-                      e.target.value as
-                        | "beginner"
-                        | "intermediate"
-                        | "advanced",
-                    )
-                  }
-                  disabled={loading}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
-                </select>
-              </div>
+              <FormField
+                type="select"
+                id="category"
+                label="Category"
+                value={category}
+                onValueChange={setCategory}
+                disabled={loading}
+                placeholder="Select category"
+                options={categories.map((cat) => ({ value: cat, label: cat }))}
+              />
+              <FormField
+                type="select"
+                id="level"
+                label="Level"
+                value={level}
+                onValueChange={(value) =>
+                  setLevel(value as "beginner" | "intermediate" | "advanced")
+                }
+                disabled={loading}
+                placeholder="Select level"
+                options={[
+                  { value: "beginner", label: "Beginner" },
+                  { value: "intermediate", label: "Intermediate" },
+                  { value: "advanced", label: "Advanced" },
+                ]}
+              />
             </div>
 
             {/* Language & Published */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="language">Language</Label>
-                <select
-                  id="language"
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  disabled={loading}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {languages.map((lang) => (
-                    <option key={lang} value={lang}>
-                      {lang}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <FormField
+                type="select"
+                id="language"
+                label="Language"
+                value={language}
+                onValueChange={setLanguage}
+                disabled={loading}
+                placeholder="Select language"
+                options={languages.map((lang) => ({
+                  value: lang,
+                  label: lang,
+                }))}
+              />
               <div className="space-y-2">
                 <Label>Publish Status</Label>
                 <div className="flex items-center h-10">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={isPublished}
-                      onChange={(e) => setIsPublished(e.target.checked)}
+                      onCheckedChange={(checked) =>
+                        setIsPublished(checked as boolean)
+                      }
                       disabled={loading}
-                      className="w-4 h-4 rounded border-slate-300"
                     />
                     <span className="text-sm text-slate-600">
                       Publish immediately

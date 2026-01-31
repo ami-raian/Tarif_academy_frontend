@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Navbar } from "@/app/(home)/_components/navbar";
 import { getCourses } from "@/lib/api";
+import { FormField } from "@/components/common/form-field";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import type { Course, CoursesResponse } from "@/types";
 
 // Icons
@@ -241,48 +244,48 @@ export default function CoursesPage() {
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
                   <Icons.search />
                 </div>
-                <input
+                <Input
                   type="text"
                   placeholder="কোর্স খুঁজুন..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
 
               {/* Level Filter */}
-              <div className="relative">
-                <select
+              <div className="w-full lg:w-48">
+                <FormField
+                  type="select"
                   value={selectedLevel}
-                  onChange={(e) => setSelectedLevel(e.target.value)}
-                  className="appearance-none w-full lg:w-48 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all bg-white pr-10"
-                >
-                  {levels.map((level) => (
-                    <option key={level.value} value={level.value}>
-                      {level.label}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
-                  <Icons.filter />
-                </div>
+                  onValueChange={setSelectedLevel}
+                  placeholder="লেভেল নির্বাচন করুন"
+                  options={levels.map((level) => ({
+                    value: level.value,
+                    label: level.label,
+                  }))}
+                />
               </div>
             </div>
 
             {/* Category Pills */}
             <div className="flex flex-wrap gap-2 mt-4">
               {categories.map((category) => (
-                <button
+                <Button
                   key={category}
+                  variant={
+                    selectedCategory === category ? "default" : "outline"
+                  }
+                  size="sm"
                   onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  className={`rounded-full ${
                     selectedCategory === category
-                      ? "bg-purple-600 text-white shadow-md"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      ? "bg-purple-600 hover:bg-purple-700"
+                      : ""
                   }`}
                 >
                   {category}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -424,7 +427,8 @@ export default function CoursesPage() {
           {/* Pagination */}
           {pagination.totalPages > 1 && (
             <div className="flex justify-center gap-2 mt-12">
-              <button
+              <Button
+                variant="outline"
                 onClick={() =>
                   setPagination((p) => ({
                     ...p,
@@ -432,26 +436,29 @@ export default function CoursesPage() {
                   }))
                 }
                 disabled={pagination.currentPage === 1}
-                className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 আগের
-              </button>
+              </Button>
               {[...Array(pagination.totalPages)].map((_, i) => (
-                <button
+                <Button
                   key={i}
+                  variant={
+                    pagination.currentPage === i + 1 ? "default" : "outline"
+                  }
                   onClick={() =>
                     setPagination((p) => ({ ...p, currentPage: i + 1 }))
                   }
-                  className={`px-4 py-2 rounded-lg ${
+                  className={
                     pagination.currentPage === i + 1
-                      ? "bg-purple-600 text-white"
-                      : "border border-gray-200 hover:bg-gray-50"
-                  }`}
+                      ? "bg-purple-600 hover:bg-purple-700"
+                      : ""
+                  }
                 >
                   {i + 1}
-                </button>
+                </Button>
               ))}
-              <button
+              <Button
+                variant="outline"
                 onClick={() =>
                   setPagination((p) => ({
                     ...p,
@@ -459,10 +466,9 @@ export default function CoursesPage() {
                   }))
                 }
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 পরের
-              </button>
+              </Button>
             </div>
           )}
         </div>
