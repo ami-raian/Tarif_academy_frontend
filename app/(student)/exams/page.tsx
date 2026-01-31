@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/app/(home)/_components/navbar";
 import { Button } from "@/components/ui/button";
+import { CommonBadge } from "@/components/common/common-badge";
 import {
   getPublishedMcqExams,
   getMyMcqExams,
@@ -355,20 +356,15 @@ export default function ExamsPage() {
                     <div className="relative h-32 bg-linear-to-br from-purple-500 to-cyan-500 p-4">
                       <div className="absolute top-3 right-3 flex gap-2">
                         {isCompleted && submission && (
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              checkIfPassed(submission, exam)
-                                ? "bg-emerald-500 text-white"
-                                : "bg-rose-500 text-white"
-                            }`}
-                          >
-                            {checkIfPassed(submission, exam) ? "পাস" : "ফেল"}
-                          </span>
+                          <CommonBadge
+                            status={
+                              checkIfPassed(submission, exam) ? "পাস" : "ফেল"
+                            }
+                            size="sm"
+                          />
                         )}
                         {isInProgress && (
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-amber-500 text-white">
-                            চলমান
-                          </span>
+                          <CommonBadge status="চলমান" size="sm" />
                         )}
                       </div>
                       <div className="absolute bottom-4 left-4 right-4">

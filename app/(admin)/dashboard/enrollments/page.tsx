@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CommonBadge } from "@/components/common/common-badge";
 import {
   getAllEnrollments,
   approveEnrollment,
@@ -122,19 +123,7 @@ export default function EnrollmentsPage() {
   const [rejectReason, setRejectReason] = useState("");
   const [showRejectModal, setShowRejectModal] = useState<string | null>(null);
 
-  useEffect(() => {
-    const token = getCookie("accessToken");
-    const userType = getCookie("userType");
-
-    if (!token || userType !== "admin") {
-      router.push("/login");
-      return;
-    }
-
-    fetchEnrollments();
-  }, [filter, pagination.page, router]);
-
-  const fetchEnrollments = async () => {
+  const fetchEnrollments = useCallback(async () => {
     try {
       setLoading(true);
       const res = await getAllEnrollments({
@@ -151,7 +140,19 @@ export default function EnrollmentsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, pagination.page, pagination.limit]);
+
+  useEffect(() => {
+    const token = getCookie("accessToken");
+    const userType = getCookie("userType");
+
+    if (!token || userType !== "admin") {
+      router.push("/login");
+      return;
+    }
+
+    fetchEnrollments();
+  }, [filter, pagination.page, router, fetchEnrollments]);
 
   const handleApprove = async (enrollmentId: string) => {
     try {
@@ -216,26 +217,12 @@ export default function EnrollmentsPage() {
   };
 
   const getStatusBadge = (status: EnrollmentStatus) => {
-    switch (status) {
-      case "pending":
-        return (
-          <span className="px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-            অপেক্ষমাণ
-          </span>
-        );
-      case "approved":
-        return (
-          <span className="px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-            অনুমোদিত
-          </span>
-        );
-      case "rejected":
-        return (
-          <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-            প্রত্যাখ্যাত
-          </span>
-        );
-    }
+    const statusMap: Record<EnrollmentStatus, string> = {
+      pending: "অপেক্ষমাণ",
+      approved: "অনুমোদিত",
+      rejected: "প্রত্যাখ্যাত",
+    };
+    return <CommonBadge status={statusMap[status]} size="sm" />;
   };
 
   if (loading && enrollments.length === 0) {
