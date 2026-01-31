@@ -19,7 +19,6 @@ import {
   getCookie,
   type McqExam,
   type McqQuestion,
-  type McqSubmission,
 } from "@/lib/api";
 
 // Icons
@@ -108,7 +107,6 @@ export default function ExamPage() {
 
   const [exam, setExam] = useState<McqExam | null>(null);
   const [questions, setQuestions] = useState<McqQuestion[]>([]);
-  const [submission, setSubmission] = useState<McqSubmission | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Map<string, number | null>>(new Map());
   const [loading, setLoading] = useState(true);
@@ -131,6 +129,23 @@ export default function ExamPage() {
       router.push("/login");
     }
   }, [router]);
+
+  const handleAutoSubmit = useCallback(async () => {
+    if (examEnded) return;
+    setExamEnded(true);
+
+    try {
+      setSubmitting(true);
+      const response = await submitMcqExam(examId, true);
+      if (response.success) {
+        router.push(`/exams/${examId}/result`);
+      }
+    } catch (error) {
+      console.error("Failed to auto-submit:", error);
+    } finally {
+      setSubmitting(false);
+    }
+  }, [examId, examEnded, router]);
 
   // Fetch exam data
   useEffect(() => {
@@ -179,7 +194,6 @@ export default function ExamPage() {
             router.push(`/exams/${examId}/result`);
             return;
           }
-          setSubmission(sub);
           setExamStarted(true);
 
           // Restore answers from submission
@@ -216,11 +230,11 @@ export default function ExamPage() {
     };
 
     fetchExamData();
-  }, [examId, router]);
+  }, [examId, router, handleAutoSubmit]);
 
   // Timer effect
   useEffect(() => {
-    if (!examStarted || examEnded || timeLeft <= 0) return;
+    if (!examStarted || examEnded) return;
 
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
@@ -249,7 +263,7 @@ export default function ExamPage() {
         clearInterval(timerRef.current);
       }
     };
-  }, [examStarted, examEnded]);
+  }, [examStarted, examEnded, handleAutoSubmit]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -262,7 +276,6 @@ export default function ExamPage() {
       setLoading(true);
       const response = await startMcqExam(examId);
       if (response.success) {
-        setSubmission(response.data.submission);
         setExamStarted(true);
         setTimeLeft(exam!.duration * 60);
 
@@ -300,23 +313,6 @@ export default function ExamPage() {
     }
   };
 
-  const handleAutoSubmit = useCallback(async () => {
-    if (examEnded) return;
-    setExamEnded(true);
-
-    try {
-      setSubmitting(true);
-      const response = await submitMcqExam(examId, true);
-      if (response.success) {
-        router.push(`/exams/${examId}/result`);
-      }
-    } catch (error) {
-      console.error("Failed to auto-submit:", error);
-    } finally {
-      setSubmitting(false);
-    }
-  }, [examId, examEnded, router]);
-
   const handleSubmit = async () => {
     try {
       setSubmitting(true);
@@ -345,7 +341,7 @@ export default function ExamPage() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
           <div className="relative w-16 h-16 mx-auto mb-4">
             <div className="absolute inset-0 rounded-full border-4 border-slate-200"></div>
@@ -360,7 +356,7 @@ export default function ExamPage() {
   // Pre-exam start screen
   if (!examStarted && exam) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-8">
           <div className="text-center mb-8">
             <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
@@ -426,7 +422,7 @@ export default function ExamPage() {
               বাতিল
             </Button>
             <Button
-              className="flex-1 bg-gradient-to-r from-purple-600 to-cyan-500"
+              className="flex-1 bg-linear-to-r from-purple-600 to-cyan-500"
               onClick={handleStartExam}
             >
               পরীক্ষা শুরু করুন
@@ -444,7 +440,7 @@ export default function ExamPage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
       {/* Header with timer */}
       <div className="bg-white border-b shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3">

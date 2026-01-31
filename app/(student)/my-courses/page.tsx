@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/app/(home)/_components/navbar";
 import { Button } from "@/components/ui/button";
@@ -120,9 +119,9 @@ export default function MyCoursesPage() {
   const router = useRouter();
   const [enrollments, setEnrollments] = useState<CourseWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">(
-    "all",
-  );
+  const [filter, setFilter] = useState<
+    "all" | "pending" | "approved" | "rejected"
+  >("all");
 
   useEffect(() => {
     const token = getCookie("accessToken");
@@ -206,12 +205,12 @@ export default function MyCoursesPage() {
     }
   };
 
-  const formatDuration = (minutes: number) => {
-    if (minutes < 60) return `${minutes} মিনিট`;
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return mins > 0 ? `${hours} ঘন্টা ${mins} মিনিট` : `${hours} ঘন্টা`;
-  };
+  // const formatDuration = (minutes: number) => {
+  //   if (minutes < 60) return `${minutes} মিনিট`;
+  //   const hours = Math.floor(minutes / 60);
+  //   const mins = minutes % 60;
+  //   return mins > 0 ? `${hours} ঘন্টা ${mins} মিনিট` : `${hours} ঘন্টা`;
+  // };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("bn-BD", {
@@ -223,7 +222,7 @@ export default function MyCoursesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50">
         <Navbar />
         <div className="pt-24 pb-16">
           <div className="container mx-auto px-4">
@@ -249,7 +248,7 @@ export default function MyCoursesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50">
       <Navbar />
 
       <main className="pt-24 pb-16">
@@ -283,7 +282,8 @@ export default function MyCoursesPage() {
                     : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
                 }`}
               >
-                অপেক্ষমাণ ({enrollments.filter((e) => e.status === "pending").length})
+                অপেক্ষমাণ (
+                {enrollments.filter((e) => e.status === "pending").length})
               </button>
               <button
                 onClick={() => setFilter("approved")}
@@ -293,7 +293,8 @@ export default function MyCoursesPage() {
                     : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
                 }`}
               >
-                অনুমোদিত ({enrollments.filter((e) => e.status === "approved").length})
+                অনুমোদিত (
+                {enrollments.filter((e) => e.status === "approved").length})
               </button>
               <button
                 onClick={() => setFilter("rejected")}
@@ -303,7 +304,8 @@ export default function MyCoursesPage() {
                     : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
                 }`}
               >
-                প্রত্যাখ্যাত ({enrollments.filter((e) => e.status === "rejected").length})
+                প্রত্যাখ্যাত (
+                {enrollments.filter((e) => e.status === "rejected").length})
               </button>
             </div>
           </div>
@@ -411,11 +413,13 @@ export default function MyCoursesPage() {
                   <div
                     key={enrollment._id}
                     className={`bg-white rounded-2xl overflow-hidden shadow-sm border hover:shadow-lg transition-shadow ${
-                      enrollment.status === "rejected" ? "border-red-200 opacity-75" : "border-gray-100"
+                      enrollment.status === "rejected"
+                        ? "border-red-200 opacity-75"
+                        : "border-gray-100"
                     }`}
                   >
                     {/* Thumbnail */}
-                    <div className="relative h-44 bg-gradient-to-br from-purple-100 to-cyan-100">
+                    <div className="relative h-44 bg-linear-to-br from-purple-100 to-cyan-100">
                       <div className="absolute top-3 left-3">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border}`}
@@ -462,7 +466,8 @@ export default function MyCoursesPage() {
 
                       {enrollment.status === "rejected" && (
                         <p className="text-sm text-red-600 mb-4">
-                          {enrollment.rejectionReason || "এনরোলমেন্ট প্রত্যাখ্যাত হয়েছে"}
+                          {enrollment.rejectionReason ||
+                            "এনরোলমেন্ট প্রত্যাখ্যাত হয়েছে"}
                         </p>
                       )}
 
@@ -480,7 +485,7 @@ export default function MyCoursesPage() {
                               className={`h-full rounded-full transition-all ${
                                 progress === 100
                                   ? "bg-emerald-500"
-                                  : "bg-gradient-to-r from-purple-500 to-cyan-500"
+                                  : "bg-linear-to-r from-purple-500 to-cyan-500"
                               }`}
                               style={{ width: `${progress}%` }}
                             />
@@ -491,7 +496,7 @@ export default function MyCoursesPage() {
                       {/* Continue Button - Only for approved enrollments */}
                       {isApproved ? (
                         <Link href={`/learn/${course?._id}`}>
-                          <Button className="w-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600">
+                          <Button className="w-full bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600">
                             <span className="flex items-center gap-2">
                               <Icons.play />
                               {progress > 0
@@ -501,11 +506,17 @@ export default function MyCoursesPage() {
                           </Button>
                         </Link>
                       ) : enrollment.status === "pending" ? (
-                        <Button disabled className="w-full bg-amber-100 text-amber-700 cursor-not-allowed">
+                        <Button
+                          disabled
+                          className="w-full bg-amber-100 text-amber-700 cursor-not-allowed"
+                        >
                           অনুমোদনের অপেক্ষায়...
                         </Button>
                       ) : (
-                        <Button disabled className="w-full bg-gray-100 text-gray-500 cursor-not-allowed">
+                        <Button
+                          disabled
+                          className="w-full bg-gray-100 text-gray-500 cursor-not-allowed"
+                        >
                           এক্সেস নেই
                         </Button>
                       )}

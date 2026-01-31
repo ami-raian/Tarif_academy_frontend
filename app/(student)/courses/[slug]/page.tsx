@@ -2,7 +2,6 @@
 
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/app/(home)/_components/navbar";
 import { Button } from "@/components/ui/button";
@@ -161,7 +160,8 @@ export default function CourseDetailPage({ params }: PageProps) {
     [key: string]: VideoWithAccess[];
   }>({});
   const [isEnrolled, setIsEnrolled] = useState(false);
-  const [enrollmentStatus, setEnrollmentStatus] = useState<EnrollmentStatus | null>(null);
+  const [enrollmentStatus, setEnrollmentStatus] =
+    useState<EnrollmentStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
@@ -260,7 +260,9 @@ export default function CourseDetailPage({ params }: PageProps) {
         setEnrollmentStatus("pending");
         setShowEnrollModal(false);
         setTransactionId("");
-        alert("এনরোলমেন্ট রিকোয়েস্ট সফল হয়েছে! অ্যাডমিন অনুমোদন করলে আপনি কোর্সটি দেখতে পারবেন।");
+        alert(
+          "এনরোলমেন্ট রিকোয়েস্ট সফল হয়েছে! অ্যাডমিন অনুমোদন করলে আপনি কোর্সটি দেখতে পারবেন।",
+        );
       } else {
         alert(res.message || "এনরোলমেন্ট ব্যর্থ হয়েছে");
       }
@@ -331,7 +333,7 @@ export default function CourseDetailPage({ params }: PageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50">
         <Navbar />
         <div className="pt-24 pb-16">
           <div className="container mx-auto px-4">
@@ -354,7 +356,7 @@ export default function CourseDetailPage({ params }: PageProps) {
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50">
         <Navbar />
         <div className="pt-24 pb-16">
           <div className="container mx-auto px-4 text-center py-16">
@@ -375,7 +377,7 @@ export default function CourseDetailPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50">
       <Navbar />
 
       <main className="pt-24 pb-16">
@@ -515,7 +517,7 @@ export default function CourseDetailPage({ params }: PageProps) {
                                 >
                                   {/* Status Icon */}
                                   <div
-                                    className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                                       video.completed
                                         ? "bg-emerald-100 text-emerald-600"
                                         : video.locked
@@ -552,7 +554,7 @@ export default function CourseDetailPage({ params }: PageProps) {
                                   </div>
 
                                   {/* Duration */}
-                                  <span className="text-sm text-gray-500 flex-shrink-0">
+                                  <span className="text-sm text-gray-500 shrink-0">
                                     {formatDuration(video.duration)}
                                   </span>
                                 </button>
@@ -570,7 +572,7 @@ export default function CourseDetailPage({ params }: PageProps) {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden sticky top-24">
                 {/* Preview Image */}
-                <div className="relative aspect-video bg-gradient-to-br from-purple-500 to-cyan-500">
+                <div className="relative aspect-video bg-linear-to-br from-purple-500 to-cyan-500">
                   {/* {course.thumbnail ? (
                     <Image
                       src={course.thumbnail}
@@ -637,14 +639,15 @@ export default function CourseDetailPage({ params }: PageProps) {
                         অনুমোদনের অপেক্ষায়...
                       </Button>
                       <p className="text-sm text-amber-600 text-center">
-                        আপনার এনরোলমেন্ট রিকোয়েস্ট জমা হয়েছে। অ্যাডমিন অনুমোদন করলে আপনি কোর্সটি দেখতে পারবেন।
+                        আপনার এনরোলমেন্ট রিকোয়েস্ট জমা হয়েছে। অ্যাডমিন অনুমোদন
+                        করলে আপনি কোর্সটি দেখতে পারবেন।
                       </p>
                     </div>
                   ) : enrollmentStatus === "rejected" ? (
                     <div className="space-y-3">
                       <Button
                         onClick={handleEnrollClick}
-                        className="w-full py-6 text-lg bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600"
+                        className="w-full py-6 text-lg bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600"
                       >
                         পুনরায় এনরোল করুন
                       </Button>
@@ -656,7 +659,7 @@ export default function CourseDetailPage({ params }: PageProps) {
                     <Button
                       onClick={handleEnrollClick}
                       disabled={enrolling}
-                      className="w-full py-6 text-lg bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600"
+                      className="w-full py-6 text-lg bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600"
                     >
                       {enrolling ? (
                         <span className="flex items-center gap-2">
@@ -716,7 +719,9 @@ export default function CourseDetailPage({ params }: PageProps) {
 
             {/* Course Info */}
             <div className="bg-gray-50 rounded-xl p-4 mb-6">
-              <h4 className="font-semibold text-gray-900 mb-2">{course.title}</h4>
+              <h4 className="font-semibold text-gray-900 mb-2">
+                {course.title}
+              </h4>
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">মূল্য:</span>
                 <span className="text-xl font-bold text-purple-600">
@@ -732,7 +737,9 @@ export default function CourseDetailPage({ params }: PageProps) {
                   <span className="text-white font-bold text-lg">bKash</span>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">বিকাশে পেমেন্ট করুন</p>
+                  <p className="font-semibold text-gray-900">
+                    বিকাশে পেমেন্ট করুন
+                  </p>
                   <p className="text-sm text-gray-600">Send Money</p>
                 </div>
               </div>
@@ -740,11 +747,15 @@ export default function CourseDetailPage({ params }: PageProps) {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between items-center bg-white rounded-lg px-3 py-2">
                   <span className="text-gray-600">বিকাশ নম্বর:</span>
-                  <span className="font-bold text-pink-600 text-lg">{BKASH_NUMBER}</span>
+                  <span className="font-bold text-pink-600 text-lg">
+                    {BKASH_NUMBER}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center bg-white rounded-lg px-3 py-2">
                   <span className="text-gray-600">পরিমাণ:</span>
-                  <span className="font-bold text-gray-900">৳{course.discountPrice || course.price}</span>
+                  <span className="font-bold text-gray-900">
+                    ৳{course.discountPrice || course.price}
+                  </span>
                 </div>
               </div>
 
@@ -793,7 +804,7 @@ export default function CourseDetailPage({ params }: PageProps) {
               <Button
                 onClick={handleEnrollSubmit}
                 disabled={enrolling || !transactionId.trim()}
-                className="flex-1 bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600"
+                className="flex-1 bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600"
               >
                 {enrolling ? (
                   <span className="flex items-center gap-2">

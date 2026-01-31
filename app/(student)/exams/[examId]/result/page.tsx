@@ -150,7 +150,7 @@ export default function ResultPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50">
         <Navbar />
         <div className="pt-24 pb-16 flex items-center justify-center">
           <div className="text-center">
@@ -182,7 +182,7 @@ export default function ResultPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50">
       <Navbar />
 
       <main className="pt-24 pb-16">
@@ -202,8 +202,8 @@ export default function ResultPage() {
             <div
               className={`p-8 text-center ${
                 result.isPassed
-                  ? "bg-gradient-to-br from-emerald-500 to-cyan-500"
-                  : "bg-gradient-to-br from-rose-500 to-orange-500"
+                  ? "bg-linear-to-br from-emerald-500 to-cyan-500"
+                  : "bg-linear-to-br from-rose-500 to-orange-500"
               }`}
             >
               <div className="text-white/80 mb-4">
@@ -433,7 +433,7 @@ export default function ResultPage() {
             <Link href="/my-courses">
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-purple-600 to-cyan-500"
+                className="bg-linear-to-r from-purple-600 to-cyan-500"
               >
                 আমার কোর্সে যান
               </Button>

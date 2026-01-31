@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Navbar } from "@/app/(home)/_components/navbar";
 import { getCourses } from "@/lib/api";
 import type { Course, CoursesResponse } from "@/types";
@@ -173,53 +172,53 @@ export default function CoursesPage() {
     return mins > 0 ? `${hours} ঘন্টা ${mins} মিনিট` : `${hours} ঘন্টা`;
   };
 
-  const getLevelBadge = (level: string) => {
-    switch (level) {
-      case "beginner":
-        return {
-          bg: "bg-emerald-100",
-          text: "text-emerald-700",
-          label: "শুরু",
-        };
-      case "intermediate":
-        return { bg: "bg-amber-100", text: "text-amber-700", label: "মধ্যম" };
-      case "advanced":
-        return { bg: "bg-red-100", text: "text-red-700", label: "উন্নত" };
-      default:
-        return { bg: "bg-gray-100", text: "text-gray-700", label: level };
-    }
-  };
+  // const getLevelBadge = (level: string) => {
+  //   switch (level) {
+  //     case "beginner":
+  //       return {
+  //         bg: "bg-emerald-100",
+  //         text: "text-emerald-700",
+  //         label: "শুরু",
+  //       };
+  //     case "intermediate":
+  //       return { bg: "bg-amber-100", text: "text-amber-700", label: "মধ্যম" };
+  //     case "advanced":
+  //       return { bg: "bg-red-100", text: "text-red-700", label: "উন্নত" };
+  //     default:
+  //       return { bg: "bg-gray-100", text: "text-gray-700", label: level };
+  //   }
+  // };
 
   // Normalize and validate thumbnail URLs for Next/Image
-  const resolveImageSrc = (thumbnail?: string) => {
-    const defaultImg = "/tarifacademy-logo.png";
-    if (!thumbnail || typeof thumbnail !== "string") return defaultImg;
+  // const resolveImageSrc = (thumbnail?: string) => {
+  //   const defaultImg = "/tarifacademy-logo.png";
+  //   if (!thumbnail || typeof thumbnail !== "string") return defaultImg;
 
-    // allow data: and blob: URLs
-    if (/^(data:|blob:)/.test(thumbnail)) return thumbnail;
+  //   // allow data: and blob: URLs
+  //   if (/^(data:|blob:)/.test(thumbnail)) return thumbnail;
 
-    // protocol-relative or absolute http(s)
-    if (/^(https?:)?\/\//i.test(thumbnail)) {
-      if (/^\/\//.test(thumbnail)) return `https:${thumbnail}`;
-      return thumbnail;
-    }
+  //   // protocol-relative or absolute http(s)
+  //   if (/^(https?:)?\/\//i.test(thumbnail)) {
+  //     if (/^\/\//.test(thumbnail)) return `https:${thumbnail}`;
+  //     return thumbnail;
+  //   }
 
-    // root-relative path
-    if (thumbnail.startsWith("/")) return thumbnail;
+  //   // root-relative path
+  //   if (thumbnail.startsWith("/")) return thumbnail;
 
-    // otherwise try to build from API base (if provided)
-    const apiBase = process.env.NEXT_PUBLIC_TARIFACADEMY_API_URL?.replace(
-      /\/$/,
-      "",
-    );
-    if (apiBase) return `${apiBase}/${thumbnail.replace(/^\/+/, "")}`;
+  //   // otherwise try to build from API base (if provided)
+  //   const apiBase = process.env.NEXT_PUBLIC_TARIFACADEMY_API_URL?.replace(
+  //     /\/$/,
+  //     "",
+  //   );
+  //   if (apiBase) return `${apiBase}/${thumbnail.replace(/^\/+/, "")}`;
 
-    // fallback to a safe public asset
-    return `/${thumbnail.replace(/^\/+/, "")}`;
-  };
+  //   // fallback to a safe public asset
+  //   return `/${thumbnail.replace(/^\/+/, "")}`;
+  // };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50">
       <Navbar />
 
       <main className="pt-24 pb-16">
@@ -318,7 +317,7 @@ export default function CoursesPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredCourses.map((course) => {
-                const levelBadge = getLevelBadge(course.level);
+                // const levelBadge = getLevelBadge(course.level);
                 return (
                   <Link
                     key={course._id}
@@ -326,7 +325,7 @@ export default function CoursesPage() {
                     className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-purple-200"
                   >
                     {/* Thumbnail */}
-                    {/* <div className="relative h-48 overflow-hidden bg-gradient-to-br from-purple-100 to-cyan-100">
+                    {/* <div className="relative h-48 overflow-hidden bg-linear-to-br from-purple-100 to-cyan-100">
                       {course?.thumbnail ? (
                         <Image
                           src={
