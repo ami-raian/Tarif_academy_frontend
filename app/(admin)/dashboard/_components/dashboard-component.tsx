@@ -438,7 +438,9 @@ const DashboardComponent = () => {
             <div className="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-gray-700"></div>
             <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
           </div>
-          <p className="text-slate-600 dark:text-gray-300 font-medium">লোড হচ্ছে...</p>
+          <p className="text-slate-600 dark:text-gray-300 font-medium">
+            লোড হচ্ছে...
+          </p>
         </div>
       </div>
     );
@@ -632,7 +634,9 @@ const DashboardComponent = () => {
                       <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-3">
                         <Icons.video />
                       </div>
-                      <p className="text-slate-500 dark:text-gray-400">কোনো ভিডিও পাওয়া যায়নি</p>
+                      <p className="text-slate-500 dark:text-gray-400">
+                        কোনো ভিডিও পাওয়া যায়নি
+                      </p>
                     </div>
                   ) : (
                     <div className="divide-y dark:divide-gray-700">
@@ -821,7 +825,9 @@ const DashboardComponent = () => {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">মোট কোর্স</p>
+                  <p className="text-sm text-slate-500 dark:text-gray-400">
+                    মোট কোর্স
+                  </p>
                   <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1">
                     {courses.length}
                   </p>
@@ -837,7 +843,9 @@ const DashboardComponent = () => {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">প্রকাশিত</p>
+                  <p className="text-sm text-slate-500 dark:text-gray-400">
+                    প্রকাশিত
+                  </p>
                   <p className="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
                     {courses.filter((c) => c.isPublished).length}
                   </p>
@@ -853,7 +861,9 @@ const DashboardComponent = () => {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">ড্রাফট</p>
+                  <p className="text-sm text-slate-500 dark:text-gray-400">
+                    ড্রাফট
+                  </p>
                   <p className="text-2xl sm:text-3xl font-bold text-amber-600 dark:text-amber-400 mt-1">
                     {courses.filter((c) => !c.isPublished).length}
                   </p>
@@ -869,7 +879,9 @@ const DashboardComponent = () => {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">মোট শিক্ষার্থী</p>
+                  <p className="text-sm text-slate-500 dark:text-gray-400">
+                    মোট শিক্ষার্থী
+                  </p>
                   <p className="text-2xl sm:text-3xl font-bold text-sky-600 dark:text-sky-400 mt-1">
                     {courses.reduce((acc, c) => acc + c.enrolledStudents, 0)}
                   </p>

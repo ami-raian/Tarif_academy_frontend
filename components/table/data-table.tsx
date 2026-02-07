@@ -1,3 +1,4 @@
+// app/(admin)/dashboard/_components/data-table.tsx
 "use client";
 
 import React, { useEffect, useRef, useState, JSX } from "react";
