@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   GraduationCap,
   ShieldCheck,
@@ -9,6 +10,7 @@ import {
   Loader2,
   Eye,
   EyeOff,
+  Home,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -99,6 +101,23 @@ export default function LoginComponent() {
             onSubmit={(e) => handleLogin(e, "student")}
             className="bg-white flex flex-col items-center justify-center px-10 h-full w-full"
           >
+            <div className="flex items-center gap-3 mb-4 text-xs">
+              <Link
+                href="/"
+                className="text-gray-500 hover:text-purple-600 flex items-center gap-1 transition-colors"
+              >
+                <Home className="w-3.5 h-3.5" />
+                Home
+              </Link>
+              <span className="text-gray-300">|</span>
+              <Link
+                href="/sign-up"
+                className="text-purple-600 hover:text-purple-700 font-medium transition-colors"
+              >
+                Create New Account
+              </Link>
+            </div>
+
             <div className="flex items-center gap-2 mb-2">
               <GraduationCap className="w-8 h-8 text-purple-600" />
               <h1 className="text-2xl font-bold text-gray-800">
@@ -188,6 +207,23 @@ export default function LoginComponent() {
             onSubmit={(e) => handleLogin(e, "admin")}
             className="bg-white flex flex-col items-center justify-center px-10 h-full w-full"
           >
+            <div className="flex items-center gap-3 mb-4 text-xs">
+              <Link
+                href="/"
+                className="text-gray-500 hover:text-purple-600 flex items-center gap-1 transition-colors"
+              >
+                <Home className="w-3.5 h-3.5" />
+                Home
+              </Link>
+              {/* <span className="text-gray-300">|</span> */}
+              {/* <Link
+                href="/sign-up"
+                className="text-purple-600 hover:text-purple-700 font-medium transition-colors"
+              >
+                Create New Account
+              </Link> */}
+            </div>
+
             <div className="flex items-center gap-2 mb-2">
               <ShieldCheck className="w-8 h-8 text-purple-600" />
               <h1 className="text-2xl font-bold text-gray-800">Admin Login</h1>
