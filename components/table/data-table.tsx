@@ -125,24 +125,27 @@ export function DataTable<T = Record<string, unknown>>({
   };
 
   const sortedData = React.useMemo(() => {
-    if (sortColumn) {
-      return [...data].sort((a, b) => {
-        const aVal = (a as Record<string, unknown>)[sortColumn];
-        const bVal = (b as Record<string, unknown>)[sortColumn];
-        if (
-          (aVal as unknown as string | number) <
-          (bVal as unknown as string | number)
-        )
-          return sortDirection === "asc" ? -1 : 1;
-        if (
-          (aVal as unknown as string | number) >
-          (bVal as unknown as string | number)
-        )
-          return sortDirection === "asc" ? 1 : -1;
-        return 0;
-      });
+    if (!sortColumn) return data;
+    if (sortColumn === "sl") {
+      if (sortDirection === "asc") return data;
+      return [...data].reverse();
     }
-    return data;
+
+    return [...data].sort((a, b) => {
+      const aVal = (a as Record<string, unknown>)[sortColumn];
+      const bVal = (b as Record<string, unknown>)[sortColumn];
+      if (
+        (aVal as unknown as string | number) <
+        (bVal as unknown as string | number)
+      )
+        return sortDirection === "asc" ? -1 : 1;
+      if (
+        (aVal as unknown as string | number) >
+        (bVal as unknown as string | number)
+      )
+        return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
   }, [data, sortColumn, sortDirection]);
 
   const updatedColumns: Column[] = [
@@ -255,27 +258,32 @@ export function DataTable<T = Record<string, unknown>>({
                             {(currentPage - 1) * pageSize + rowIndex + 1}
                           </TableCell>
                         )}
-                        {columns.map((column) => (
-                          <TableCell key={column.key} align={column.align}>
-                            {column.showFullContent ? (
-                              <div
-                                style={{ width: column?.width ?? "auto" }}
-                                className="wrap-break-words"
-                              >
-                                {String(
-                                  (row as Record<string, unknown>)[column.key],
-                                )}
-                              </div>
-                            ) : (
-                              <CellWithTooltip
-                                content={String(
-                                  (row as Record<string, unknown>)[column.key],
-                                )}
-                                width={column?.width}
-                              />
-                            )}
-                          </TableCell>
-                        ))}
+                        {columns.map((column) => {
+                          const cellValue = (row as Record<string, unknown>)[
+                            column.key
+                          ];
+                          const isReactNode = React.isValidElement(cellValue);
+
+                          return (
+                            <TableCell key={column.key} align={column.align}>
+                              {isReactNode ? (
+                                cellValue
+                              ) : column.showFullContent ? (
+                                <div
+                                  style={{ width: column?.width ?? "auto" }}
+                                  className="wrap-break-words"
+                                >
+                                  {String(cellValue)}
+                                </div>
+                              ) : (
+                                <CellWithTooltip
+                                  content={String(cellValue)}
+                                  width={column?.width}
+                                />
+                              )}
+                            </TableCell>
+                          );
+                        })}
                       </TableRow>
                       {showExpandable && expandedRows[rowKey] && (
                         <TableRow className="bg-muted/20">

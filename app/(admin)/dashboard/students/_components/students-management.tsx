@@ -2,13 +2,15 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/table/data-table";
 import type { Column } from "@/components/table/data-table";
-import { getAllStudents } from "@/lib/api";
+import { getAllStudents, deleteStudent } from "@/lib/api";
 import type { Student } from "@/types";
 import { PAGE_SIZE } from "@/components/table/page-size";
+import StatsCard from "@/components/common/stats-card";
 import {
   Users,
   ShieldCheck,
@@ -16,7 +18,18 @@ import {
   User,
   UserCircle,
   RefreshCw,
+  MoreVertical,
+  Eye,
+  Pencil,
+  Trash2,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import DeleteConfirmationDialog from "@/components/common/delete-confirmation-dialog";
 
 interface StudentRow {
   _id: string;
@@ -29,6 +42,7 @@ interface StudentRow {
   isVerified: string;
   isActive: string;
   createdAt: string;
+  action?: React.ReactNode;
 }
 
 const genderMap: Record<string, string> = {
@@ -69,6 +83,7 @@ const columns: Column<StudentRow>[] = [
   { key: "isVerified", name: "ভেরিফাইড", width: 90, align: "center" },
   { key: "isActive", name: "স্ট্যাটাস", width: 90, align: "center" },
   { key: "createdAt", name: "যোগদান", width: 120 },
+  { key: "action", name: "অ্যাকশন", width: 80, align: "right" },
 ];
 
 export default function StudentsManagement() {
@@ -81,6 +96,11 @@ export default function StudentsManagement() {
     currentPage: 1,
     pageSize: PAGE_SIZE,
   });
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
+    null,
+  );
+  const [deleting, setDeleting] = useState(false);
 
   const page = Number(searchParams.get("page")) || 1;
   const pageSize = Number(searchParams.get("pageSize")) || PAGE_SIZE;
@@ -104,7 +124,70 @@ export default function StudentsManagement() {
     fetchStudents();
   }, [fetchStudents]);
 
-  const tableData = students.map(transformStudentToRow);
+  const handleDelete = async () => {
+    if (!selectedStudentId) return;
+    try {
+      setDeleting(true);
+      const result = await deleteStudent(selectedStudentId);
+      if (result.success) {
+        setDeleteModalOpen(false);
+        setSelectedStudentId(null);
+        fetchStudents();
+      }
+    } catch (error) {
+      console.error("Failed to delete student:", error);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const tableData = students.map((student) => {
+    const row = transformStudentToRow(student);
+    return {
+      ...row,
+      action: (
+        <div className="flex items-center justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon" className="h-8 w-8">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link
+                  href={`/dashboard/students/${student._id}`}
+                  className="cursor-pointer"
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  দেখুন
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  href={`/dashboard/students/edit/${student._id}`}
+                  className="cursor-pointer"
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  সম্পাদনা
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-red-600 cursor-pointer"
+                onClick={() => {
+                  setDeleteModalOpen(true);
+                  setSelectedStudentId(student._id);
+                }}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                মুছুন
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      ),
+    };
+  });
 
   const stats = {
     total: pagination.totalItems,
@@ -161,91 +244,36 @@ export default function StudentsManagement() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-          <Card className="border-0 shadow-md dark:bg-gray-800">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">
-                    মোট শিক্ষার্থী
-                  </p>
-                  <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {stats.total}
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
-                  <Users className="w-5 h-5" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-md dark:bg-gray-800">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">
-                    ভেরিফাইড
-                  </p>
-                  <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                    {stats.verified}
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-md dark:bg-gray-800">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">
-                    সক্রিয়
-                  </p>
-                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {stats.active}
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                  <CheckCircle className="w-5 h-5" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-md dark:bg-gray-800">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">
-                    পুরুষ
-                  </p>
-                  <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                    {stats.male}
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                  <User className="w-5 h-5" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-md dark:bg-gray-800">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">
-                    মহিলা
-                  </p>
-                  <p className="text-2xl font-bold text-pink-600 dark:text-pink-400">
-                    {stats.female}
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-lg bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center text-pink-600 dark:text-pink-400">
-                  <UserCircle className="w-5 h-5" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <StatsCard
+            label="মোট শিক্ষার্থী"
+            value={stats.total}
+            icon={Users}
+            variant="violet"
+          />
+          <StatsCard
+            label="ভেরিফাইড"
+            value={stats.verified}
+            icon={ShieldCheck}
+            variant="emerald"
+          />
+          <StatsCard
+            label="সক্রিয়"
+            value={stats.active}
+            icon={CheckCircle}
+            variant="blue"
+          />
+          <StatsCard
+            label="পুরুষ"
+            value={stats.male}
+            icon={User}
+            variant="indigo"
+          />
+          <StatsCard
+            label="মহিলা"
+            value={stats.female}
+            icon={UserCircle}
+            variant="pink"
+          />
         </div>
 
         {/* DataTable */}
@@ -265,6 +293,16 @@ export default function StudentsManagement() {
           />
         </Card>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmationDialog
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        onConfirm={handleDelete}
+        title="শিক্ষার্থী মুছুন"
+        itemName="এই শিক্ষার্থীকে"
+        isDeleting={deleting}
+      />
     </div>
   );
 }
