@@ -20,6 +20,14 @@ import {
   type McqExam,
   type McqQuestion,
 } from "@/lib/api";
+import {
+  buildInitialAnswers,
+  clearExamCache,
+  loadAnswersFromStorage,
+  loadStartedAtFromStorage,
+  saveAnswersToStorage,
+  saveStartedAtToStorage,
+} from "@/lib/exam-persistence";
 
 // Icons
 const Icons = {
@@ -107,6 +115,7 @@ export default function ExamPage() {
       setSubmitting(true);
       const response = await submitMcqExam(examId, true);
       if (response.success) {
+        clearExamCache(examId);
         router.push(`/exams/${examId}/result`);
       }
     } catch (error) {
@@ -132,6 +141,9 @@ export default function ExamPage() {
         } catch (e) {
           console.error("Failed to load cached exam:", e);
         }
+
+        const cachedAnswers = loadAnswersFromStorage(examId);
+        const cachedStartedAt = loadStartedAtFromStorage(examId);
 
         const [examRes, questionsRes, submissionRes] = await Promise.all([
           examData
@@ -166,7 +178,14 @@ export default function ExamPage() {
           setExamStarted(true);
 
           // Restore answers from submission
-          const savedAnswers = new Map<string, number | null>();
+          const savedAnswers = buildInitialAnswers(questionsRes.data || []);
+          if (cachedAnswers) {
+            cachedAnswers.forEach((value, key) => {
+              if (savedAnswers.has(key)) {
+                savedAnswers.set(key, value);
+              }
+            });
+          }
           sub.answers.forEach(
             (ans: {
               questionId: string;
@@ -176,6 +195,8 @@ export default function ExamPage() {
             },
           );
           setAnswers(savedAnswers);
+          saveAnswersToStorage(examId, savedAnswers);
+          saveStartedAtToStorage(examId, new Date(sub.startedAt).getTime());
 
           // Calculate remaining time
           const startedAt = new Date(sub.startedAt).getTime();
@@ -189,6 +210,29 @@ export default function ExamPage() {
             handleAutoSubmit();
           } else {
             setTimeLeft(remaining);
+          }
+        } else if (questionsRes.success) {
+          if (cachedAnswers && cachedStartedAt) {
+            const restoredAnswers = buildInitialAnswers(questionsRes.data);
+            cachedAnswers.forEach((value, key) => {
+              if (restoredAnswers.has(key)) {
+                restoredAnswers.set(key, value);
+              }
+            });
+            setAnswers(restoredAnswers);
+            setExamStarted(true);
+
+            const elapsedSeconds = Math.floor(
+              (Date.now() - cachedStartedAt) / 1000,
+            );
+            const totalSeconds = examRes.data.duration * 60;
+            const remaining = totalSeconds - elapsedSeconds;
+
+            if (remaining <= 0) {
+              handleAutoSubmit();
+            } else {
+              setTimeLeft(remaining);
+            }
           }
         }
       } catch (error) {
@@ -247,13 +291,12 @@ export default function ExamPage() {
       if (response.success) {
         setExamStarted(true);
         setTimeLeft(exam!.duration * 60);
+        saveStartedAtToStorage(examId, Date.now());
 
         // Initialize answers map
-        const initialAnswers = new Map<string, number | null>();
-        questions.forEach((q) => {
-          initialAnswers.set(q._id, null);
-        });
+        const initialAnswers = buildInitialAnswers(questions);
         setAnswers(initialAnswers);
+        saveAnswersToStorage(examId, initialAnswers);
       } else {
         alert(response.message || "পরীক্ষা শুরু করতে সমস্যা হয়েছে");
       }
@@ -272,6 +315,7 @@ export default function ExamPage() {
     const newAnswers = new Map(answers);
     newAnswers.set(questionId, optionIndex);
     setAnswers(newAnswers);
+    saveAnswersToStorage(examId, newAnswers);
 
     // Save to server
     try {
@@ -290,6 +334,7 @@ export default function ExamPage() {
       setExamEnded(true);
       const response = await submitMcqExam(examId, false);
       if (response.success) {
+        clearExamCache(examId);
         router.push(`/exams/${examId}/result`);
       } else {
         alert(response.message || "পরীক্ষা জমা দিতে সমস্যা হয়েছে");
@@ -306,7 +351,8 @@ export default function ExamPage() {
   };
 
   const getAnsweredCount = () => {
-    return Array.from(answers.values()).filter((v) => v !== null).length;
+    return Array.from(answers.values()).filter((v) => typeof v === "number")
+      .length;
   };
 
   // Loading state
