@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,7 +15,6 @@ import {
   getCourseVideos,
   syncAllVideos as syncAllVideosApi,
 } from "@/lib/api";
-import { Home } from "lucide-react";
 import type {
   Course,
   Video,
@@ -762,7 +760,7 @@ const DashboardComponent = () => {
 
   // ==================== DASHBOARD MAIN VIEW ====================
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
+    <div>
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -775,63 +773,13 @@ const DashboardComponent = () => {
                 আপনার কোর্স এবং কনটেন্ট ম্যানেজ করুন
               </p>
             </div>
-            <div className="flex gap-3">
-              <Link href="/">
-                <Button variant="outline" className="gap-2">
-                  <Home className="w-4 h-4" />
-                  হোম
-                </Button>
-              </Link>
-              <Link href="/dashboard/mcq">
-                <Button variant="outline" className="gap-2">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  MCQ পরীক্ষা
-                </Button>
-              </Link>
-              <Link href="/dashboard/enrollments">
-                <Button variant="outline" className="gap-2">
-                  <Icons.users />
-                  এনরোলমেন্ট
-                </Button>
-              </Link>
-              <Link href="/dashboard/students">
-                <Button variant="outline" className="gap-2">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                    />
-                  </svg>
-                  শিক্ষার্থী
-                </Button>
-              </Link>
-              <Button
-                onClick={() => setIsCreateCourseModalOpen(true)}
-                className="gap-2 shadow-lg shadow-primary/25"
-              >
-                <Icons.plus />
-                নতুন কোর্স যোগ করুন
-              </Button>
-            </div>
+            <Button
+              onClick={() => setIsCreateCourseModalOpen(true)}
+              className="gap-2 shadow-lg shadow-primary/25"
+            >
+              <Icons.plus />
+              নতুন কোর্স যোগ করুন
+            </Button>
           </div>
         </div>
       </div>
