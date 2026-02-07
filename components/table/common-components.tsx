@@ -55,7 +55,7 @@ export const CommonTableDiv: React.FC<{
   className?: string;
 }> = ({ children, className }) => {
   return (
-    <div className={cn("overflow-x-auto rounded-xl border", className)}>
+    <div className={cn("overflow-x-auto rounded-xl border-0", className)}>
       {children}
     </div>
   );
