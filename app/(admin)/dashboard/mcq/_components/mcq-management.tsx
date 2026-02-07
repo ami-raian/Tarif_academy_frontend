@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -449,7 +449,7 @@ const McqManagement = () => {
   // Loading State
   if (loading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="relative w-16 h-16 mx-auto mb-4">
             <div className="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-gray-700"></div>
@@ -464,7 +464,7 @@ const McqManagement = () => {
   // Questions View
   if (view === "questions" && selectedExam) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
+      <div>
         <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-40 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
@@ -696,7 +696,7 @@ const McqManagement = () => {
   // Results View
   if (view === "results" && selectedExam) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
+      <div>
         <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-40 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
@@ -841,26 +841,18 @@ const McqManagement = () => {
 
   // Main List View
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
+    <div>
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="gap-2">
-                  <Icons.back />
-                  ড্যাশবোর্ড
-                </Button>
-              </Link>
-              <div>
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  MCQ পরীক্ষা
-                </h1>
-                <p className="text-slate-500 dark:text-gray-400 mt-1">
-                  পরীক্ষা তৈরি এবং ম্যানেজ করুন
-                </p>
-              </div>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+                MCQ পরীক্ষা
+              </h1>
+              <p className="text-slate-500 dark:text-gray-400 mt-1">
+                পরীক্ষা তৈরি এবং ম্যানেজ করুন
+              </p>
             </div>
             <Button
               onClick={() => setIsCreateExamModalOpen(true)}

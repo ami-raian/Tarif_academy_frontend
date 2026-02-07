@@ -144,16 +144,8 @@ export default function EnrollmentsPage() {
   }, [filter, pagination.page, pagination.limit]);
 
   useEffect(() => {
-    const token = getCookie("accessToken");
-    const userType = getCookie("userType");
-
-    if (!token || userType !== "admin") {
-      router.push("/login");
-      return;
-    }
-
     fetchEnrollments();
-  }, [filter, pagination.page, router, fetchEnrollments]);
+  }, [filter, pagination.page, fetchEnrollments]);
 
   const handleApprove = async (enrollmentId: string) => {
     try {
@@ -228,7 +220,7 @@ export default function EnrollmentsPage() {
 
   if (loading && enrollments.length === 0) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="relative w-16 h-16 mx-auto mb-4">
             <div className="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-gray-700"></div>
@@ -241,29 +233,18 @@ export default function EnrollmentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
+    <div>
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => router.push("/dashboard")}
-                className="gap-2"
-              >
-                <Icons.back />
-                ড্যাশবোর্ড
-              </Button>
-              <div>
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  এনরোলমেন্ট ম্যানেজমেন্ট
-                </h1>
-                <p className="text-slate-500 dark:text-gray-400 mt-1">
-                  শিক্ষার্থীদের এনরোলমেন্ট অনুমোদন করুন
-                </p>
-              </div>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+                এনরোলমেন্ট ম্যানেজমেন্ট
+              </h1>
+              <p className="text-slate-500 dark:text-gray-400 mt-1">
+                শিক্ষার্থীদের এনরোলমেন্ট অনুমোদন করুন
+              </p>
             </div>
             <Button
               variant="outline"
