@@ -1,4 +1,5 @@
 import { Navbar } from "./_components/navbar";
+import { QuickLinks } from "./_components/quick-links";
 import { Hero } from "./_components/hero";
 import { Features } from "./_components/features";
 import { CTA } from "./_components/cta";
@@ -32,6 +33,7 @@ export default function HomePage() {
 
           {/* Content */}
           <div className="relative">
+            <QuickLinks />
             <Hero />
             <Features />
           </div>
