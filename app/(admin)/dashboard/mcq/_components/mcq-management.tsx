@@ -218,7 +218,7 @@ const McqManagement = () => {
       { text: "", isCorrect: false },
       { text: "", isCorrect: false },
     ],
-    marks: 1,
+    marks: "1",
   });
 
   // Fetch exams
@@ -357,6 +357,13 @@ const McqManagement = () => {
     e.preventDefault();
     if (!selectedExam) return;
 
+    const marks = parseInt(questionForm.marks, 10) || 1;
+
+    if (marks < 1) {
+      alert("মার্কস কমপক্ষে ১ হতে হবে");
+      return;
+    }
+
     // Validate at least one correct option
     const hasCorrect = questionForm.options.some((opt) => opt.isCorrect);
     if (!hasCorrect) {
@@ -368,6 +375,7 @@ const McqManagement = () => {
       const response = await createMcqQuestion({
         examId: selectedExam._id,
         ...questionForm,
+        marks,
       });
       if (response.success) {
         setIsAddQuestionModalOpen(false);
@@ -377,7 +385,7 @@ const McqManagement = () => {
             { text: "", isCorrect: false },
             { text: "", isCorrect: false },
           ],
-          marks: 1,
+          marks: "1",
         });
         fetchQuestions(selectedExam._id);
       } else {
@@ -455,7 +463,9 @@ const McqManagement = () => {
             <div className="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-gray-700"></div>
             <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
           </div>
-          <p className="text-slate-600 dark:text-gray-300 font-medium">লোড হচ্ছে...</p>
+          <p className="text-slate-600 dark:text-gray-300 font-medium">
+            লোড হচ্ছে...
+          </p>
         </div>
       </div>
     );
@@ -506,7 +516,9 @@ const McqManagement = () => {
             <Card className="border-0 shadow-md dark:bg-gray-800">
               <CardContent className="py-12 text-center">
                 <Icons.questions />
-                <p className="text-slate-500 dark:text-gray-400 mt-2">কোনো প্রশ্ন পাওয়া যায়নি</p>
+                <p className="text-slate-500 dark:text-gray-400 mt-2">
+                  কোনো প্রশ্ন পাওয়া যায়নি
+                </p>
                 <Button
                   onClick={() => setIsAddQuestionModalOpen(true)}
                   className="mt-4 gap-2"
@@ -518,7 +530,10 @@ const McqManagement = () => {
             </Card>
           ) : (
             questions.map((question, index) => (
-              <Card key={question._id} className="border-0 shadow-md dark:bg-gray-800">
+              <Card
+                key={question._id}
+                className="border-0 shadow-md dark:bg-gray-800"
+              >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
@@ -666,7 +681,7 @@ const McqManagement = () => {
                   onChange={(e) =>
                     setQuestionForm({
                       ...questionForm,
-                      marks: parseInt(e.target.value) || 1,
+                      marks: e.target.value,
                     })
                   }
                   className="mt-1 w-24"
@@ -743,7 +758,9 @@ const McqManagement = () => {
             <Card className="border-0 shadow-md dark:bg-gray-800">
               <CardContent className="py-12 text-center">
                 <Icons.results />
-                <p className="text-slate-500 dark:text-gray-400 mt-2">কেউ এখনও পরীক্ষা দেয়নি</p>
+                <p className="text-slate-500 dark:text-gray-400 mt-2">
+                  কেউ এখনও পরীক্ষা দেয়নি
+                </p>
               </CardContent>
             </Card>
           ) : (
@@ -780,8 +797,13 @@ const McqManagement = () => {
                         email: string;
                       };
                       return (
-                        <tr key={submission._id} className="hover:bg-slate-50 dark:hover:bg-gray-700">
-                          <td className="px-4 py-3 text-sm dark:text-gray-300">{index + 1}</td>
+                        <tr
+                          key={submission._id}
+                          className="hover:bg-slate-50 dark:hover:bg-gray-700"
+                        >
+                          <td className="px-4 py-3 text-sm dark:text-gray-300">
+                            {index + 1}
+                          </td>
                           <td className="px-4 py-3">
                             <p className="font-medium text-slate-900 dark:text-white">
                               {student?.fullName || "অজানা"}
@@ -870,7 +892,9 @@ const McqManagement = () => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <Card className="border-0 shadow-md dark:bg-gray-800">
             <CardContent className="p-4">
-              <p className="text-sm text-slate-500 dark:text-gray-400">মোট পরীক্ষা</p>
+              <p className="text-sm text-slate-500 dark:text-gray-400">
+                মোট পরীক্ষা
+              </p>
               <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
                 {exams.length}
               </p>
@@ -878,7 +902,9 @@ const McqManagement = () => {
           </Card>
           <Card className="border-0 shadow-md dark:bg-gray-800">
             <CardContent className="p-4">
-              <p className="text-sm text-slate-500 dark:text-gray-400">প্রকাশিত</p>
+              <p className="text-sm text-slate-500 dark:text-gray-400">
+                প্রকাশিত
+              </p>
               <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
                 {exams.filter((e) => e.isPublished).length}
               </p>
@@ -886,7 +912,9 @@ const McqManagement = () => {
           </Card>
           <Card className="border-0 shadow-md dark:bg-gray-800">
             <CardContent className="p-4">
-              <p className="text-sm text-slate-500 dark:text-gray-400">ড্রাফট</p>
+              <p className="text-sm text-slate-500 dark:text-gray-400">
+                ড্রাফট
+              </p>
               <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">
                 {exams.filter((e) => !e.isPublished).length}
               </p>
@@ -894,7 +922,9 @@ const McqManagement = () => {
           </Card>
           <Card className="border-0 shadow-md dark:bg-gray-800">
             <CardContent className="p-4">
-              <p className="text-sm text-slate-500 dark:text-gray-400">ফলাফল প্রকাশিত</p>
+              <p className="text-sm text-slate-500 dark:text-gray-400">
+                ফলাফল প্রকাশিত
+              </p>
               <p className="text-2xl font-bold text-sky-600 dark:text-sky-400 mt-1">
                 {exams.filter((e) => e.isResultPublished).length}
               </p>

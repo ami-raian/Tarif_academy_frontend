@@ -20,6 +20,14 @@ import {
   type McqExam,
   type McqQuestion,
 } from "@/lib/api";
+import {
+  buildInitialAnswers,
+  clearExamCache,
+  loadAnswersFromStorage,
+  loadStartedAtFromStorage,
+  saveAnswersToStorage,
+  saveStartedAtToStorage,
+} from "@/lib/exam-persistence";
 
 // Icons
 const Icons = {
@@ -68,36 +76,6 @@ const Icons = {
       />
     </svg>
   ),
-  back: () => (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M15 19l-7-7 7-7"
-      />
-    </svg>
-  ),
-  next: () => (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 5l7 7-7 7"
-      />
-    </svg>
-  ),
 };
 
 export default function ExamPage() {
@@ -107,7 +85,6 @@ export default function ExamPage() {
 
   const [exam, setExam] = useState<McqExam | null>(null);
   const [questions, setQuestions] = useState<McqQuestion[]>([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Map<string, number | null>>(new Map());
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -138,6 +115,7 @@ export default function ExamPage() {
       setSubmitting(true);
       const response = await submitMcqExam(examId, true);
       if (response.success) {
+        clearExamCache(examId);
         router.push(`/exams/${examId}/result`);
       }
     } catch (error) {
@@ -163,6 +141,9 @@ export default function ExamPage() {
         } catch (e) {
           console.error("Failed to load cached exam:", e);
         }
+
+        const cachedAnswers = loadAnswersFromStorage(examId);
+        const cachedStartedAt = loadStartedAtFromStorage(examId);
 
         const [examRes, questionsRes, submissionRes] = await Promise.all([
           examData
@@ -197,7 +178,14 @@ export default function ExamPage() {
           setExamStarted(true);
 
           // Restore answers from submission
-          const savedAnswers = new Map<string, number | null>();
+          const savedAnswers = buildInitialAnswers(questionsRes.data || []);
+          if (cachedAnswers) {
+            cachedAnswers.forEach((value, key) => {
+              if (savedAnswers.has(key)) {
+                savedAnswers.set(key, value);
+              }
+            });
+          }
           sub.answers.forEach(
             (ans: {
               questionId: string;
@@ -207,6 +195,8 @@ export default function ExamPage() {
             },
           );
           setAnswers(savedAnswers);
+          saveAnswersToStorage(examId, savedAnswers);
+          saveStartedAtToStorage(examId, new Date(sub.startedAt).getTime());
 
           // Calculate remaining time
           const startedAt = new Date(sub.startedAt).getTime();
@@ -220,6 +210,29 @@ export default function ExamPage() {
             handleAutoSubmit();
           } else {
             setTimeLeft(remaining);
+          }
+        } else if (questionsRes.success) {
+          if (cachedAnswers && cachedStartedAt) {
+            const restoredAnswers = buildInitialAnswers(questionsRes.data);
+            cachedAnswers.forEach((value, key) => {
+              if (restoredAnswers.has(key)) {
+                restoredAnswers.set(key, value);
+              }
+            });
+            setAnswers(restoredAnswers);
+            setExamStarted(true);
+
+            const elapsedSeconds = Math.floor(
+              (Date.now() - cachedStartedAt) / 1000,
+            );
+            const totalSeconds = examRes.data.duration * 60;
+            const remaining = totalSeconds - elapsedSeconds;
+
+            if (remaining <= 0) {
+              handleAutoSubmit();
+            } else {
+              setTimeLeft(remaining);
+            }
           }
         }
       } catch (error) {
@@ -278,13 +291,12 @@ export default function ExamPage() {
       if (response.success) {
         setExamStarted(true);
         setTimeLeft(exam!.duration * 60);
+        saveStartedAtToStorage(examId, Date.now());
 
         // Initialize answers map
-        const initialAnswers = new Map<string, number | null>();
-        questions.forEach((q) => {
-          initialAnswers.set(q._id, null);
-        });
+        const initialAnswers = buildInitialAnswers(questions);
         setAnswers(initialAnswers);
+        saveAnswersToStorage(examId, initialAnswers);
       } else {
         alert(response.message || "পরীক্ষা শুরু করতে সমস্যা হয়েছে");
       }
@@ -296,16 +308,19 @@ export default function ExamPage() {
     }
   };
 
-  const handleSelectAnswer = async (optionIndex: number) => {
-    const currentQuestion = questions[currentQuestionIndex];
+  const handleSelectAnswer = async (
+    questionId: string,
+    optionIndex: number,
+  ) => {
     const newAnswers = new Map(answers);
-    newAnswers.set(currentQuestion._id, optionIndex);
+    newAnswers.set(questionId, optionIndex);
     setAnswers(newAnswers);
+    saveAnswersToStorage(examId, newAnswers);
 
     // Save to server
     try {
       await saveMcqAnswer(examId, {
-        questionId: currentQuestion._id,
+        questionId,
         selectedOptionIndex: optionIndex,
       });
     } catch (error) {
@@ -319,6 +334,7 @@ export default function ExamPage() {
       setExamEnded(true);
       const response = await submitMcqExam(examId, false);
       if (response.success) {
+        clearExamCache(examId);
         router.push(`/exams/${examId}/result`);
       } else {
         alert(response.message || "পরীক্ষা জমা দিতে সমস্যা হয়েছে");
@@ -335,7 +351,8 @@ export default function ExamPage() {
   };
 
   const getAnsweredCount = () => {
-    return Array.from(answers.values()).filter((v) => v !== null).length;
+    return Array.from(answers.values()).filter((v) => typeof v === "number")
+      .length;
   };
 
   // Loading state
@@ -434,11 +451,6 @@ export default function ExamPage() {
   }
 
   // Exam interface
-  const currentQuestion = questions[currentQuestionIndex];
-  const currentAnswer = currentQuestion
-    ? answers.get(currentQuestion._id)
-    : null;
-
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
       {/* Header with timer */}
@@ -450,7 +462,7 @@ export default function ExamPage() {
                 {exam?.title}
               </h1>
               <p className="text-sm text-gray-500">
-                প্রশ্ন {currentQuestionIndex + 1} / {questions.length}
+                মোট প্রশ্ন: {questions.length}
               </p>
             </div>
 
@@ -483,87 +495,71 @@ export default function ExamPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Question Panel */}
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-2xl shadow-md p-6">
-              {/* Question */}
-              <div className="mb-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="bg-purple-100 text-purple-700 text-sm font-medium px-3 py-1 rounded-full">
-                    প্রশ্ন {currentQuestionIndex + 1}
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    নম্বর: {currentQuestion?.marks || 1}
-                  </span>
-                </div>
-                <p className="text-lg font-medium text-gray-900">
-                  {currentQuestion?.questionText}
-                </p>
-              </div>
-
-              {/* Options */}
-              <div className="space-y-3">
-                {currentQuestion?.options.map((option, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleSelectAnswer(index)}
-                    className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left ${
-                      currentAnswer === index
-                        ? "border-purple-500 bg-purple-50"
-                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                    }`}
+            <div className="space-y-6">
+              {questions.map((question, questionIndex) => {
+                const currentAnswer = answers.get(question._id);
+                return (
+                  <div
+                    key={question._id}
+                    id={`question-${questionIndex + 1}`}
+                    className="bg-white rounded-2xl shadow-md p-6 scroll-mt-24"
                   >
-                    <span
-                      className={`w-10 h-10 rounded-full flex items-center justify-center font-medium ${
-                        currentAnswer === index
-                          ? "bg-purple-500 text-white"
-                          : "bg-gray-100 text-gray-700"
-                      }`}
-                    >
-                      {String.fromCharCode(65 + index)}
-                    </span>
-                    <span
-                      className={`flex-1 ${
-                        currentAnswer === index
-                          ? "text-purple-900 font-medium"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      {option.text}
-                    </span>
-                    {currentAnswer === index && (
-                      <span className="text-purple-500">
-                        <Icons.check />
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
+                    <div className="mb-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="bg-purple-100 text-purple-700 text-sm font-medium px-3 py-1 rounded-full">
+                          প্রশ্ন {questionIndex + 1}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          নম্বর: {question.marks || 1}
+                        </span>
+                      </div>
+                      <p className="text-lg font-medium text-gray-900">
+                        {question.questionText}
+                      </p>
+                    </div>
 
-              {/* Navigation */}
-              <div className="flex justify-between mt-8 pt-6 border-t">
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))
-                  }
-                  disabled={currentQuestionIndex === 0}
-                  className="gap-2"
-                >
-                  <Icons.back />
-                  আগের প্রশ্ন
-                </Button>
-                <Button
-                  onClick={() =>
-                    setCurrentQuestionIndex((prev) =>
-                      Math.min(questions.length - 1, prev + 1),
-                    )
-                  }
-                  disabled={currentQuestionIndex === questions.length - 1}
-                  className="gap-2"
-                >
-                  পরের প্রশ্ন
-                  <Icons.next />
-                </Button>
-              </div>
+                    <div className="space-y-3">
+                      {question.options.map((option, optionIndex) => (
+                        <button
+                          key={optionIndex}
+                          onClick={() =>
+                            handleSelectAnswer(question._id, optionIndex)
+                          }
+                          className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left ${
+                            currentAnswer === optionIndex
+                              ? "border-purple-500 bg-purple-50"
+                              : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                          }`}
+                        >
+                          <span
+                            className={`w-10 h-10 rounded-full flex items-center justify-center font-medium ${
+                              currentAnswer === optionIndex
+                                ? "bg-purple-500 text-white"
+                                : "bg-gray-100 text-gray-700"
+                            }`}
+                          >
+                            {String.fromCharCode(65 + optionIndex)}
+                          </span>
+                          <span
+                            className={`flex-1 ${
+                              currentAnswer === optionIndex
+                                ? "text-purple-900 font-medium"
+                                : "text-gray-700"
+                            }`}
+                          >
+                            {option.text}
+                          </span>
+                          {currentAnswer === optionIndex && (
+                            <span className="text-purple-500">
+                              <Icons.check />
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -573,22 +569,20 @@ export default function ExamPage() {
               <h3 className="font-medium text-gray-900 mb-4">প্রশ্ন তালিকা</h3>
               <div className="grid grid-cols-5 gap-2 mb-4">
                 {questions.map((q, index) => {
-                  const answered = answers.get(q._id) !== null;
-                  const isCurrent = index === currentQuestionIndex;
+                  const selectedIndex = answers.get(q._id);
+                  const answered = typeof selectedIndex === "number";
                   return (
-                    <button
+                    <a
                       key={q._id}
-                      onClick={() => setCurrentQuestionIndex(index)}
-                      className={`w-10 h-10 rounded-lg font-medium text-sm transition-all ${
-                        isCurrent
-                          ? "bg-purple-600 text-white ring-2 ring-purple-300"
-                          : answered
-                            ? "bg-emerald-500 text-white"
-                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      href={`#question-${index + 1}`}
+                      className={`w-10 h-10 rounded-lg font-medium text-sm transition-all flex items-center justify-center ${
+                        answered
+                          ? "bg-emerald-500 text-white"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       }`}
                     >
                       {index + 1}
-                    </button>
+                    </a>
                   );
                 })}
               </div>
@@ -605,10 +599,6 @@ export default function ExamPage() {
                   <span className="text-gray-600">
                     উত্তর দেওয়া হয়নি ({questions.length - getAnsweredCount()})
                   </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded bg-purple-600"></span>
-                  <span className="text-gray-600">বর্তমান প্রশ্ন</span>
                 </div>
               </div>
             </div>
