@@ -758,3 +758,24 @@ export async function getMcqLeaderboard(examId: string, limit = 10) {
   );
   return response.json();
 }
+
+// ========================
+// STUDENTS API (Admin)
+// ========================
+
+export async function getAllStudents(params?: {
+  page?: number;
+  limit?: number;
+}) {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.set("page", params.page.toString());
+  if (params?.limit) searchParams.set("limit", params.limit.toString());
+
+  const response = await fetch(
+    `${API_BASE_URL}/students?${searchParams.toString()}`,
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+  return response.json();
+}
