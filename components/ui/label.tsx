@@ -10,12 +10,17 @@ const labelVariants = cva(
 export interface LabelProps
   extends
     React.LabelHTMLAttributes<HTMLLabelElement>,
-    VariantProps<typeof labelVariants> {}
+    VariantProps<typeof labelVariants> {
+  required?: boolean;
+}
 
 const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, children, required, ...props }, ref) => {
     return (
-      <label ref={ref} className={cn(labelVariants(), className)} {...props} />
+      <label ref={ref} className={cn(labelVariants(), className)} {...props}>
+        {children}
+        {required && <span className="text-red-500 ml-1">*</span>}
+      </label>
     );
   },
 );

@@ -64,30 +64,37 @@ const sscSchema = z.object({
     .max(5.0, "GPA সর্বোচ্চ ৫.০০ হতে পারে"),
 });
 
-// HSC Schema
+// HSC Schema - all fields optional
 const hscSchema = z.object({
   roll: z
     .string()
-    .min(1, "HSC রোল নম্বর আবশ্যক")
-    .regex(/^\d+$/, "শুধুমাত্র সংখ্যা দিন"),
+    .regex(/^\d*$/, "শুধুমাত্র সংখ্যা দিন")
+    .optional()
+    .or(z.literal("")),
   registration: z
     .string()
-    .min(1, "HSC রেজিস্ট্রেশন নম্বর আবশ্যক")
-    .regex(/^\d+$/, "শুধুমাত্র সংখ্যা দিন"),
+    .regex(/^\d*$/, "শুধুমাত্র সংখ্যা দিন")
+    .optional()
+    .or(z.literal("")),
   collegeName: z
     .string()
-    .min(2, "কলেজের নাম কমপক্ষে ২ অক্ষর হতে হবে")
-    .max(100, "কলেজের নাম সর্বোচ্চ ১০০ অক্ষর হতে পারে"),
-  board: z.enum(boards, { message: "বোর্ড নির্বাচন করুন" }),
+    .max(100, "কলেজের নাম সর্বোচ্চ ১০০ অক্ষর হতে পারে")
+    .optional()
+    .or(z.literal("")),
+  board: z.enum(boards).optional(),
   passingYear: z
     .number()
     .min(2000, "পাশের সাল ২০০০ এর পরে হতে হবে")
-    .max(new Date().getFullYear() + 5, "পাশের সাল সঠিক নয়"),
-  group: z.enum(groups, { message: "বিভাগ নির্বাচন করুন" }),
+    .max(new Date().getFullYear() + 5, "পাশের সাল সঠিক নয়")
+    .optional()
+    .or(z.nan().transform(() => undefined)),
+  group: z.enum(groups).optional(),
   gpa: z
     .number()
-    .min(1.0, "GPA কমপক্ষে ১.০০ হতে হবে")
-    .max(5.0, "GPA সর্বোচ্চ ৫.০০ হতে পারে"),
+    .min(0, "GPA কমপক্ষে ০ হতে হবে")
+    .max(5.0, "GPA সর্বোচ্চ ৫.০০ হতে পারে")
+    .optional()
+    .or(z.nan().transform(() => undefined)),
 });
 
 // Guardian Schema
@@ -126,7 +133,7 @@ const addressSchema = z.object({
 // Educational Info Schema
 const educationalInfoSchema = z.object({
   ssc: sscSchema,
-  hsc: hscSchema,
+  hsc: hscSchema.optional(),
 });
 
 // Main Signup Schema
@@ -152,8 +159,9 @@ export const signupSchema = z
       ),
     whatsapp: z
       .string()
-      .min(1, "হোয়াটসঅ্যাপ নম্বর আবশ্যক")
-      .regex(bdPhoneRegex, "সঠিক বাংলাদেশি মোবাইল নম্বর দিন"),
+      .regex(bdPhoneRegex, "সঠিক বাংলাদেশি মোবাইল নম্বর দিন")
+      .optional()
+      .or(z.literal("")),
     dateOfBirth: z
       .string()
       .min(1, "জন্ম তারিখ আবশ্যক")
@@ -168,8 +176,8 @@ export const signupSchema = z
 
     // Nested Objects
     educationalInfo: educationalInfoSchema,
-    guardian: guardianSchema,
-    address: addressSchema,
+    // guardian: guardianSchema,
+    // address: addressSchema,
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "পাসওয়ার্ড মিলছে না",

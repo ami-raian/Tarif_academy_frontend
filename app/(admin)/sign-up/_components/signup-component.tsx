@@ -13,8 +13,8 @@ import {
   Calendar,
   Droplet,
   BookOpen,
-  Users,
-  MapPin,
+  // Users,
+  // MapPin,
   Eye,
   EyeOff,
   Loader2,
@@ -32,30 +32,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   signupSchema,
   SignupFormData,
   BLOOD_GROUPS,
   BOARDS,
   GROUPS,
-  GUARDIAN_TYPES,
+  // GUARDIAN_TYPES,
   GENDERS,
   BOARD_NAMES,
   GROUP_NAMES,
-  GUARDIAN_TYPE_NAMES,
+  // GUARDIAN_TYPE_NAMES,
   GENDER_NAMES,
 } from "@/lib/validations/signup";
 import { registerStudent } from "@/lib/api";
 
 const STEPS = [
-  { id: 1, title: "ব্যক্তিগত তথ্য", icon: User },
-  { id: 2, title: "SSC তথ্য", icon: BookOpen },
-  { id: 3, title: "HSC তথ্য", icon: GraduationCap },
-  { id: 4, title: "অভিভাবক ও ঠিকানা", icon: Users },
+  { id: "personal", title: "ব্যক্তিগত তথ্য", icon: User },
+  { id: "ssc", title: "SSC তথ্য", icon: BookOpen },
+  { id: "hsc", title: "HSC তথ্য", icon: GraduationCap },
+  // { id: "guardian", title: "অভিভাবক ও ঠিকানা", icon: Users },
 ];
 
 export default function SignUpComponent() {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentTab, setCurrentTab] = useState("personal");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -80,24 +81,23 @@ export default function SignUpComponent() {
     },
   });
 
-  const validateStep = async (step: number): Promise<boolean> => {
+  const validateTab = async (tab: string): Promise<boolean> => {
     let fieldsToValidate: (keyof SignupFormData | string)[] = [];
 
-    switch (step) {
-      case 1:
+    switch (tab) {
+      case "personal":
         fieldsToValidate = [
           "fullName",
           "email",
           "password",
           "confirmPassword",
           "mobile",
-          "whatsapp",
           "dateOfBirth",
           "gender",
           "bloodGroup",
         ];
         break;
-      case 2:
+      case "ssc":
         fieldsToValidate = [
           "educationalInfo.ssc.roll",
           "educationalInfo.ssc.registration",
@@ -108,27 +108,9 @@ export default function SignUpComponent() {
           "educationalInfo.ssc.gpa",
         ];
         break;
-      case 3:
-        fieldsToValidate = [
-          "educationalInfo.hsc.roll",
-          "educationalInfo.hsc.registration",
-          "educationalInfo.hsc.collegeName",
-          "educationalInfo.hsc.board",
-          "educationalInfo.hsc.passingYear",
-          "educationalInfo.hsc.group",
-          "educationalInfo.hsc.gpa",
-        ];
-        break;
-      case 4:
-        fieldsToValidate = [
-          "guardian.type",
-          "guardian.name",
-          "guardian.mobile",
-          "guardian.occupation",
-          "address.present",
-          "address.district",
-          "address.permanent",
-        ];
+      case "hsc":
+        // HSC fields are optional, no validation required
+        fieldsToValidate = [];
         break;
     }
 
@@ -136,16 +118,35 @@ export default function SignUpComponent() {
     return result;
   };
 
-  const nextStep = async () => {
-    const isValid = await validateStep(currentStep);
-    if (isValid && currentStep < 4) {
-      setCurrentStep(currentStep + 1);
+  const handleTabChange = async (newTab: string) => {
+    const currentTabIndex = STEPS.findIndex((step) => step.id === currentTab);
+    const newTabIndex = STEPS.findIndex((step) => step.id === newTab);
+
+    // If moving forward, validate current tab
+    if (newTabIndex > currentTabIndex) {
+      const isValid = await validateTab(currentTab);
+      if (!isValid) {
+        return; // Don't change tab if validation fails
+      }
+    }
+
+    setCurrentTab(newTab);
+  };
+
+  const nextTab = async () => {
+    const currentTabIndex = STEPS.findIndex((step) => step.id === currentTab);
+    if (currentTabIndex < STEPS.length - 1) {
+      const isValid = await validateTab(currentTab);
+      if (isValid) {
+        setCurrentTab(STEPS[currentTabIndex + 1].id);
+      }
     }
   };
 
-  const prevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+  const prevTab = () => {
+    const currentTabIndex = STEPS.findIndex((step) => step.id === currentTab);
+    if (currentTabIndex > 0) {
+      setCurrentTab(STEPS[currentTabIndex - 1].id);
     }
   };
 
@@ -206,50 +207,32 @@ export default function SignUpComponent() {
             <GraduationCap className="w-8 h-8" />
             <h1 className="text-2xl font-bold">Tarif Academy - রেজিস্ট্রেশন</h1>
           </div>
-
-          {/* Progress Steps */}
-          <div className="flex justify-between items-center mt-6">
-            {STEPS.map((step, index) => (
-              <div key={step.id} className="flex items-center">
-                <div
-                  className={`flex flex-col items-center ${
-                    index !== STEPS.length - 1 ? "flex-1" : ""
-                  }`}
-                >
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                      currentStep >= step.id
-                        ? "bg-white text-purple-600"
-                        : "bg-white/30 text-white"
-                    }`}
-                  >
-                    {currentStep > step.id ? (
-                      <Check className="w-5 h-5" />
-                    ) : (
-                      <step.icon className="w-5 h-5" />
-                    )}
-                  </div>
-                  <span className="text-xs mt-1 hidden sm:block">
-                    {step.title}
-                  </span>
-                </div>
-                {index !== STEPS.length - 1 && (
-                  <div
-                    className={`h-1 w-12 sm:w-20 mx-2 rounded ${
-                      currentStep > step.id ? "bg-white" : "bg-white/30"
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
         </div>
 
-        {/* Form */}
+        {/* Form with Tabs */}
         <form onSubmit={handleSubmit(onSubmit)} className="p-6">
-          {/* Step 1: Personal Info */}
-          {currentStep === 1 && (
-            <div className="space-y-4">
+          <Tabs
+            defaultValue="personal"
+            value={currentTab}
+            onValueChange={handleTabChange}
+            className="w-full"
+          >
+            <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsTrigger value="personal" className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                ব্যক্তিগত তথ্য
+              </TabsTrigger>
+              <TabsTrigger value="ssc" className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4" />
+                SSC তথ্য
+              </TabsTrigger>
+              <TabsTrigger value="hsc" className="flex items-center gap-2">
+                <GraduationCap className="w-4 h-4" />
+                HSC তথ্য
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="personal" className="space-y-6">
               <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                 <User className="w-5 h-5 text-purple-600" />
                 ব্যক্তিগত তথ্য
@@ -258,7 +241,9 @@ export default function SignUpComponent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Full Name */}
                 <div className="space-y-1">
-                  <Label htmlFor="fullName">পূর্ণ নাম *</Label>
+                  <Label htmlFor="fullName" required>
+                    পূর্ণ নাম
+                  </Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
@@ -277,7 +262,9 @@ export default function SignUpComponent() {
 
                 {/* Email */}
                 <div className="space-y-1">
-                  <Label htmlFor="email">ইমেইল *</Label>
+                  <Label htmlFor="email" required>
+                    ইমেইল
+                  </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
@@ -297,7 +284,9 @@ export default function SignUpComponent() {
 
                 {/* Password */}
                 <div className="space-y-1">
-                  <Label htmlFor="password">পাসওয়ার্ড *</Label>
+                  <Label htmlFor="password" required>
+                    পাসওয়ার্ড
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
@@ -328,8 +317,8 @@ export default function SignUpComponent() {
 
                 {/* Confirm Password */}
                 <div className="space-y-1">
-                  <Label htmlFor="confirmPassword">
-                    পাসওয়ার্ড নিশ্চিত করুন *
+                  <Label htmlFor="confirmPassword" required>
+                    পাসওয়ার্ড নিশ্চিত করুন
                   </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -363,7 +352,9 @@ export default function SignUpComponent() {
 
                 {/* Mobile */}
                 <div className="space-y-1">
-                  <Label htmlFor="mobile">মোবাইল নম্বর *</Label>
+                  <Label htmlFor="mobile" required>
+                    মোবাইল নম্বর
+                  </Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
@@ -382,7 +373,7 @@ export default function SignUpComponent() {
 
                 {/* WhatsApp */}
                 <div className="space-y-1">
-                  <Label htmlFor="whatsapp">হোয়াটসঅ্যাপ নম্বর *</Label>
+                  <Label htmlFor="whatsapp">হোয়াটসঅ্যাপ নম্বর</Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
@@ -401,7 +392,9 @@ export default function SignUpComponent() {
 
                 {/* Date of Birth */}
                 <div className="space-y-1">
-                  <Label htmlFor="dateOfBirth">জন্ম তারিখ *</Label>
+                  <Label htmlFor="dateOfBirth" required>
+                    জন্ম তারিখ
+                  </Label>
                   <div className="relative">
                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
@@ -420,7 +413,9 @@ export default function SignUpComponent() {
 
                 {/* Gender */}
                 <div className="space-y-1">
-                  <Label htmlFor="gender">লিঙ্গ *</Label>
+                  <Label htmlFor="gender" required>
+                    লিঙ্গ
+                  </Label>
                   <Select
                     value={watch("gender")}
                     onValueChange={(value) =>
@@ -447,7 +442,9 @@ export default function SignUpComponent() {
 
                 {/* Blood Group */}
                 <div className="space-y-1">
-                  <Label htmlFor="bloodGroup">রক্তের গ্রুপ *</Label>
+                  <Label htmlFor="bloodGroup" required>
+                    রক্তের গ্রুপ
+                  </Label>
                   <Select
                     value={watch("bloodGroup")}
                     onValueChange={(value) =>
@@ -478,12 +475,31 @@ export default function SignUpComponent() {
                   )}
                 </div>
               </div>
-            </div>
-          )}
 
-          {/* Step 2: SSC Info */}
-          {currentStep === 2 && (
-            <div className="space-y-4">
+              {/* Navigation Buttons */}
+              <div className="flex justify-between mt-8">
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled
+                  className="flex items-center gap-2 opacity-50 cursor-not-allowed"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  পেছনে
+                </Button>
+
+                <Button
+                  type="button"
+                  onClick={nextTab}
+                  className="flex items-center gap-2 bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 text-white"
+                >
+                  পরবর্তী
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="ssc" className="space-y-6">
               <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-purple-600" />
                 SSC তথ্য
@@ -491,7 +507,7 @@ export default function SignUpComponent() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <Label>SSC রোল নম্বর *</Label>
+                  <Label required>SSC রোল নম্বর</Label>
                   <Input
                     {...register("educationalInfo.ssc.roll")}
                     placeholder="রোল নম্বর"
@@ -504,7 +520,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>SSC রেজিস্ট্রেশন নম্বর *</Label>
+                  <Label required>SSC রেজিস্ট্রেশন নম্বর</Label>
                   <Input
                     {...register("educationalInfo.ssc.registration")}
                     placeholder="রেজিস্ট্রেশন নম্বর"
@@ -517,7 +533,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1 md:col-span-2">
-                  <Label>স্কুলের নাম *</Label>
+                  <Label required>স্কুলের নাম</Label>
                   <Input
                     {...register("educationalInfo.ssc.schoolName")}
                     placeholder="আপনার স্কুলের নাম"
@@ -530,7 +546,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>বোর্ড *</Label>
+                  <Label required>বোর্ড</Label>
                   <Select
                     value={watch("educationalInfo.ssc.board")}
                     onValueChange={(value) =>
@@ -559,7 +575,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>বিভাগ *</Label>
+                  <Label required>বিভাগ</Label>
                   <Select
                     value={watch("educationalInfo.ssc.group")}
                     onValueChange={(value) =>
@@ -588,7 +604,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>পাশের সাল *</Label>
+                  <Label required>পাশের সাল</Label>
                   <Input
                     type="number"
                     {...register("educationalInfo.ssc.passingYear", {
@@ -604,7 +620,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>GPA *</Label>
+                  <Label required>GPA</Label>
                   <Input
                     type="number"
                     step="0.01"
@@ -620,12 +636,31 @@ export default function SignUpComponent() {
                   )}
                 </div>
               </div>
-            </div>
-          )}
 
-          {/* Step 3: HSC Info */}
-          {currentStep === 3 && (
-            <div className="space-y-4">
+              {/* Navigation Buttons */}
+              <div className="flex justify-between mt-8">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={prevTab}
+                  className="flex items-center gap-2"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  পেছনে
+                </Button>
+
+                <Button
+                  type="button"
+                  onClick={nextTab}
+                  className="flex items-center gap-2 bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 text-white"
+                >
+                  পরবর্তী
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="hsc" className="space-y-6">
               <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                 <GraduationCap className="w-5 h-5 text-purple-600" />
                 HSC তথ্য
@@ -633,7 +668,7 @@ export default function SignUpComponent() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <Label>HSC রোল নম্বর *</Label>
+                  <Label>HSC রোল নম্বর</Label>
                   <Input
                     {...register("educationalInfo.hsc.roll")}
                     placeholder="রোল নম্বর"
@@ -646,7 +681,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>HSC রেজিস্ট্রেশন নম্বর *</Label>
+                  <Label>HSC রেজিস্ট্রেশন নম্বর</Label>
                   <Input
                     {...register("educationalInfo.hsc.registration")}
                     placeholder="রেজিস্ট্রেশন নম্বর"
@@ -659,7 +694,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1 md:col-span-2">
-                  <Label>কলেজের নাম *</Label>
+                  <Label>কলেজের নাম</Label>
                   <Input
                     {...register("educationalInfo.hsc.collegeName")}
                     placeholder="আপনার কলেজের নাম"
@@ -672,7 +707,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>বোর্ড *</Label>
+                  <Label>বোর্ড</Label>
                   <Select
                     value={watch("educationalInfo.hsc.board")}
                     onValueChange={(value) =>
@@ -701,7 +736,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>বিভাগ *</Label>
+                  <Label>বিভাগ</Label>
                   <Select
                     value={watch("educationalInfo.hsc.group")}
                     onValueChange={(value) =>
@@ -730,7 +765,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>পাশের সাল *</Label>
+                  <Label>পাশের সাল</Label>
                   <Input
                     type="number"
                     {...register("educationalInfo.hsc.passingYear", {
@@ -746,7 +781,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>GPA *</Label>
+                  <Label>GPA</Label>
                   <Input
                     type="number"
                     step="0.01"
@@ -762,140 +797,39 @@ export default function SignUpComponent() {
                   )}
                 </div>
               </div>
-            </div>
-          )}
 
-          {/* Step 4: Guardian & Address */}
-          {currentStep === 4 && (
-            <div className="space-y-6">
-              {/* Guardian Info */}
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-                  <Users className="w-5 h-5 text-purple-600" />
-                  অভিভাবকের তথ্য
-                </h2>
+              {/* Navigation and Submit Buttons */}
+              <div className="flex justify-between mt-8">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={prevTab}
+                  className="flex items-center gap-2"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  পেছনে
+                </Button>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <Label>অভিভাবকের ধরন *</Label>
-                    <Select
-                      value={watch("guardian.type")}
-                      onValueChange={(value) =>
-                        setValue(
-                          "guardian.type",
-                          value as (typeof GUARDIAN_TYPES)[number],
-                        )
-                      }
-                    >
-                      <SelectTrigger className="w-full h-10">
-                        <SelectValue placeholder="নির্বাচন করুন" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {GUARDIAN_TYPES.map((t) => (
-                          <SelectItem key={t} value={t}>
-                            {GUARDIAN_TYPE_NAMES[t]}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.guardian?.type && (
-                      <p className="text-xs text-red-500">
-                        {errors.guardian.type.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1">
-                    <Label>অভিভাবকের নাম *</Label>
-                    <Input
-                      {...register("guardian.name")}
-                      placeholder="অভিভাবকের পূর্ণ নাম"
-                    />
-                    {errors.guardian?.name && (
-                      <p className="text-xs text-red-500">
-                        {errors.guardian.name.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1">
-                    <Label>অভিভাবকের মোবাইল *</Label>
-                    <Input
-                      {...register("guardian.mobile")}
-                      placeholder="01712345678"
-                    />
-                    {errors.guardian?.mobile && (
-                      <p className="text-xs text-red-500">
-                        {errors.guardian.mobile.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1">
-                    <Label>পেশা *</Label>
-                    <Input
-                      {...register("guardian.occupation")}
-                      placeholder="অভিভাবকের পেশা"
-                    />
-                    {errors.guardian?.occupation && (
-                      <p className="text-xs text-red-500">
-                        {errors.guardian.occupation.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="flex items-center gap-2 bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 text-white"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      রেজিস্ট্রেশন হচ্ছে...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4" />
+                      রেজিস্ট্রেশন করুন
+                    </>
+                  )}
+                </Button>
               </div>
-
-              {/* Address Info */}
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-purple-600" />
-                  ঠিকানা
-                </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1 md:col-span-2">
-                    <Label>বর্তমান ঠিকানা *</Label>
-                    <Input
-                      {...register("address.present")}
-                      placeholder="বাড়ি নং, রোড নং, এলাকা"
-                    />
-                    {errors.address?.present && (
-                      <p className="text-xs text-red-500">
-                        {errors.address.present.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1">
-                    <Label>জেলা *</Label>
-                    <Input
-                      {...register("address.district")}
-                      placeholder="জেলার নাম"
-                    />
-                    {errors.address?.district && (
-                      <p className="text-xs text-red-500">
-                        {errors.address.district.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1 md:col-span-2">
-                    <Label>স্থায়ী ঠিকানা *</Label>
-                    <Input
-                      {...register("address.permanent")}
-                      placeholder="গ্রাম, উপজেলা, জেলা"
-                    />
-                    {errors.address?.permanent && (
-                      <p className="text-xs text-red-500">
-                        {errors.address.permanent.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+            </TabsContent>
+          </Tabs>
 
           {/* Error Message */}
           {error && (
@@ -903,49 +837,6 @@ export default function SignUpComponent() {
               {error}
             </div>
           )}
-
-          {/* Navigation Buttons */}
-          <div className="flex justify-between mt-8">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={prevStep}
-              disabled={currentStep === 1}
-              className="flex items-center gap-2"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              পেছনে
-            </Button>
-
-            {currentStep < 4 ? (
-              <Button
-                type="button"
-                onClick={nextStep}
-                className="flex items-center gap-2 bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 text-white"
-              >
-                পরবর্তী
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            ) : (
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="flex items-center gap-2 bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 text-white"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    রেজিস্ট্রেশন হচ্ছে...
-                  </>
-                ) : (
-                  <>
-                    <Check className="w-4 h-4" />
-                    রেজিস্ট্রেশন করুন
-                  </>
-                )}
-              </Button>
-            )}
-          </div>
 
           {/* Login Link */}
           <div className="text-center mt-6">
