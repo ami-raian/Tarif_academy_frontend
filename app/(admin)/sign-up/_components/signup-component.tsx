@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import {
   GraduationCap,
@@ -32,7 +33,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import {
   signupSchema,
   SignupFormData,
@@ -217,7 +219,7 @@ export default function SignUpComponent() {
             onValueChange={handleTabChange}
             className="w-full"
           >
-            <TabsList className="grid w-full grid-cols-3 mb-6">
+            {/* <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="personal" className="flex items-center gap-2">
                 <User className="w-4 h-4" />
                 ব্যক্তিগত তথ্য
@@ -230,7 +232,67 @@ export default function SignUpComponent() {
                 <GraduationCap className="w-4 h-4" />
                 HSC তথ্য
               </TabsTrigger>
-            </TabsList>
+            </TabsList> */}
+            {/* Step Indicator */}
+            <div className="flex items-center justify-center mb-8">
+              {STEPS.map((step, index) => {
+                const currentIndex = STEPS.findIndex(
+                  (s) => s.id === currentTab,
+                );
+                const isActive = step.id === currentTab;
+                const isCompleted = index < currentIndex;
+                const StepIcon = step.icon;
+
+                return (
+                  <div key={step.id} className="flex items-center">
+                    <button
+                      type="button"
+                      onClick={() => handleTabChange(step.id)}
+                      className="flex flex-col items-center gap-1.5 group"
+                    >
+                      <div
+                        className={cn(
+                          "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2",
+                          isCompleted
+                            ? "bg-green-500 border-green-500 text-white"
+                            : isActive
+                              ? "bg-linear-to-r from-purple-600 to-cyan-500 border-purple-600 text-white shadow-lg shadow-purple-500/25"
+                              : "bg-muted border-muted-foreground/20 text-muted-foreground group-hover:border-purple-400 group-hover:text-purple-500",
+                        )}
+                      >
+                        {isCompleted ? (
+                          <Check className="w-5 h-5" />
+                        ) : (
+                          <StepIcon className="w-5 h-5" />
+                        )}
+                      </div>
+                      <span
+                        className={cn(
+                          "text-xs font-medium transition-colors hidden sm:block",
+                          isActive
+                            ? "text-purple-600 dark:text-purple-400"
+                            : isCompleted
+                              ? "text-green-600 dark:text-green-400"
+                              : "text-muted-foreground",
+                        )}
+                      >
+                        {step.title}
+                      </span>
+                    </button>
+                    {index < STEPS.length - 1 && (
+                      <div
+                        className={cn(
+                          "w-12 sm:w-20 h-0.5 mx-2 mb-5 sm:mb-6 rounded-full transition-all duration-300",
+                          index < currentIndex
+                            ? "bg-green-500"
+                            : "bg-muted-foreground/20",
+                        )}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
 
             <TabsContent value="personal" className="space-y-6">
               <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
