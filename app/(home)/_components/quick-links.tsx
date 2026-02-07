@@ -102,19 +102,31 @@ const QuickLinkCard = ({ item }: { item: QuickLink }) => {
 
 export function QuickLinks() {
   return (
-    <section className="relative py-10">
+    <section className="relative py-12">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-24 top-10 h-48 w-48 rounded-full bg-purple-200/50 blur-3xl" />
+        <div className="absolute right-10 top-4 h-40 w-40 rounded-full bg-cyan-200/40 blur-3xl" />
+      </div>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-5 flex items-end justify-between gap-4">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500">
+            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-300">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.65)]" />
               Explore
-            </p>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
-              Popular Shortcuts
+            </div>
+            <h2 className="mt-3 text-3xl font-semibold text-slate-900 dark:text-white sm:text-4xl">
+              Popular{" "}
+              <span className="bg-linear-to-r from-slate-900 via-purple-700 to-cyan-600 bg-clip-text text-transparent dark:from-white dark:via-purple-300 dark:to-cyan-300">
+                Shortcuts
+              </span>
             </h2>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              Jump into your next lesson in one click.
+            </p>
           </div>
-          <div className="hidden sm:block text-sm text-slate-500 dark:text-slate-400">
+          <div className="hidden sm:flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-600 shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-300">
             Start from anywhere
+            <span className="h-1.5 w-8 rounded-full bg-linear-to-r from-purple-400 to-cyan-400" />
           </div>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
