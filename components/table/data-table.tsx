@@ -125,24 +125,27 @@ export function DataTable<T = Record<string, unknown>>({
   };
 
   const sortedData = React.useMemo(() => {
-    if (sortColumn) {
-      return [...data].sort((a, b) => {
-        const aVal = (a as Record<string, unknown>)[sortColumn];
-        const bVal = (b as Record<string, unknown>)[sortColumn];
-        if (
-          (aVal as unknown as string | number) <
-          (bVal as unknown as string | number)
-        )
-          return sortDirection === "asc" ? -1 : 1;
-        if (
-          (aVal as unknown as string | number) >
-          (bVal as unknown as string | number)
-        )
-          return sortDirection === "asc" ? 1 : -1;
-        return 0;
-      });
+    if (!sortColumn) return data;
+    if (sortColumn === "sl") {
+      if (sortDirection === "asc") return data;
+      return [...data].reverse();
     }
-    return data;
+
+    return [...data].sort((a, b) => {
+      const aVal = (a as Record<string, unknown>)[sortColumn];
+      const bVal = (b as Record<string, unknown>)[sortColumn];
+      if (
+        (aVal as unknown as string | number) <
+        (bVal as unknown as string | number)
+      )
+        return sortDirection === "asc" ? -1 : 1;
+      if (
+        (aVal as unknown as string | number) >
+        (bVal as unknown as string | number)
+      )
+        return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
   }, [data, sortColumn, sortDirection]);
 
   const updatedColumns: Column[] = [
