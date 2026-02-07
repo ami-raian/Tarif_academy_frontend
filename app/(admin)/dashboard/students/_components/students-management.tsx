@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/table/data-table";
 import type { Column } from "@/components/table/data-table";
 import { getAllStudents } from "@/lib/api";
 import type { Student } from "@/types";
 import { PAGE_SIZE } from "@/components/table/page-size";
+import StatsCard from "@/components/common/stats-card";
 import {
   Users,
   ShieldCheck,
@@ -161,91 +162,36 @@ export default function StudentsManagement() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-          <Card className="border-0 shadow-md dark:bg-gray-800">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">
-                    মোট শিক্ষার্থী
-                  </p>
-                  <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {stats.total}
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
-                  <Users className="w-5 h-5" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-md dark:bg-gray-800">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">
-                    ভেরিফাইড
-                  </p>
-                  <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                    {stats.verified}
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-md dark:bg-gray-800">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">
-                    সক্রিয়
-                  </p>
-                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {stats.active}
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                  <CheckCircle className="w-5 h-5" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-md dark:bg-gray-800">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">
-                    পুরুষ
-                  </p>
-                  <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                    {stats.male}
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                  <User className="w-5 h-5" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-md dark:bg-gray-800">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">
-                    মহিলা
-                  </p>
-                  <p className="text-2xl font-bold text-pink-600 dark:text-pink-400">
-                    {stats.female}
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-lg bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center text-pink-600 dark:text-pink-400">
-                  <UserCircle className="w-5 h-5" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <StatsCard
+            label="মোট শিক্ষার্থী"
+            value={stats.total}
+            icon={Users}
+            variant="violet"
+          />
+          <StatsCard
+            label="ভেরিফাইড"
+            value={stats.verified}
+            icon={ShieldCheck}
+            variant="emerald"
+          />
+          <StatsCard
+            label="সক্রিয়"
+            value={stats.active}
+            icon={CheckCircle}
+            variant="blue"
+          />
+          <StatsCard
+            label="পুরুষ"
+            value={stats.male}
+            icon={User}
+            variant="indigo"
+          />
+          <StatsCard
+            label="মহিলা"
+            value={stats.female}
+            icon={UserCircle}
+            variant="pink"
+          />
         </div>
 
         {/* DataTable */}
