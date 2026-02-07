@@ -255,27 +255,32 @@ export function DataTable<T = Record<string, unknown>>({
                             {(currentPage - 1) * pageSize + rowIndex + 1}
                           </TableCell>
                         )}
-                        {columns.map((column) => (
-                          <TableCell key={column.key} align={column.align}>
-                            {column.showFullContent ? (
-                              <div
-                                style={{ width: column?.width ?? "auto" }}
-                                className="wrap-break-words"
-                              >
-                                {String(
-                                  (row as Record<string, unknown>)[column.key],
-                                )}
-                              </div>
-                            ) : (
-                              <CellWithTooltip
-                                content={String(
-                                  (row as Record<string, unknown>)[column.key],
-                                )}
-                                width={column?.width}
-                              />
-                            )}
-                          </TableCell>
-                        ))}
+                        {columns.map((column) => {
+                          const cellValue = (row as Record<string, unknown>)[
+                            column.key
+                          ];
+                          const isReactNode = React.isValidElement(cellValue);
+
+                          return (
+                            <TableCell key={column.key} align={column.align}>
+                              {isReactNode ? (
+                                cellValue
+                              ) : column.showFullContent ? (
+                                <div
+                                  style={{ width: column?.width ?? "auto" }}
+                                  className="wrap-break-words"
+                                >
+                                  {String(cellValue)}
+                                </div>
+                              ) : (
+                                <CellWithTooltip
+                                  content={String(cellValue)}
+                                  width={column?.width}
+                                />
+                              )}
+                            </TableCell>
+                          );
+                        })}
                       </TableRow>
                       {showExpandable && expandedRows[rowKey] && (
                         <TableRow className="bg-muted/20">

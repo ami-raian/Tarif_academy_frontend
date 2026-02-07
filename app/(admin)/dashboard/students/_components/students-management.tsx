@@ -2,11 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/table/data-table";
 import type { Column } from "@/components/table/data-table";
-import { getAllStudents } from "@/lib/api";
+import { getAllStudents, deleteStudent } from "@/lib/api";
 import type { Student } from "@/types";
 import { PAGE_SIZE } from "@/components/table/page-size";
 import StatsCard from "@/components/common/stats-card";
@@ -17,7 +18,18 @@ import {
   User,
   UserCircle,
   RefreshCw,
+  MoreVertical,
+  Eye,
+  Pencil,
+  Trash2,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import DeleteConfirmationDialog from "@/components/common/delete-confirmation-dialog";
 
 interface StudentRow {
   _id: string;
@@ -30,6 +42,7 @@ interface StudentRow {
   isVerified: string;
   isActive: string;
   createdAt: string;
+  action?: React.ReactNode;
 }
 
 const genderMap: Record<string, string> = {
@@ -70,6 +83,7 @@ const columns: Column<StudentRow>[] = [
   { key: "isVerified", name: "ভেরিফাইড", width: 90, align: "center" },
   { key: "isActive", name: "স্ট্যাটাস", width: 90, align: "center" },
   { key: "createdAt", name: "যোগদান", width: 120 },
+  { key: "action", name: "অ্যাকশন", width: 80, align: "right" },
 ];
 
 export default function StudentsManagement() {
@@ -82,6 +96,11 @@ export default function StudentsManagement() {
     currentPage: 1,
     pageSize: PAGE_SIZE,
   });
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
+    null,
+  );
+  const [deleting, setDeleting] = useState(false);
 
   const page = Number(searchParams.get("page")) || 1;
   const pageSize = Number(searchParams.get("pageSize")) || PAGE_SIZE;
@@ -105,7 +124,70 @@ export default function StudentsManagement() {
     fetchStudents();
   }, [fetchStudents]);
 
-  const tableData = students.map(transformStudentToRow);
+  const handleDelete = async () => {
+    if (!selectedStudentId) return;
+    try {
+      setDeleting(true);
+      const result = await deleteStudent(selectedStudentId);
+      if (result.success) {
+        setDeleteModalOpen(false);
+        setSelectedStudentId(null);
+        fetchStudents();
+      }
+    } catch (error) {
+      console.error("Failed to delete student:", error);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const tableData = students.map((student) => {
+    const row = transformStudentToRow(student);
+    return {
+      ...row,
+      action: (
+        <div className="flex items-center justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon" className="h-8 w-8">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link
+                  href={`/dashboard/students/${student._id}`}
+                  className="cursor-pointer"
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  দেখুন
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  href={`/dashboard/students/edit/${student._id}`}
+                  className="cursor-pointer"
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  সম্পাদনা
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-red-600 cursor-pointer"
+                onClick={() => {
+                  setDeleteModalOpen(true);
+                  setSelectedStudentId(student._id);
+                }}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                মুছুন
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      ),
+    };
+  });
 
   const stats = {
     total: pagination.totalItems,
@@ -211,6 +293,16 @@ export default function StudentsManagement() {
           />
         </Card>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmationDialog
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        onConfirm={handleDelete}
+        title="শিক্ষার্থী মুছুন"
+        itemName="এই শিক্ষার্থীকে"
+        isDeleting={deleting}
+      />
     </div>
   );
 }

@@ -779,3 +779,11 @@ export async function getAllStudents(params?: {
   );
   return response.json();
 }
+
+export async function deleteStudent(studentId: string) {
+  const response = await fetch(`${API_BASE_URL}/students/${studentId}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+  return response.json();
+}
