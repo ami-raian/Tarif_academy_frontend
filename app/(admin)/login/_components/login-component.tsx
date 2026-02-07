@@ -137,7 +137,7 @@ export default function LoginComponent() {
                 value={studentForm.email}
                 onChange={handleStudentInputChange}
                 required
-                className="w-full bg-gray-100 border-none py-2.5 pl-10 text-sm rounded-lg"
+                className="w-full bg-gray-100 dark:bg-gray-800 border-none py-2.5 pl-10 text-sm rounded-lg"
               />
             </div>
 
@@ -150,7 +150,7 @@ export default function LoginComponent() {
                 value={studentForm.password}
                 onChange={handleStudentInputChange}
                 required
-                className="w-full bg-gray-100 border-none py-2.5 pl-10 pr-10 text-sm rounded-lg"
+                className="w-full bg-gray-100 dark:bg-gray-800 border-none py-2.5 pl-10 pr-10 text-sm rounded-lg"
               />
               <button
                 type="button"
@@ -241,7 +241,7 @@ export default function LoginComponent() {
                 value={adminForm.email}
                 onChange={handleAdminInputChange}
                 required
-                className="w-full bg-gray-100 border-none py-2.5 pl-10 text-sm rounded-lg"
+                className="w-full bg-gray-100 dark:bg-gray-800 border-none py-2.5 pl-10 text-sm rounded-lg"
               />
             </div>
 
@@ -254,7 +254,7 @@ export default function LoginComponent() {
                 value={adminForm.password}
                 onChange={handleAdminInputChange}
                 required
-                className="w-full bg-gray-100 border-none py-2.5 pl-10 pr-10 text-sm rounded-lg"
+                className="w-full bg-gray-100 dark:bg-gray-800 border-none py-2.5 pl-10 pr-10 text-sm rounded-lg"
               />
               <button
                 type="button"
