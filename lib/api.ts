@@ -412,6 +412,8 @@ export interface McqExam {
   passingMarks: number;
   isPublished: boolean;
   isResultPublished: boolean;
+  hasAccessCode?: boolean; // true if exam requires an access code
+  accessCode?: string;     // only present in admin responses
   startTime?: string;
   endTime?: string;
   createdBy?: { name: string; email: string };
@@ -509,6 +511,7 @@ export async function createMcqExam(data: {
   description?: string;
   duration: number;
   passingMarks: number;
+  accessCode?: string;
   startTime?: string;
   endTime?: string;
 }) {
@@ -528,6 +531,7 @@ export async function updateMcqExam(
     description?: string;
     duration?: number;
     passingMarks?: number;
+    accessCode?: string;
     startTime?: string;
     endTime?: string;
   },
@@ -676,10 +680,23 @@ export async function bulkCreateMcqQuestions(
 // ========================
 
 // Student: Start exam
-export async function startMcqExam(examId: string) {
+export async function verifyMcqExamCode(examId: string, accessCode: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/mcq/exams/${examId}/verify-code`,
+    {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ accessCode }),
+    },
+  );
+  return response.json();
+}
+
+export async function startMcqExam(examId: string, accessCode?: string) {
   const response = await fetch(`${API_BASE_URL}/mcq/exams/${examId}/start`, {
     method: "POST",
     headers: getAuthHeaders(),
+    body: accessCode ? JSON.stringify({ accessCode }) : undefined,
   });
   return response.json();
 }

@@ -287,7 +287,8 @@ export default function ExamPage() {
   const handleStartExam = async () => {
     try {
       setLoading(true);
-      const response = await startMcqExam(examId);
+      const savedCode = localStorage.getItem(`exam_${examId}_code`) ?? undefined;
+      const response = await startMcqExam(examId, savedCode);
       if (response.success) {
         setExamStarted(true);
         setTimeLeft(exam!.duration * 60);

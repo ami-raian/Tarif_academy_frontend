@@ -63,7 +63,7 @@ const quickLinks: QuickLink[] = [
   {
     title: "Quiz Command",
     subtitle: "Fast challenges",
-    href: "#",
+    href: "/exams",
     icon: Command,
     accent: "text-teal-700",
     tint: "bg-teal-100",

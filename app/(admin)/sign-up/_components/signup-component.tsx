@@ -75,12 +75,7 @@ export default function SignUpComponent() {
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     mode: "onChange",
-    defaultValues: {
-      educationalInfo: {
-        ssc: { gpa: 0, passingYear: new Date().getFullYear() },
-        hsc: { gpa: 0, passingYear: new Date().getFullYear() + 2 },
-      },
-    },
+    defaultValues: {},
   });
 
   const validateTab = async (tab: string): Promise<boolean> => {
@@ -100,15 +95,8 @@ export default function SignUpComponent() {
         ];
         break;
       case "ssc":
-        fieldsToValidate = [
-          "educationalInfo.ssc.roll",
-          "educationalInfo.ssc.registration",
-          "educationalInfo.ssc.schoolName",
-          "educationalInfo.ssc.board",
-          "educationalInfo.ssc.passingYear",
-          "educationalInfo.ssc.group",
-          "educationalInfo.ssc.gpa",
-        ];
+        // SSC fields are optional, no validation required
+        fieldsToValidate = [];
         break;
       case "hsc":
         // HSC fields are optional, no validation required
@@ -569,7 +557,7 @@ export default function SignUpComponent() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <Label required>SSC রোল নম্বর</Label>
+                  <Label>SSC রোল নম্বর</Label>
                   <Input
                     {...register("educationalInfo.ssc.roll")}
                     placeholder="রোল নম্বর"
@@ -582,7 +570,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label required>SSC রেজিস্ট্রেশন নম্বর</Label>
+                  <Label>SSC রেজিস্ট্রেশন নম্বর</Label>
                   <Input
                     {...register("educationalInfo.ssc.registration")}
                     placeholder="রেজিস্ট্রেশন নম্বর"
@@ -595,7 +583,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1 md:col-span-2">
-                  <Label required>স্কুলের নাম</Label>
+                  <Label>স্কুলের নাম</Label>
                   <Input
                     {...register("educationalInfo.ssc.schoolName")}
                     placeholder="আপনার স্কুলের নাম"
@@ -608,7 +596,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label required>বোর্ড</Label>
+                  <Label>বোর্ড</Label>
                   <Select
                     value={watch("educationalInfo.ssc.board")}
                     onValueChange={(value) =>
@@ -637,7 +625,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label required>বিভাগ</Label>
+                  <Label>বিভাগ</Label>
                   <Select
                     value={watch("educationalInfo.ssc.group")}
                     onValueChange={(value) =>
@@ -666,7 +654,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label required>পাশের সাল</Label>
+                  <Label>পাশের সাল</Label>
                   <Input
                     type="number"
                     {...register("educationalInfo.ssc.passingYear", {
@@ -682,7 +670,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label required>GPA</Label>
+                  <Label>GPA</Label>
                   <Input
                     type="number"
                     step="0.01"

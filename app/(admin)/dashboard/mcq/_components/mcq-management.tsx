@@ -210,6 +210,7 @@ const McqManagement = () => {
     description: "",
     duration: "30",
     passingMarks: "40",
+    accessCode: "",
   });
 
   const [questionForm, setQuestionForm] = useState({
@@ -284,6 +285,7 @@ const McqManagement = () => {
         ...examForm,
         duration,
         passingMarks,
+        accessCode: examForm.accessCode.trim() || undefined,
       });
       if (response.success) {
         setIsCreateExamModalOpen(false);
@@ -292,6 +294,7 @@ const McqManagement = () => {
           description: "",
           duration: "30",
           passingMarks: "40",
+          accessCode: "",
         });
         fetchExams();
       } else {
@@ -1110,6 +1113,20 @@ const McqManagement = () => {
                   className="mt-1"
                 />
               </div>
+            </div>
+            <div>
+              <Label>অ্যাক্সেস কোড (ঐচ্ছিক)</Label>
+              <Input
+                value={examForm.accessCode}
+                onChange={(e) =>
+                  setExamForm({ ...examForm, accessCode: e.target.value })
+                }
+                placeholder="যেমন: EXAM2024 — খালি রাখলে সবাই দিতে পারবে"
+                className="mt-1"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                কোড দিলে শুধু যারা কোড জানে তারাই পরীক্ষায় অংশ নিতে পারবে
+              </p>
             </div>
             <div className="flex gap-3 pt-4">
               <Button

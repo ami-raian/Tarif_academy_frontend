@@ -8,105 +8,7 @@ import { Navbar } from "@/app/(home)/_components/navbar";
 import { Button } from "@/components/ui/button";
 import { getMyEnrollments, getCourseProgress, getCookie } from "@/lib/api";
 import type { Enrollment } from "@/types";
-
-// Icons
-const Icons = {
-  play: () => (
-    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M8 5v14l11-7z" />
-    </svg>
-  ),
-  clock: () => (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-  ),
-  book: () => (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-      />
-    </svg>
-  ),
-  check: () => (
-    <svg
-      className="w-5 h-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M5 13l4 4L19 7"
-      />
-    </svg>
-  ),
-  progress: () => (
-    <svg
-      className="w-5 h-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-      />
-    </svg>
-  ),
-  emptyBox: () => (
-    <svg
-      className="w-16 h-16"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-      />
-    </svg>
-  ),
-  logout: () => (
-    <svg
-      className="w-5 h-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-      />
-    </svg>
-  ),
-};
+import { Play, Clock, BookOpen, CheckCircle2, BarChart2, Inbox } from "lucide-react";
 
 interface CourseWithProgress extends Enrollment {
   progressData?: {
@@ -177,30 +79,30 @@ export default function MyCoursesPage() {
     switch (status) {
       case "pending":
         return {
-          bg: "bg-amber-100",
-          text: "text-amber-800",
-          border: "border-amber-200",
+          bg: "bg-amber-100 dark:bg-amber-500/20",
+          text: "text-amber-800 dark:text-amber-400",
+          border: "border-amber-200 dark:border-amber-500/30",
           label: "অপেক্ষমাণ",
         };
       case "approved":
         return {
-          bg: "bg-emerald-100",
-          text: "text-emerald-800",
-          border: "border-emerald-200",
+          bg: "bg-emerald-100 dark:bg-emerald-500/20",
+          text: "text-emerald-800 dark:text-emerald-400",
+          border: "border-emerald-200 dark:border-emerald-500/30",
           label: "অনুমোদিত",
         };
       case "rejected":
         return {
-          bg: "bg-red-100",
-          text: "text-red-800",
-          border: "border-red-200",
+          bg: "bg-red-100 dark:bg-red-500/20",
+          text: "text-red-800 dark:text-red-400",
+          border: "border-red-200 dark:border-red-500/30",
           label: "প্রত্যাখ্যাত",
         };
       default:
         return {
-          bg: "bg-gray-100",
-          text: "text-gray-800",
-          border: "border-gray-200",
+          bg: "bg-gray-100 dark:bg-gray-700",
+          text: "text-gray-800 dark:text-gray-300",
+          border: "border-gray-200 dark:border-gray-600",
           label: status,
         };
     }
@@ -223,7 +125,7 @@ export default function MyCoursesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <Navbar />
         <div className="pt-24 pb-16">
           <div className="container mx-auto px-4">
@@ -231,13 +133,13 @@ export default function MyCoursesPage() {
               {[...Array(6)].map((_, i) => (
                 <div
                   key={i}
-                  className="bg-white rounded-2xl overflow-hidden animate-pulse"
+                  className="bg-white dark:bg-gray-800/50 rounded-2xl overflow-hidden animate-pulse"
                 >
-                  <div className="h-48 bg-gray-200" />
+                  <div className="h-48 bg-gray-200 dark:bg-gray-700" />
                   <div className="p-5 space-y-3">
-                    <div className="h-4 bg-gray-200 rounded w-3/4" />
-                    <div className="h-3 bg-gray-200 rounded w-1/2" />
-                    <div className="h-8 bg-gray-200 rounded w-full" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+                    <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-full" />
                   </div>
                 </div>
               ))}
@@ -249,7 +151,7 @@ export default function MyCoursesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       <Navbar />
 
       <main className="pt-24 pb-16">
@@ -257,8 +159,8 @@ export default function MyCoursesPage() {
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">আমার কোর্স</h1>
-              <p className="text-gray-600 mt-1">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">আমার কোর্স</h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
                 আপনার এনরোল করা কোর্স সমূহ এখানে দেখুন
               </p>
             </div>
@@ -315,55 +217,55 @@ export default function MyCoursesPage() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600">
-                  <Icons.book />
+                <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                  <BookOpen className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {enrollments.length}
                   </p>
-                  <p className="text-sm text-gray-500">মোট এনরোল</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">মোট এনরোল</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600">
-                  <Icons.clock />
+                <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                  <Clock className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {enrollments.filter((e) => e.status === "pending").length}
                   </p>
-                  <p className="text-sm text-gray-500">অপেক্ষমাণ</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">অপেক্ষমাণ</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600">
-                  <Icons.check />
+                <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {enrollments.filter((e) => e.status === "approved").length}
                   </p>
-                  <p className="text-sm text-gray-500">অনুমোদিত</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">অনুমোদিত</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center text-red-600">
-                  <Icons.progress />
+                <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-500/20 flex items-center justify-center text-red-600 dark:text-red-400">
+                  <BarChart2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {enrollments.filter((e) => e.status === "rejected").length}
                   </p>
-                  <p className="text-sm text-gray-500">প্রত্যাখ্যাত</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">প্রত্যাখ্যাত</p>
                 </div>
               </div>
             </div>
@@ -371,11 +273,11 @@ export default function MyCoursesPage() {
 
           {/* Courses Grid */}
           {filteredEnrollments.length === 0 ? (
-            <div className="bg-white rounded-2xl p-16 text-center shadow-sm border border-gray-100">
-              <div className="flex justify-center text-gray-300 mb-4">
-                <Icons.emptyBox />
+            <div className="bg-white dark:bg-gray-800/50 rounded-2xl p-16 text-center shadow-sm border border-gray-100 dark:border-gray-700/50">
+              <div className="flex justify-center text-gray-300 dark:text-gray-600 mb-4">
+                <Inbox className="w-16 h-16" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 {filter === "all"
                   ? "এখনো কোন কোর্সে এনরোল করেননি"
                   : filter === "pending"
@@ -384,7 +286,7 @@ export default function MyCoursesPage() {
                       ? "কোন অনুমোদিত কোর্স নেই"
                       : "কোন প্রত্যাখ্যাত কোর্স নেই"}
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
                 {filter === "all"
                   ? "আমাদের কোর্স সমূহ দেখুন এবং শেখা শুরু করুন"
                   : "অন্য ফিল্টার ব্যবহার করে দেখুন"}
@@ -415,14 +317,14 @@ export default function MyCoursesPage() {
                 return (
                   <div
                     key={enrollment._id}
-                    className={`bg-white rounded-2xl overflow-hidden shadow-sm border hover:shadow-lg transition-shadow ${
+                    className={`bg-white dark:bg-gray-800/50 rounded-2xl overflow-hidden shadow-sm border hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow ${
                       enrollment.status === "rejected"
-                        ? "border-red-200 opacity-75"
-                        : "border-gray-100"
+                        ? "border-red-200 dark:border-red-500/30 opacity-75"
+                        : "border-gray-100 dark:border-gray-700/50"
                     }`}
                   >
                     {/* Thumbnail */}
-                    <div className="relative h-44 bg-linear-to-br from-purple-100 to-cyan-100">
+                    <div className="relative h-44 bg-linear-to-br from-purple-100 to-cyan-100 dark:from-purple-500/20 dark:to-cyan-500/20">
                       <div className="absolute top-3 left-3">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border}`}
@@ -453,22 +355,22 @@ export default function MyCoursesPage() {
 
                     {/* Content */}
                     <div className="p-5">
-                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
                         {course?.title}
                       </h3>
 
-                      <p className="text-sm text-gray-500 mb-2">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
                         এনরোল: {formatDate(enrollment.enrolledAt)}
                       </p>
 
                       {enrollment.status === "pending" && (
-                        <p className="text-sm text-amber-600 mb-4">
+                        <p className="text-sm text-amber-600 dark:text-amber-400 mb-4">
                           আপনার এনরোলমেন্ট অনুমোদনের অপেক্ষায় আছে
                         </p>
                       )}
 
                       {enrollment.status === "rejected" && (
-                        <p className="text-sm text-red-600 mb-4">
+                        <p className="text-sm text-red-600 dark:text-red-400 mb-4">
                           {enrollment.rejectionReason ||
                             "এনরোলমেন্ট প্রত্যাখ্যাত হয়েছে"}
                         </p>
@@ -478,12 +380,12 @@ export default function MyCoursesPage() {
                       {isApproved && (
                         <div className="mb-4">
                           <div className="flex items-center justify-between text-sm mb-1">
-                            <span className="text-gray-600">অগ্রগতি</span>
-                            <span className="text-gray-900 font-medium">
+                            <span className="text-gray-600 dark:text-gray-400">অগ্রগতি</span>
+                            <span className="text-gray-900 dark:text-white font-medium">
                               {completedVideos}/{totalVideos} ভিডিও
                             </span>
                           </div>
-                          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                             <div
                               className={`h-full rounded-full transition-all ${
                                 progress === 100
@@ -501,7 +403,7 @@ export default function MyCoursesPage() {
                         <Link href={`/learn/${course?._id}`}>
                           <Button className="w-full bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600">
                             <span className="flex items-center gap-2">
-                              <Icons.play />
+                              <Play className="w-4 h-4" />
                               {progress > 0
                                 ? "কোর্স চালিয়ে যান"
                                 : "কোর্স শুরু করুন"}
@@ -511,14 +413,14 @@ export default function MyCoursesPage() {
                       ) : enrollment.status === "pending" ? (
                         <Button
                           disabled
-                          className="w-full bg-amber-100 text-amber-700 cursor-not-allowed"
+                          className="w-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 cursor-not-allowed"
                         >
                           অনুমোদনের অপেক্ষায়...
                         </Button>
                       ) : (
                         <Button
                           disabled
-                          className="w-full bg-gray-100 text-gray-500 cursor-not-allowed"
+                          className="w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                         >
                           এক্সেস নেই
                         </Button>
