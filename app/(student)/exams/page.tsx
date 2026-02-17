@@ -1,3 +1,4 @@
+// app/(student)/exams/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -185,8 +186,14 @@ export default function ExamsPage() {
     try {
       const res = await verifyMcqExamCode(codeModalExam._id, codeInput.trim());
       if (res.success) {
-        localStorage.setItem(`exam_${codeModalExam._id}`, JSON.stringify(codeModalExam));
-        localStorage.setItem(`exam_${codeModalExam._id}_code`, codeInput.trim());
+        localStorage.setItem(
+          `exam_${codeModalExam._id}`,
+          JSON.stringify(codeModalExam),
+        );
+        localStorage.setItem(
+          `exam_${codeModalExam._id}_code`,
+          codeInput.trim(),
+        );
         setCodeModalExam(null);
         setCodeInput("");
         router.push(`/exams/${codeModalExam._id}`);
@@ -496,8 +503,18 @@ export default function ExamsPage() {
                           }}
                         >
                           <span className="flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                              />
                             </svg>
                             কোড দিয়ে যোগ দিন
                           </span>
@@ -536,13 +553,27 @@ export default function ExamsPage() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
                   </svg>
                 </div>
                 <div>
-                  <h2 className="font-semibold text-gray-900">অ্যাক্সেস কোড দিন</h2>
-                  <p className="text-xs text-gray-500 line-clamp-1">{codeModalExam.title}</p>
+                  <h2 className="font-semibold text-gray-900">
+                    অ্যাক্সেস কোড দিন
+                  </h2>
+                  <p className="text-xs text-gray-500 line-clamp-1">
+                    {codeModalExam.title}
+                  </p>
                 </div>
               </div>
               <button
@@ -561,7 +592,10 @@ export default function ExamsPage() {
               <input
                 type="text"
                 value={codeInput}
-                onChange={(e) => { setCodeInput(e.target.value); setCodeError(""); }}
+                onChange={(e) => {
+                  setCodeInput(e.target.value);
+                  setCodeError("");
+                }}
                 placeholder="অ্যাক্সেস কোড লিখুন..."
                 className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 autoFocus
