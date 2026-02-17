@@ -15,105 +15,16 @@ import {
   type McqExam,
   type McqSubmission,
 } from "@/lib/api";
-
-// Icons
-const Icons = {
-  clock: () => (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-  ),
-  questions: () => (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-  ),
-  check: () => (
-    <svg
-      className="w-5 h-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M5 13l4 4L19 7"
-      />
-    </svg>
-  ),
-  x: () => (
-    <svg
-      className="w-5 h-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M6 18L18 6M6 6l12 12"
-      />
-    </svg>
-  ),
-  play: () => (
-    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M8 5v14l11-7z" />
-    </svg>
-  ),
-  trophy: () => (
-    <svg
-      className="w-5 h-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-  ),
-  emptyBox: () => (
-    <svg
-      className="w-16 h-16"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-        d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-  ),
-};
+import {
+  Clock,
+  HelpCircle,
+  CheckCircle2,
+  X,
+  Play,
+  Trophy,
+  Inbox,
+  Lock,
+} from "lucide-react";
 
 export default function ExamsPage() {
   const router = useRouter();
@@ -144,13 +55,8 @@ export default function ExamsPage() {
           getPublishedMcqExams(),
           getMyMcqExams(),
         ]);
-
-        if (examsRes.success) {
-          setExams(examsRes.data);
-        }
-        if (submissionsRes.success) {
-          setMySubmissions(submissionsRes.data);
-        }
+        if (examsRes.success) setExams(examsRes.data);
+        if (submissionsRes.success) setMySubmissions(submissionsRes.data);
       } catch (error) {
         console.error("Failed to fetch exams:", error);
       } finally {
@@ -163,18 +69,12 @@ export default function ExamsPage() {
 
   const getSubmissionForExam = (examId: string) => {
     return mySubmissions.find(
-      (s) =>
-        (typeof s.examId === "string" ? s.examId : s.examId._id) === examId,
+      (s) => (typeof s.examId === "string" ? s.examId : s.examId._id) === examId,
     );
   };
 
-  // Check if student passed based on exam's passing marks
   const checkIfPassed = (submission: McqSubmission, exam: McqExam) => {
-    // First check if isPassed is explicitly set
-    if (submission.isPassed !== undefined) {
-      return submission.isPassed;
-    }
-    // Fallback: calculate based on passingMarks
+    if (submission.isPassed !== undefined) return submission.isPassed;
     return submission.obtainedMarks >= exam.passingMarks;
   };
 
@@ -186,14 +86,8 @@ export default function ExamsPage() {
     try {
       const res = await verifyMcqExamCode(codeModalExam._id, codeInput.trim());
       if (res.success) {
-        localStorage.setItem(
-          `exam_${codeModalExam._id}`,
-          JSON.stringify(codeModalExam),
-        );
-        localStorage.setItem(
-          `exam_${codeModalExam._id}_code`,
-          codeInput.trim(),
-        );
+        localStorage.setItem(`exam_${codeModalExam._id}`, JSON.stringify(codeModalExam));
+        localStorage.setItem(`exam_${codeModalExam._id}_code`, codeInput.trim());
         setCodeModalExam(null);
         setCodeInput("");
         router.push(`/exams/${codeModalExam._id}`);
@@ -209,29 +103,25 @@ export default function ExamsPage() {
 
   const filteredExams = exams.filter((exam) => {
     const submission = getSubmissionForExam(exam._id);
-    if (filter === "new")
-      return !submission || submission.status === "in_progress";
+    if (filter === "new") return !submission || submission.status === "in_progress";
     if (filter === "completed") return submission?.status === "evaluated";
     return true;
   });
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
         <Navbar />
         <div className="pt-24 pb-16">
           <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-2xl overflow-hidden animate-pulse"
-                >
-                  <div className="h-32 bg-gray-200" />
+                <div key={i} className="bg-white dark:bg-gray-800/50 rounded-2xl overflow-hidden animate-pulse">
+                  <div className="h-32 bg-gray-200 dark:bg-gray-700" />
                   <div className="p-5 space-y-3">
-                    <div className="h-4 bg-gray-200 rounded w-3/4" />
-                    <div className="h-3 bg-gray-200 rounded w-1/2" />
-                    <div className="h-8 bg-gray-200 rounded w-full" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+                    <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-full" />
                   </div>
                 </div>
               ))}
@@ -243,16 +133,17 @@ export default function ExamsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       <Navbar />
 
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">MCQ পরীক্ষা</h1>
-              <p className="text-gray-600 mt-1">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">MCQ পরীক্ষা</h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
                 প্রকাশিত পরীক্ষাগুলোতে অংশগ্রহণ করুন
               </p>
             </div>
@@ -264,7 +155,7 @@ export default function ExamsPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   filter === "all"
                     ? "bg-purple-600 text-white"
-                    : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                 }`}
               >
                 সব ({exams.length})
@@ -274,7 +165,7 @@ export default function ExamsPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   filter === "new"
                     ? "bg-emerald-500 text-white"
-                    : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                 }`}
               >
                 নতুন
@@ -284,7 +175,7 @@ export default function ExamsPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   filter === "completed"
                     ? "bg-sky-500 text-white"
-                    : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                 }`}
               >
                 সম্পন্ন
@@ -294,69 +185,58 @@ export default function ExamsPage() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600">
-                  <Icons.questions />
+                <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                  <HelpCircle className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {exams.length}
-                  </p>
-                  <p className="text-sm text-gray-500">মোট পরীক্ষা</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{exams.length}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">মোট পরীক্ষা</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600">
-                  <Icons.check />
+                <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {
-                      mySubmissions.filter((s) => s.status === "evaluated")
-                        .length
-                    }
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {mySubmissions.filter((s) => s.status === "evaluated").length}
                   </p>
-                  <p className="text-sm text-gray-500">সম্পন্ন</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">সম্পন্ন</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600">
-                  <Icons.trophy />
+                <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                  <Trophy className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {
-                      mySubmissions.filter((s) => {
-                        const exam = exams.find(
-                          (e) =>
-                            e._id ===
-                            (typeof s.examId === "string"
-                              ? s.examId
-                              : s.examId._id),
-                        );
-                        return exam && checkIfPassed(s, exam);
-                      }).length
-                    }
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {mySubmissions.filter((s) => {
+                      const exam = exams.find(
+                        (e) => e._id === (typeof s.examId === "string" ? s.examId : s.examId._id),
+                      );
+                      return exam && checkIfPassed(s, exam);
+                    }).length}
                   </p>
-                  <p className="text-sm text-gray-500">পাস</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">পাস</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-sky-100 flex items-center justify-center text-sky-600">
-                  <Icons.clock />
+                <div className="w-10 h-10 rounded-lg bg-sky-100 dark:bg-sky-500/20 flex items-center justify-center text-sky-600 dark:text-sky-400">
+                  <Clock className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {exams.filter((e) => !getSubmissionForExam(e._id)).length}
                   </p>
-                  <p className="text-sm text-gray-500">বাকি আছে</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">বাকি আছে</p>
                 </div>
               </div>
             </div>
@@ -364,17 +244,15 @@ export default function ExamsPage() {
 
           {/* Exams Grid */}
           {filteredExams.length === 0 ? (
-            <div className="bg-white rounded-2xl p-16 text-center shadow-sm border border-gray-100">
-              <div className="flex justify-center text-gray-300 mb-4">
-                <Icons.emptyBox />
+            <div className="bg-white dark:bg-gray-800/50 rounded-2xl p-16 text-center shadow-sm border border-gray-100 dark:border-gray-700/50">
+              <div className="flex justify-center text-gray-300 dark:text-gray-600 mb-4">
+                <Inbox className="w-16 h-16" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 কোনো পরীক্ষা পাওয়া যায়নি
               </h3>
-              <p className="text-gray-600">
-                {filter !== "all"
-                  ? "অন্য ফিল্টার ব্যবহার করে দেখুন"
-                  : "শীঘ্রই নতুন পরীক্ষা যোগ হবে"}
+              <p className="text-gray-600 dark:text-gray-400">
+                {filter !== "all" ? "অন্য ফিল্টার ব্যবহার করে দেখুন" : "শীঘ্রই নতুন পরীক্ষা যোগ হবে"}
               </p>
             </div>
           ) : (
@@ -387,21 +265,23 @@ export default function ExamsPage() {
                 return (
                   <div
                     key={exam._id}
-                    className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow"
+                    className="bg-white dark:bg-gray-800/50 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow"
                   >
-                    {/* Header */}
+                    {/* Card Header */}
                     <div className="relative h-32 bg-linear-to-br from-purple-500 to-cyan-500 p-4">
                       <div className="absolute top-3 right-3 flex gap-2">
                         {isCompleted && submission && (
                           <CommonBadge
-                            status={
-                              checkIfPassed(submission, exam) ? "পাস" : "ফেল"
-                            }
+                            status={checkIfPassed(submission, exam) ? "পাস" : "ফেল"}
                             size="sm"
                           />
                         )}
-                        {isInProgress && (
-                          <CommonBadge status="চলমান" size="sm" />
+                        {isInProgress && <CommonBadge status="চলমান" size="sm" />}
+                        {exam.hasAccessCode && !isCompleted && !isInProgress && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/20 text-white text-xs font-medium">
+                            <Lock className="w-3 h-3" />
+                            কোড
+                          </span>
                         )}
                       </div>
                       <div className="absolute bottom-4 left-4 right-4">
@@ -411,56 +291,51 @@ export default function ExamsPage() {
                       </div>
                     </div>
 
-                    {/* Content */}
+                    {/* Card Content */}
                     <div className="p-5">
                       {exam.description && (
-                        <p className="text-sm text-gray-500 mb-4 line-clamp-2">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">
                           {exam.description}
                         </p>
                       )}
 
-                      <div className="flex flex-wrap gap-3 text-sm text-gray-600 mb-4">
+                      <div className="flex flex-wrap gap-3 text-sm text-gray-600 dark:text-gray-400 mb-4">
                         <span className="flex items-center gap-1">
-                          <Icons.clock />
+                          <Clock className="w-4 h-4" />
                           {exam.duration} মিনিট
                         </span>
                         <span className="flex items-center gap-1">
-                          <Icons.questions />
+                          <HelpCircle className="w-4 h-4" />
                           {exam.totalQuestions} প্রশ্ন
                         </span>
                         <span>মোট: {exam.totalMarks} নম্বর</span>
                       </div>
 
                       {/* Result Section */}
-                      {isCompleted && exam.isResultPublished && (
-                        <div className="mb-4 p-3 rounded-lg bg-gray-50">
+                      {isCompleted && exam.isResultPublished && submission && (
+                        <div className="mb-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
                           <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-600">
-                              প্রাপ্ত নম্বর:
-                            </span>
-                            <span className="font-bold text-lg">
-                              {submission.obtainedMarks} /{" "}
-                              {submission.totalMarks}
+                            <span className="text-sm text-gray-600 dark:text-gray-400">প্রাপ্ত নম্বর:</span>
+                            <span className="font-bold text-lg text-gray-900 dark:text-white">
+                              {submission.obtainedMarks} / {submission.totalMarks}
                             </span>
                           </div>
-                          <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div className="mt-2 h-2 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
                             <div
                               className={`h-full rounded-full ${
-                                checkIfPassed(submission, exam)
-                                  ? "bg-emerald-500"
-                                  : "bg-rose-500"
+                                checkIfPassed(submission, exam) ? "bg-emerald-500" : "bg-rose-500"
                               }`}
                               style={{ width: `${submission.percentage}%` }}
                             />
                           </div>
-                          <p className="text-xs text-gray-500 mt-1 text-right">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-right">
                             {submission.percentage}%
                           </p>
                         </div>
                       )}
 
                       {isCompleted && !exam.isResultPublished && (
-                        <div className="mb-4 p-3 rounded-lg bg-amber-50 text-amber-700 text-sm">
+                        <div className="mb-4 p-3 rounded-lg bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 text-sm">
                           পরীক্ষা জমা দেওয়া হয়েছে। ফলাফল প্রকাশের অপেক্ষায়...
                         </div>
                       )}
@@ -471,7 +346,7 @@ export default function ExamsPage() {
                           <Link href={`/exams/${exam._id}/result`}>
                             <Button className="w-full bg-sky-500 hover:bg-sky-600">
                               <span className="flex items-center gap-2">
-                                <Icons.trophy />
+                                <Trophy className="w-4 h-4" />
                                 বিস্তারিত ফলাফল দেখুন
                               </span>
                             </Button>
@@ -479,7 +354,7 @@ export default function ExamsPage() {
                         ) : (
                           <Button
                             disabled
-                            className="w-full bg-gray-100 text-gray-500 cursor-not-allowed"
+                            className="w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                           >
                             ফলাফল প্রকাশের অপেক্ষায়
                           </Button>
@@ -488,7 +363,7 @@ export default function ExamsPage() {
                         <Link href={`/exams/${exam._id}`}>
                           <Button className="w-full bg-amber-500 hover:bg-amber-600">
                             <span className="flex items-center gap-2">
-                              <Icons.play />
+                              <Play className="w-4 h-4" />
                               পরীক্ষা চালিয়ে যান
                             </span>
                           </Button>
@@ -503,19 +378,7 @@ export default function ExamsPage() {
                           }}
                         >
                           <span className="flex items-center gap-2">
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                              />
-                            </svg>
+                            <Lock className="w-4 h-4" />
                             কোড দিয়ে যোগ দিন
                           </span>
                         </Button>
@@ -523,15 +386,12 @@ export default function ExamsPage() {
                         <Link
                           href={`/exams/${exam._id}`}
                           onClick={() => {
-                            localStorage.setItem(
-                              `exam_${exam._id}`,
-                              JSON.stringify(exam),
-                            );
+                            localStorage.setItem(`exam_${exam._id}`, JSON.stringify(exam));
                           }}
                         >
                           <Button className="w-full bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600">
                             <span className="flex items-center gap-2">
-                              <Icons.play />
+                              <Play className="w-4 h-4" />
                               পরীক্ষা শুরু করুন
                             </span>
                           </Button>
@@ -549,42 +409,30 @@ export default function ExamsPage() {
       {/* Access Code Modal */}
       {codeModalExam && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl dark:shadow-gray-900/60 w-full max-w-md p-6 border border-gray-100 dark:border-gray-700/50">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                    />
-                  </svg>
+                <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                  <Lock className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="font-semibold text-gray-900">
+                  <h2 className="font-semibold text-gray-900 dark:text-white">
                     অ্যাক্সেস কোড দিন
                   </h2>
-                  <p className="text-xs text-gray-500 line-clamp-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
                     {codeModalExam.title}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setCodeModalExam(null)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
               >
-                <Icons.x />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               এই পরীক্ষায় অংশ নিতে অ্যাডমিন প্রদত্ত কোড প্রয়োজন।
             </p>
 
@@ -592,23 +440,20 @@ export default function ExamsPage() {
               <input
                 type="text"
                 value={codeInput}
-                onChange={(e) => {
-                  setCodeInput(e.target.value);
-                  setCodeError("");
-                }}
+                onChange={(e) => { setCodeInput(e.target.value); setCodeError(""); }}
                 placeholder="অ্যাক্সেস কোড লিখুন..."
-                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 autoFocus
                 required
               />
               {codeError && (
-                <p className="text-sm text-rose-600 font-medium">{codeError}</p>
+                <p className="text-sm text-rose-600 dark:text-rose-400 font-medium">{codeError}</p>
               )}
               <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={() => setCodeModalExam(null)}
-                  className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   বাতিল
                 </button>

@@ -14,10 +14,10 @@ const buttonVariants = cva(
         destructive:
           "bg-rose-500 text-white shadow-md hover:bg-rose-600 hover:shadow-lg active:scale-[0.98]",
         outline:
-          "border border-input bg-white text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98]",
+          "border border-input bg-white dark:bg-gray-800 text-slate-700 dark:text-slate-300 shadow-sm hover:bg-slate-50 dark:hover:bg-gray-700 hover:border-slate-300 dark:border-gray-600 dark:hover:border-gray-500 active:scale-[0.98]",
         secondary:
-          "bg-slate-100 text-slate-900 shadow-sm hover:bg-slate-200 active:scale-[0.98]",
-        ghost: "hover:bg-slate-100 hover:text-slate-900",
+          "bg-slate-100 dark:bg-gray-700 text-slate-900 dark:text-slate-100 shadow-sm hover:bg-slate-200 dark:hover:bg-gray-600 active:scale-[0.98]",
+        ghost: "hover:bg-slate-100 dark:hover:bg-gray-700 hover:text-slate-900 dark:hover:text-white dark:text-slate-300",
         link: "text-purple-600 underline-offset-4 hover:underline",
         success:
           "bg-emerald-500 text-white shadow-md hover:bg-emerald-600 hover:shadow-lg active:scale-[0.98]",
