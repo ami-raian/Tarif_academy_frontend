@@ -54,4 +54,5 @@ export const loadStartedAtFromStorage = (examId: string) => {
 export const clearExamCache = (examId: string) => {
   localStorage.removeItem(getAnswersStorageKey(examId));
   localStorage.removeItem(getStartedAtStorageKey(examId));
+  localStorage.removeItem(`exam_${examId}_code`);
 };
