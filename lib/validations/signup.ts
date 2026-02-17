@@ -38,30 +38,37 @@ const guardianTypes = [
 // Gender
 const genders = ["male", "female", "other"] as const;
 
-// SSC Schema
+// SSC Schema - all fields optional
 const sscSchema = z.object({
   roll: z
     .string()
-    .min(1, "SSC রোল নম্বর আবশ্যক")
-    .regex(/^\d+$/, "শুধুমাত্র সংখ্যা দিন"),
+    .regex(/^\d*$/, "শুধুমাত্র সংখ্যা দিন")
+    .optional()
+    .or(z.literal("")),
   registration: z
     .string()
-    .min(1, "SSC রেজিস্ট্রেশন নম্বর আবশ্যক")
-    .regex(/^\d+$/, "শুধুমাত্র সংখ্যা দিন"),
+    .regex(/^\d*$/, "শুধুমাত্র সংখ্যা দিন")
+    .optional()
+    .or(z.literal("")),
   schoolName: z
     .string()
-    .min(2, "স্কুলের নাম কমপক্ষে ২ অক্ষর হতে হবে")
-    .max(100, "স্কুলের নাম সর্বোচ্চ ১০০ অক্ষর হতে পারে"),
-  board: z.enum(boards, { message: "বোর্ড নির্বাচন করুন" }),
+    .max(100, "স্কুলের নাম সর্বোচ্চ ১০০ অক্ষর হতে পারে")
+    .optional()
+    .or(z.literal("")),
+  board: z.enum(boards).optional(),
   passingYear: z
     .number()
     .min(2000, "পাশের সাল ২০০০ এর পরে হতে হবে")
-    .max(new Date().getFullYear() + 1, "ভবিষ্যতের সাল দেওয়া যাবে না"),
-  group: z.enum(groups, { message: "বিভাগ নির্বাচন করুন" }),
+    .max(new Date().getFullYear() + 1, "ভবিষ্যতের সাল দেওয়া যাবে না")
+    .optional()
+    .or(z.nan().transform(() => undefined)),
+  group: z.enum(groups).optional(),
   gpa: z
     .number()
-    .min(1.0, "GPA কমপক্ষে ১.০০ হতে হবে")
-    .max(5.0, "GPA সর্বোচ্চ ৫.০০ হতে পারে"),
+    .min(0, "GPA কমপক্ষে ০ হতে হবে")
+    .max(5.0, "GPA সর্বোচ্চ ৫.০০ হতে পারে")
+    .optional()
+    .or(z.nan().transform(() => undefined)),
 });
 
 // HSC Schema - all fields optional
@@ -132,7 +139,7 @@ const addressSchema = z.object({
 
 // Educational Info Schema
 const educationalInfoSchema = z.object({
-  ssc: sscSchema,
+  ssc: sscSchema.optional(),
   hsc: hscSchema.optional(),
 });
 
@@ -175,7 +182,7 @@ export const signupSchema = z
     bloodGroup: z.enum(bloodGroups, { message: "রক্তের গ্রুপ নির্বাচন করুন" }),
 
     // Nested Objects
-    educationalInfo: educationalInfoSchema,
+    educationalInfo: educationalInfoSchema.optional(),
     // guardian: guardianSchema,
     // address: addressSchema,
   })
