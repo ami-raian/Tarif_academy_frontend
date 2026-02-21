@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { useRouter } from "next/navigation";
 import { GraduationCap, Menu } from "lucide-react";
 import DashboardSidebar from "./_components/dashboard-sidebar";
@@ -13,6 +13,14 @@ function getCookie(name: string): string | null {
   return null;
 }
 
+// Check auth synchronously on client
+function checkAuth(): boolean | null {
+  if (typeof document === "undefined") return null; // SSR
+  const token = getCookie("accessToken");
+  const userType = getCookie("userType");
+  return !!(token && userType === "admin");
+}
+
 export default function DashboardLayout({
   children,
 }: {
@@ -20,19 +28,22 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [authorized, setAuthorized] = useState(false);
+  // Initialize with actual auth state if on client
+  const [authorized, setAuthorized] = useState<boolean | null>(() =>
+    checkAuth(),
+  );
 
-  useEffect(() => {
-    const token = getCookie("accessToken");
-    const userType = getCookie("userType");
-    if (!token || userType !== "admin") {
+  useLayoutEffect(() => {
+    const isAuth = checkAuth();
+    if (isAuth === false) {
       router.push("/login");
     } else {
       setAuthorized(true);
     }
   }, [router]);
 
-  if (!authorized) {
+  // Only show loading on initial SSR or when redirecting
+  if (authorized === null || authorized === false) {
     return (
       <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">

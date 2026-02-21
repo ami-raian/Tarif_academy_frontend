@@ -63,6 +63,14 @@ html {
   overflow: hidden;
 }
 
+/* Fallback for browsers that don't support dvh */
+@supports not (height: 100dvh) {
+  .app-scrollbar {
+    height: 100vh !important;
+    max-height: 100vh !important;
+  }
+}
+
 /* SimpleBar custom styles start============================>>>>*/
 .simplebar-scrollbar::before {
   background: rgb(156 163 175 / 0.5) !important;
