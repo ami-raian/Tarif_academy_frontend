@@ -69,7 +69,8 @@ export default function ExamsPage() {
 
   const getSubmissionForExam = (examId: string) => {
     return mySubmissions.find(
-      (s) => (typeof s.examId === "string" ? s.examId : s.examId._id) === examId,
+      (s) =>
+        (typeof s.examId === "string" ? s.examId : s.examId._id) === examId,
     );
   };
 
@@ -86,8 +87,14 @@ export default function ExamsPage() {
     try {
       const res = await verifyMcqExamCode(codeModalExam._id, codeInput.trim());
       if (res.success) {
-        localStorage.setItem(`exam_${codeModalExam._id}`, JSON.stringify(codeModalExam));
-        localStorage.setItem(`exam_${codeModalExam._id}_code`, codeInput.trim());
+        localStorage.setItem(
+          `exam_${codeModalExam._id}`,
+          JSON.stringify(codeModalExam),
+        );
+        localStorage.setItem(
+          `exam_${codeModalExam._id}_code`,
+          codeInput.trim(),
+        );
         setCodeModalExam(null);
         setCodeInput("");
         router.push(`/exams/${codeModalExam._id}`);
@@ -103,7 +110,8 @@ export default function ExamsPage() {
 
   const filteredExams = exams.filter((exam) => {
     const submission = getSubmissionForExam(exam._id);
-    if (filter === "new") return !submission || submission.status === "in_progress";
+    if (filter === "new")
+      return !submission || submission.status === "in_progress";
     if (filter === "completed") return submission?.status === "evaluated";
     return true;
   });
@@ -116,7 +124,10 @@ export default function ExamsPage() {
           <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-white dark:bg-gray-800/50 rounded-2xl overflow-hidden animate-pulse">
+                <div
+                  key={i}
+                  className="bg-white dark:bg-gray-800/50 rounded-2xl overflow-hidden animate-pulse"
+                >
                   <div className="h-32 bg-gray-200 dark:bg-gray-700" />
                   <div className="p-5 space-y-3">
                     <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
@@ -138,11 +149,12 @@ export default function ExamsPage() {
 
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">MCQ পরীক্ষা</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                MCQ পরীক্ষা
+              </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
                 প্রকাশিত পরীক্ষাগুলোতে অংশগ্রহণ করুন
               </p>
@@ -185,49 +197,66 @@ export default function ExamsPage() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
                   <HelpCircle className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{exams.length}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">মোট পরীক্ষা</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {exams.length}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    মোট পরীক্ষা
+                  </p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {mySubmissions.filter((s) => s.status === "evaluated").length}
+                    {
+                      mySubmissions.filter((s) => s.status === "evaluated")
+                        .length
+                    }
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">সম্পন্ন</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    সম্পন্ন
+                  </p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
                   <Trophy className="w-5 h-5" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {mySubmissions.filter((s) => {
-                      const exam = exams.find(
-                        (e) => e._id === (typeof s.examId === "string" ? s.examId : s.examId._id),
-                      );
-                      return exam && checkIfPassed(s, exam);
-                    }).length}
+                    {
+                      mySubmissions.filter((s) => {
+                        const exam = exams.find(
+                          (e) =>
+                            e._id ===
+                            (typeof s.examId === "string"
+                              ? s.examId
+                              : s.examId._id),
+                        );
+                        return exam && checkIfPassed(s, exam);
+                      }).length
+                    }
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">পাস</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    পাস
+                  </p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-sky-100 dark:bg-sky-500/20 flex items-center justify-center text-sky-600 dark:text-sky-400">
                   <Clock className="w-5 h-5" />
@@ -236,7 +265,9 @@ export default function ExamsPage() {
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {exams.filter((e) => !getSubmissionForExam(e._id)).length}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">বাকি আছে</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    বাকি আছে
+                  </p>
                 </div>
               </div>
             </div>
@@ -244,7 +275,7 @@ export default function ExamsPage() {
 
           {/* Exams Grid */}
           {filteredExams.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800/50 rounded-2xl p-16 text-center shadow-sm border border-gray-100 dark:border-gray-700/50">
+            <div className="bg-white dark:bg-gray-800/50 rounded-2xl p-16 text-center shadow-sm border border-gray-200 dark:border-gray-700/50">
               <div className="flex justify-center text-gray-300 dark:text-gray-600 mb-4">
                 <Inbox className="w-16 h-16" />
               </div>
@@ -252,7 +283,9 @@ export default function ExamsPage() {
                 কোনো পরীক্ষা পাওয়া যায়নি
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                {filter !== "all" ? "অন্য ফিল্টার ব্যবহার করে দেখুন" : "শীঘ্রই নতুন পরীক্ষা যোগ হবে"}
+                {filter !== "all"
+                  ? "অন্য ফিল্টার ব্যবহার করে দেখুন"
+                  : "শীঘ্রই নতুন পরীক্ষা যোগ হবে"}
               </p>
             </div>
           ) : (
@@ -265,24 +298,30 @@ export default function ExamsPage() {
                 return (
                   <div
                     key={exam._id}
-                    className="bg-white dark:bg-gray-800/50 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow"
+                    className="bg-white dark:bg-gray-800/50 rounded-2xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700/50 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow"
                   >
                     {/* Card Header */}
                     <div className="relative h-32 bg-linear-to-br from-purple-500 to-cyan-500 p-4">
                       <div className="absolute top-3 right-3 flex gap-2">
                         {isCompleted && submission && (
                           <CommonBadge
-                            status={checkIfPassed(submission, exam) ? "পাস" : "ফেল"}
+                            status={
+                              checkIfPassed(submission, exam) ? "পাস" : "ফেল"
+                            }
                             size="sm"
                           />
                         )}
-                        {isInProgress && <CommonBadge status="চলমান" size="sm" />}
-                        {exam.hasAccessCode && !isCompleted && !isInProgress && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/20 text-white text-xs font-medium">
-                            <Lock className="w-3 h-3" />
-                            কোড
-                          </span>
+                        {isInProgress && (
+                          <CommonBadge status="চলমান" size="sm" />
                         )}
+                        {exam.hasAccessCode &&
+                          !isCompleted &&
+                          !isInProgress && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/20 text-white text-xs font-medium">
+                              <Lock className="w-3 h-3" />
+                              কোড
+                            </span>
+                          )}
                       </div>
                       <div className="absolute bottom-4 left-4 right-4">
                         <h3 className="font-semibold text-white text-lg line-clamp-2">
@@ -315,15 +354,20 @@ export default function ExamsPage() {
                       {isCompleted && exam.isResultPublished && submission && (
                         <div className="mb-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
                           <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">প্রাপ্ত নম্বর:</span>
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              প্রাপ্ত নম্বর:
+                            </span>
                             <span className="font-bold text-lg text-gray-900 dark:text-white">
-                              {submission.obtainedMarks} / {submission.totalMarks}
+                              {submission.obtainedMarks} /{" "}
+                              {submission.totalMarks}
                             </span>
                           </div>
                           <div className="mt-2 h-2 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
                             <div
                               className={`h-full rounded-full ${
-                                checkIfPassed(submission, exam) ? "bg-emerald-500" : "bg-rose-500"
+                                checkIfPassed(submission, exam)
+                                  ? "bg-emerald-500"
+                                  : "bg-rose-500"
                               }`}
                               style={{ width: `${submission.percentage}%` }}
                             />
@@ -386,7 +430,10 @@ export default function ExamsPage() {
                         <Link
                           href={`/exams/${exam._id}`}
                           onClick={() => {
-                            localStorage.setItem(`exam_${exam._id}`, JSON.stringify(exam));
+                            localStorage.setItem(
+                              `exam_${exam._id}`,
+                              JSON.stringify(exam),
+                            );
                           }}
                         >
                           <Button className="w-full bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600">
@@ -409,7 +456,7 @@ export default function ExamsPage() {
       {/* Access Code Modal */}
       {codeModalExam && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl dark:shadow-gray-900/60 w-full max-w-md p-6 border border-gray-100 dark:border-gray-700/50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl dark:shadow-gray-900/60 w-full max-w-md p-6 border border-gray-200 dark:border-gray-700/50">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
@@ -440,14 +487,19 @@ export default function ExamsPage() {
               <input
                 type="text"
                 value={codeInput}
-                onChange={(e) => { setCodeInput(e.target.value); setCodeError(""); }}
+                onChange={(e) => {
+                  setCodeInput(e.target.value);
+                  setCodeError("");
+                }}
                 placeholder="অ্যাক্সেস কোড লিখুন..."
                 className="w-full border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 autoFocus
                 required
               />
               {codeError && (
-                <p className="text-sm text-rose-600 dark:text-rose-400 font-medium">{codeError}</p>
+                <p className="text-sm text-rose-600 dark:text-rose-400 font-medium">
+                  {codeError}
+                </p>
               )}
               <div className="flex gap-3">
                 <button

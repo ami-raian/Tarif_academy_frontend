@@ -270,7 +270,7 @@ export default function CoursesPage() {
           </div>
 
           {/* Filters */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Search */}
               <div className="flex-1 relative">
@@ -393,7 +393,7 @@ export default function CoursesPage() {
                   <Link
                     key={course._id}
                     href={`/courses/${course.slug}`}
-                    className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-purple-200 dark:hover:border-purple-500"
+                    className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-purple-200 dark:hover:border-purple-500"
                   >
                     {/* Thumbnail */}
                     {/* <div className="relative h-48 overflow-hidden bg-linear-to-br from-purple-100 to-cyan-100">
@@ -460,7 +460,7 @@ export default function CoursesPage() {
                       </div>
 
                       {/* Price */}
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
                         <div>
                           {course.discountPrice > 0 ? (
                             <div className="flex items-center gap-2">

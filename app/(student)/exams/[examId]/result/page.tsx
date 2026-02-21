@@ -70,10 +70,12 @@ export default function ResultPage() {
         <div className="pt-24 pb-16 flex items-center justify-center">
           <div className="text-center">
             <div className="relative w-16 h-16 mx-auto mb-4">
-              <div className="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-gray-700" />
+              <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700" />
               <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
             </div>
-            <p className="text-slate-600 dark:text-slate-400 font-medium">লোড হচ্ছে...</p>
+            <p className="text-slate-600 dark:text-slate-400 font-medium">
+              লোড হচ্ছে...
+            </p>
           </div>
         </div>
       </div>
@@ -100,11 +102,13 @@ export default function ResultPage() {
 
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-
           {/* Back Button */}
           <div className="mb-6">
             <Link href="/exams">
-              <Button variant="ghost" className="gap-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+              <Button
+                variant="ghost"
+                className="gap-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+              >
                 <ChevronLeft className="w-4 h-4" />
                 পরীক্ষা তালিকায় ফিরে যান
               </Button>
@@ -122,9 +126,11 @@ export default function ResultPage() {
               }`}
             >
               <div className="text-white/80 mb-4 flex justify-center">
-                {result.isPassed
-                  ? <PartyPopper className="w-12 h-12" />
-                  : <Frown className="w-12 h-12" />}
+                {result.isPassed ? (
+                  <PartyPopper className="w-12 h-12" />
+                ) : (
+                  <Frown className="w-12 h-12" />
+                )}
               </div>
               <h1 className="text-3xl font-bold text-white mb-2">
                 {result.isPassed
@@ -137,18 +143,22 @@ export default function ResultPage() {
             <CardContent className="p-8 bg-white dark:bg-gray-800/50">
               {/* Score Circle */}
               <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gray-50 dark:bg-gray-700/50 border-4 border-gray-100 dark:border-gray-700 mb-4">
+                <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gray-50 dark:bg-gray-700/50 border-4 border-gray-50 dark:border-gray-700 mb-4">
                   <div>
                     <span className="text-4xl font-bold text-gray-900 dark:text-white">
                       {result.percentage}
                     </span>
-                    <span className="text-xl text-gray-500 dark:text-gray-400">%</span>
+                    <span className="text-xl text-gray-500 dark:text-gray-400">
+                      %
+                    </span>
                   </div>
                 </div>
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">
                   {result.obtainedMarks} / {result.totalMarks}
                 </div>
-                <p className="text-gray-500 dark:text-gray-400 mt-1">প্রাপ্ত নম্বর</p>
+                <p className="text-gray-500 dark:text-gray-400 mt-1">
+                  প্রাপ্ত নম্বর
+                </p>
               </div>
 
               {/* Stats Grid */}
@@ -157,25 +167,41 @@ export default function ResultPage() {
                   <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                     {result.answers.filter((a) => a.isCorrect).length}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">সঠিক</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    সঠিক
+                  </p>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 text-center">
                   <p className="text-2xl font-bold text-rose-600 dark:text-rose-400">
-                    {result.answers.filter((a) => a.selectedOptionIndex !== null && !a.isCorrect).length}
+                    {
+                      result.answers.filter(
+                        (a) => a.selectedOptionIndex !== null && !a.isCorrect,
+                      ).length
+                    }
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">ভুল</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    ভুল
+                  </p>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 text-center">
                   <p className="text-2xl font-bold text-gray-600 dark:text-gray-300">
-                    {result.answers.filter((a) => a.selectedOptionIndex === null).length}
+                    {
+                      result.answers.filter(
+                        (a) => a.selectedOptionIndex === null,
+                      ).length
+                    }
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">উত্তরহীন</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    উত্তরহীন
+                  </p>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 text-center">
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {exam.passingMarks}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">পাস মার্ক</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    পাস মার্ক
+                  </p>
                 </div>
               </div>
 
@@ -218,7 +244,8 @@ export default function ResultPage() {
 
                 const selectedIndex = answer.selectedOptionIndex;
                 const isCorrect = answer.isCorrect;
-                const correctOptionIndex = question.options?.findIndex((opt) => opt.isCorrect) ?? -1;
+                const correctOptionIndex =
+                  question.options?.findIndex((opt) => opt.isCorrect) ?? -1;
 
                 return (
                   <Card
@@ -262,11 +289,13 @@ export default function ResultPage() {
                                 : "text-rose-500"
                           }`}
                         >
-                          {isCorrect
-                            ? <CheckCircle2 className="w-5 h-5" />
-                            : selectedIndex === null
-                              ? <X className="w-5 h-5" />
-                              : <XCircle className="w-5 h-5" />}
+                          {isCorrect ? (
+                            <CheckCircle2 className="w-5 h-5" />
+                          ) : selectedIndex === null ? (
+                            <X className="w-5 h-5" />
+                          ) : (
+                            <XCircle className="w-5 h-5" />
+                          )}
                         </span>
                       </div>
 
@@ -274,7 +303,8 @@ export default function ResultPage() {
                       <div className="space-y-2 ml-11">
                         {question.options?.map((option, optIndex) => {
                           const isSelected = selectedIndex === optIndex;
-                          const isCorrectOption = optIndex === correctOptionIndex;
+                          const isCorrectOption =
+                            optIndex === correctOptionIndex;
 
                           let bgClass = "bg-gray-50 dark:bg-gray-700/40";
                           let textClass = "text-gray-700 dark:text-gray-300";
@@ -282,12 +312,15 @@ export default function ResultPage() {
 
                           if (isCorrectOption) {
                             bgClass = "bg-emerald-50 dark:bg-emerald-500/10";
-                            textClass = "text-emerald-700 dark:text-emerald-400";
-                            borderClass = "border border-emerald-200 dark:border-emerald-500/30";
+                            textClass =
+                              "text-emerald-700 dark:text-emerald-400";
+                            borderClass =
+                              "border border-emerald-200 dark:border-emerald-500/30";
                           } else if (isSelected && !isCorrect) {
                             bgClass = "bg-rose-50 dark:bg-rose-500/10";
                             textClass = "text-rose-700 dark:text-rose-400";
-                            borderClass = "border border-rose-200 dark:border-rose-500/30";
+                            borderClass =
+                              "border border-rose-200 dark:border-rose-500/30";
                           }
 
                           return (
@@ -304,11 +337,13 @@ export default function ResultPage() {
                                       : "bg-white dark:bg-gray-600 text-gray-600 dark:text-gray-300 border dark:border-gray-500"
                                 }`}
                               >
-                                {isCorrectOption
-                                  ? <Check className="w-4 h-4" />
-                                  : isSelected && !isCorrect
-                                    ? <X className="w-4 h-4" />
-                                    : String.fromCharCode(65 + optIndex)}
+                                {isCorrectOption ? (
+                                  <Check className="w-4 h-4" />
+                                ) : isSelected && !isCorrect ? (
+                                  <X className="w-4 h-4" />
+                                ) : (
+                                  String.fromCharCode(65 + optIndex)
+                                )}
                               </span>
                               <span className={`flex-1 ${textClass}`}>
                                 {option.text}
@@ -354,12 +389,14 @@ export default function ResultPage() {
               </Button>
             </Link>
             <Link href="/my-courses">
-              <Button size="lg" className="bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600">
+              <Button
+                size="lg"
+                className="bg-linear-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600"
+              >
                 আমার কোর্সে যান
               </Button>
             </Link>
           </div>
-
         </div>
       </main>
     </div>

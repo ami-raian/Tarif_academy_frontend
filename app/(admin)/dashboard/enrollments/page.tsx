@@ -223,10 +223,12 @@ export default function EnrollmentsPage() {
       <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="relative w-16 h-16 mx-auto mb-4">
-            <div className="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-gray-700"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700"></div>
             <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
           </div>
-          <p className="text-slate-600 dark:text-gray-300 font-medium">লোড হচ্ছে...</p>
+          <p className="text-slate-600 dark:text-gray-300 font-medium">
+            লোড হচ্ছে...
+          </p>
         </div>
       </div>
     );
@@ -235,9 +237,9 @@ export default function EnrollmentsPage() {
   return (
     <div>
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-slate-200 dark:border-gray-700">
+      <div className="sticky top-0 z-30 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h1 className="text-lg font-bold text-slate-900 dark:text-white">
                 এনরোলমেন্ট ম্যানেজমেন্ট
@@ -246,17 +248,52 @@ export default function EnrollmentsPage() {
                 শিক্ষার্থীদের এনরোলমেন্ট অনুমোদন করুন
               </p>
             </div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={fetchEnrollments}
-              disabled={loading}
-            >
-              <span className={loading ? "animate-spin" : ""}>
-                <Icons.refresh />
-              </span>
-              রিফ্রেশ
-            </Button>
+            <div className="flex items-center gap-3 flex-wrap">
+              <Tabs
+                value={filter}
+                defaultValue="pending"
+                onValueChange={(value) => setFilter(value as typeof filter)}
+                className="w-full sm:w-auto"
+              >
+                <TabsList className="grid grid-cols-4 w-full sm:w-auto bg-slate-100 dark:bg-gray-700 p-1 rounded-lg">
+                  <TabsTrigger
+                    value="pending"
+                    className="text-xs sm:text-sm font-medium data-[state=active]:bg-amber-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all"
+                  >
+                    ⏳ অপেক্ষমাণ
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="approved"
+                    className="text-xs sm:text-sm font-medium data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all"
+                  >
+                    ✅ অনুমোদিত
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="rejected"
+                    className="text-xs sm:text-sm font-medium data-[state=active]:bg-rose-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all"
+                  >
+                    ❌ প্রত্যাখ্যাত
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="all"
+                    className="text-xs sm:text-sm font-medium data-[state=active]:bg-white dark:data-[state=active]:bg-gray-600 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all"
+                  >
+                    📚 সব
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={fetchEnrollments}
+                disabled={loading}
+              >
+                <span className={loading ? "animate-spin" : ""}>
+                  <Icons.refresh />
+                </span>
+                রিফ্রেশ
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -268,7 +305,9 @@ export default function EnrollmentsPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">মোট</p>
+                  <p className="text-sm text-slate-500 dark:text-gray-400">
+                    মোট
+                  </p>
                   <p className="text-2xl font-bold text-slate-900 dark:text-white">
                     {pagination.total}
                   </p>
@@ -283,7 +322,9 @@ export default function EnrollmentsPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">অপেক্ষমাণ</p>
+                  <p className="text-sm text-slate-500 dark:text-gray-400">
+                    অপেক্ষমাণ
+                  </p>
                   <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
                     {enrollments.filter((e) => e.status === "pending").length}
                   </p>
@@ -298,7 +339,9 @@ export default function EnrollmentsPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">অনুমোদিত</p>
+                  <p className="text-sm text-slate-500 dark:text-gray-400">
+                    অনুমোদিত
+                  </p>
                   <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                     {enrollments.filter((e) => e.status === "approved").length}
                   </p>
@@ -313,7 +356,9 @@ export default function EnrollmentsPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-gray-400">প্রত্যাখ্যাত</p>
+                  <p className="text-sm text-slate-500 dark:text-gray-400">
+                    প্রত্যাখ্যাত
+                  </p>
                   <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                     {enrollments.filter((e) => e.status === "rejected").length}
                   </p>
@@ -326,24 +371,12 @@ export default function EnrollmentsPage() {
           </Card>
         </div>
 
-        {/* Filter Tabs */}
+        {/* Enrollments List */}
         <Card className="border-0 shadow-lg dark:bg-gray-800">
-          <CardHeader className="border-b dark:border-gray-700 bg-white dark:bg-gray-800">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <CardTitle className="text-lg dark:text-white">এনরোলমেন্ট তালিকা</CardTitle>
-              <Tabs
-                value={filter}
-                defaultValue="pending"
-                onValueChange={(value) => setFilter(value as typeof filter)}
-              >
-                <TabsList>
-                  <TabsTrigger value="pending">অপেক্ষমাণ</TabsTrigger>
-                  <TabsTrigger value="approved">অনুমোদিত</TabsTrigger>
-                  <TabsTrigger value="rejected">প্রত্যাখ্যাত</TabsTrigger>
-                  <TabsTrigger value="all">সব</TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
+          <CardHeader className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+            <CardTitle className="text-lg dark:text-white">
+              এনরোলমেন্ট তালিকা
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             {enrollments.length === 0 ? (
@@ -432,7 +465,7 @@ export default function EnrollmentsPage() {
 
             {/* Pagination */}
             {pagination.totalPages > 1 && (
-              <div className="flex items-center justify-between p-4 border-t dark:border-gray-700">
+              <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-700">
                 <p className="text-sm text-slate-500 dark:text-gray-400">
                   পেজ {pagination.page} / {pagination.totalPages}
                 </p>
@@ -476,7 +509,7 @@ export default function EnrollmentsPage() {
                 প্রত্যাখ্যানের কারণ (ঐচ্ছিক)
               </label>
               <textarea
-                className="w-full p-3 border border-slate-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full p-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 rows={3}
                 placeholder="কারণ লিখুন..."
                 value={rejectReason}

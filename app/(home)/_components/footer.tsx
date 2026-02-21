@@ -1,6 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Facebook, Youtube, Instagram, Mail, Phone, MapPin } from "lucide-react";
+import {
+  Facebook,
+  Youtube,
+  Instagram,
+  Mail,
+  Phone,
+  MapPin,
+} from "lucide-react";
 
 const quickLinks = [
   { href: "/", label: "হোম" },
@@ -30,8 +37,16 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center mb-4">
-              <Image src="/tarifacademy-logo.png" alt="Tarif Academy" width={36} height={36} className="mr-2" />
-              <span className="text-lg font-bold text-gray-900 dark:text-white">তারিফ একাডেমি</span>
+              <Image
+                src="/tarifacademy-logo.png"
+                alt="Tarif Academy"
+                width={36}
+                height={36}
+                className="mr-2"
+              />
+              <span className="text-lg font-bold text-gray-900 dark:text-white">
+                তারিফ একাডেমি
+              </span>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               বাংলাদেশের সেরা অনলাইন শিক্ষা প্ল্যাটফর্ম
@@ -51,11 +66,16 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-gray-900 dark:text-white font-semibold mb-4">দ্রুত লিংক</h3>
+            <h3 className="text-gray-900 dark:text-white font-semibold mb-4">
+              দ্রুত লিংক
+            </h3>
             <ul className="space-y-2 text-sm">
               {quickLinks.map((link) => (
                 <li key={link.href + link.label}>
-                  <Link href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                  <Link
+                    href={link.href}
+                    className="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                  >
                     {link.label}
                   </Link>
                 </li>
@@ -65,11 +85,16 @@ export function Footer() {
 
           {/* Courses */}
           <div>
-            <h3 className="text-gray-900 dark:text-white font-semibold mb-4">জনপ্রিয় কোর্স</h3>
+            <h3 className="text-gray-900 dark:text-white font-semibold mb-4">
+              জনপ্রিয় কোর্স
+            </h3>
             <ul className="space-y-2 text-sm">
               {courses.map((course) => (
                 <li key={course.label}>
-                  <Link href={course.href} className="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                  <Link
+                    href={course.href}
+                    className="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                  >
                     {course.label}
                   </Link>
                 </li>
@@ -79,7 +104,9 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="text-gray-900 dark:text-white font-semibold mb-4">যোগাযোগ</h3>
+            <h3 className="text-gray-900 dark:text-white font-semibold mb-4">
+              যোগাযোগ
+            </h3>
             <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
               <li className="flex items-center">
                 <MapPin className="w-4 h-4 mr-2 text-purple-600 dark:text-purple-400 shrink-0" />
@@ -101,8 +128,18 @@ export function Footer() {
         <div className="pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row justify-between items-center text-sm text-gray-500 dark:text-gray-500 gap-4">
           <p>&copy; 2026 Tarif Academy. সর্বস্বত্ব সংরক্ষিত।</p>
           <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">গোপনীয়তা নীতি</Link>
-            <Link href="/terms" className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">শর্তাবলী</Link>
+            <Link
+              href="/privacy"
+              className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+            >
+              গোপনীয়তা নীতি
+            </Link>
+            <Link
+              href="/terms"
+              className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+            >
+              শর্তাবলী
+            </Link>
           </div>
         </div>
       </div>

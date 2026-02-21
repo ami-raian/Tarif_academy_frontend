@@ -222,7 +222,9 @@ const McqManagement = () => {
   const [questions, setQuestions] = useState<McqQuestion[]>([]);
   const [submissions, setSubmissions] = useState<McqSubmission[]>([]);
   const [questionsLoading, setQuestionsLoading] = useState(false);
-  const [view, setView] = useState<"list" | "questions" | "results" | "leaderboard">("list");
+  const [view, setView] = useState<
+    "list" | "questions" | "results" | "leaderboard"
+  >("list");
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
   // Modal states
@@ -505,7 +507,7 @@ const McqManagement = () => {
       <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="relative w-16 h-16 mx-auto mb-4">
-            <div className="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-gray-700"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700"></div>
             <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
           </div>
           <p className="text-slate-600 dark:text-gray-300 font-medium">
@@ -520,7 +522,7 @@ const McqManagement = () => {
   if (view === "questions" && selectedExam) {
     return (
       <div>
-        <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-40 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
               <Button
@@ -757,7 +759,7 @@ const McqManagement = () => {
   if (view === "results" && selectedExam) {
     return (
       <div>
-        <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-40 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
               <Button
@@ -812,7 +814,7 @@ const McqManagement = () => {
             <Card className="border-0 shadow-md overflow-hidden dark:bg-gray-800">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-slate-50 dark:bg-gray-700 border-b dark:border-gray-600">
+                  <thead className="bg-slate-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                     <tr>
                       <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">
                         #
@@ -910,10 +912,15 @@ const McqManagement = () => {
   if (view === "leaderboard" && selectedExam) {
     return (
       <div>
-        <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-40 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={handleBack} className="gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleBack}
+                className="gap-2"
+              >
                 <Icons.back />
                 ফিরে যান
               </Button>
@@ -948,42 +955,76 @@ const McqManagement = () => {
             <Card className="border-0 shadow-md overflow-hidden dark:bg-gray-800">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-amber-50 dark:bg-amber-900/20 border-b dark:border-gray-600">
+                  <thead className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-100 dark:border-gray-600">
                     <tr>
-                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">র‍্যাংক</th>
-                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">শিক্ষার্থী</th>
-                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">প্রাপ্ত নম্বর</th>
-                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">শতাংশ</th>
-                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">জমার সময়</th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">
+                        র‍্যাংক
+                      </th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">
+                        শিক্ষার্থী
+                      </th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">
+                        প্রাপ্ত নম্বর
+                      </th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">
+                        শতাংশ
+                      </th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">
+                        জমার সময়
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y dark:divide-gray-700">
                     {leaderboard.map((entry, idx) => (
-                      <tr key={entry.studentId?._id ?? idx} className={`hover:bg-slate-50 dark:hover:bg-gray-700 ${entry.rank <= 3 ? "bg-amber-50/40 dark:bg-amber-500/5" : ""}`}>
+                      <tr
+                        key={entry.studentId?._id ?? idx}
+                        className={`hover:bg-slate-50 dark:hover:bg-gray-700 ${entry.rank <= 3 ? "bg-amber-50/40 dark:bg-amber-500/5" : ""}`}
+                      >
                         <td className="px-4 py-3">
-                          <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
-                            entry.rank === 1 ? "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300" :
-                            entry.rank === 2 ? "bg-slate-100 dark:bg-slate-600/30 text-slate-600 dark:text-slate-300" :
-                            entry.rank === 3 ? "bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300" :
-                            "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
-                          }`}>
-                            {entry.rank === 1 ? "🥇" : entry.rank === 2 ? "🥈" : entry.rank === 3 ? "🥉" : entry.rank}
+                          <span
+                            className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
+                              entry.rank === 1
+                                ? "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300"
+                                : entry.rank === 2
+                                  ? "bg-slate-100 dark:bg-slate-600/30 text-slate-600 dark:text-slate-300"
+                                  : entry.rank === 3
+                                    ? "bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300"
+                                    : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                            }`}
+                          >
+                            {entry.rank === 1
+                              ? "🥇"
+                              : entry.rank === 2
+                                ? "🥈"
+                                : entry.rank === 3
+                                  ? "🥉"
+                                  : entry.rank}
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          <p className="font-medium text-slate-900 dark:text-white">{entry.studentId?.fullName ?? "—"}</p>
-                          <p className="text-xs text-slate-500 dark:text-gray-400">{entry.studentId?.email ?? ""}</p>
+                          <p className="font-medium text-slate-900 dark:text-white">
+                            {entry.studentId?.fullName ?? "—"}
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-gray-400">
+                            {entry.studentId?.email ?? ""}
+                          </p>
                         </td>
                         <td className="px-4 py-3 font-medium dark:text-white">
                           {entry.obtainedMarks} / {selectedExam.totalMarks}
                         </td>
                         <td className="px-4 py-3">
-                          <span className={`font-medium ${entry.percentage >= (selectedExam.passingMarks / selectedExam.totalMarks * 100) ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                          <span
+                            className={`font-medium ${entry.percentage >= (selectedExam.passingMarks / selectedExam.totalMarks) * 100 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}
+                          >
                             {entry.percentage.toFixed(1)}%
                           </span>
                         </td>
                         <td className="px-4 py-3 text-sm text-slate-500 dark:text-gray-400">
-                          {entry.submittedAt ? new Date(entry.submittedAt).toLocaleString("bn-BD") : "—"}
+                          {entry.submittedAt
+                            ? new Date(entry.submittedAt).toLocaleString(
+                                "bn-BD",
+                              )
+                            : "—"}
                         </td>
                       </tr>
                     ))}
@@ -1001,7 +1042,7 @@ const McqManagement = () => {
   return (
     <div>
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-slate-200 dark:border-gray-700">
+      <div className="sticky top-0 z-30 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -1138,7 +1179,7 @@ const McqManagement = () => {
                     </div>
                   )}
 
-                  <div className="flex flex-wrap gap-2 pt-3 border-t dark:border-gray-700">
+                  <div className="flex flex-wrap gap-2 pt-3 border-t border-gray-200 dark:border-gray-700">
                     <Button
                       variant="outline"
                       size="sm"

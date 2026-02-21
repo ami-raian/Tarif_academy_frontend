@@ -388,7 +388,7 @@ const DashboardComponent = () => {
         return {
           bg: "bg-slate-50 dark:bg-slate-800",
           text: "text-slate-700 dark:text-slate-300",
-          border: "border-slate-200 dark:border-slate-600",
+          border: "border-gray-200 dark:border-slate-600",
           label: level,
         };
     }
@@ -433,7 +433,7 @@ const DashboardComponent = () => {
       <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="relative w-16 h-16 mx-auto mb-4">
-            <div className="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-gray-700"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700"></div>
             <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
           </div>
           <p className="text-slate-600 dark:text-gray-300 font-medium">
@@ -449,7 +449,7 @@ const DashboardComponent = () => {
     return (
       <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
         {/* Top Header */}
-        <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-40 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
               <Button
@@ -614,7 +614,7 @@ const DashboardComponent = () => {
             {/* Video List Sidebar */}
             <div className="lg:col-span-1">
               <Card className="border-0 shadow-lg sticky top-24 dark:bg-gray-800">
-                <CardHeader className="pb-3 border-b dark:border-gray-700 bg-slate-50/50 dark:bg-gray-800/50">
+                <CardHeader className="pb-3 border-b border-gray-200 dark:border-gray-700 bg-slate-50/50 dark:bg-gray-800/50">
                   <CardTitle className="text-base flex items-center justify-between dark:text-white">
                     <span>কোর্স কনটেন্ট</span>
                     <span className="text-sm font-normal text-slate-500 dark:text-gray-400">
@@ -762,9 +762,9 @@ const DashboardComponent = () => {
   return (
     <div>
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-slate-200 dark:border-gray-700">
+      <div className="sticky top-0 z-30 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h1 className="text-lg font-bold text-slate-900 dark:text-white">
                 ড্যাশবোর্ড
@@ -773,14 +773,45 @@ const DashboardComponent = () => {
                 আপনার কোর্স এবং কনটেন্ট ম্যানেজ করুন
               </p>
             </div>
-            <Button
-              size="sm"
-              onClick={() => setIsCreateCourseModalOpen(true)}
-              className="gap-1.5 shadow-md shadow-primary/20"
-            >
-              <Icons.plus />
-              নতুন কোর্স যোগ করুন
-            </Button>
+            <div className="flex items-center gap-3 flex-wrap">
+              <Tabs
+                defaultValue="all"
+                value={filter}
+                onValueChange={(value) =>
+                  setFilter(value as "all" | "true" | "false")
+                }
+                className="w-full sm:w-auto"
+              >
+                <TabsList className="grid grid-cols-3 w-full sm:w-auto bg-slate-100 dark:bg-gray-700 p-1 rounded-lg">
+                  <TabsTrigger
+                    value="all"
+                    className="text-xs sm:text-sm font-medium data-[state=active]:bg-white dark:data-[state=active]:bg-gray-600 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all"
+                  >
+                    📚 সকল
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="true"
+                    className="text-xs sm:text-sm font-medium data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all"
+                  >
+                    ✅ প্রকাশিত
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="false"
+                    className="text-xs sm:text-sm font-medium data-[state=active]:bg-amber-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all"
+                  >
+                    📝 ড্রাফট
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              <Button
+                size="sm"
+                onClick={() => setIsCreateCourseModalOpen(true)}
+                className="gap-1.5 shadow-md shadow-primary/20"
+              >
+                <Icons.plus />
+                নতুন কোর্স যোগ করুন
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -862,174 +893,131 @@ const DashboardComponent = () => {
         </div>
 
         {/* Courses Section */}
-        <Card className="border-0 shadow-lg dark:bg-gray-800">
-          <CardHeader className="border-b dark:border-gray-700 bg-white dark:bg-gray-800">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">
-                  আপনার কোর্সসমূহ
-                </CardTitle>
-                <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">
-                  আপনার সকল কোর্স দেখুন এবং ম্যানেজ করুন
-                </p>
+        <div>
+          {courses.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
+                <Icons.book />
               </div>
-              <Tabs
-                defaultValue="all"
-                value={filter}
-                onValueChange={(value) =>
-                  setFilter(value as "all" | "true" | "false")
-                }
-                className="w-full sm:w-auto"
-              >
-                <TabsList className="grid grid-cols-3 w-full sm:w-auto bg-slate-100 dark:bg-gray-700 p-1 rounded-lg">
-                  <TabsTrigger
-                    value="all"
-                    className="text-xs sm:text-sm font-medium data-[state=active]:bg-white dark:data-[state=active]:bg-gray-600 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all"
-                  >
-                    📚 সকল
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="true"
-                    className="text-xs sm:text-sm font-medium data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all"
-                  >
-                    ✅ প্রকাশিত
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="false"
-                    className="text-xs sm:text-sm font-medium data-[state=active]:bg-amber-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all"
-                  >
-                    📝 ড্রাফট
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <p className="text-slate-500 dark:text-gray-400 font-medium">
+                কোনো কোর্স পাওয়া যায়নি
+              </p>
+              <p className="text-slate-400 dark:text-gray-500 text-sm mt-1">
+                নতুন কোর্স যোগ করুন
+              </p>
             </div>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-6">
-            {courses.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
-                  <Icons.book />
-                </div>
-                <p className="text-slate-500 dark:text-gray-400 font-medium">
-                  কোনো কোর্স পাওয়া যায়নি
-                </p>
-                <p className="text-slate-400 dark:text-gray-500 text-sm mt-1">
-                  নতুন কোর্স যোগ করুন
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-                {courses.map((course) => {
-                  const levelConfig = getLevelConfig(course.level);
-                  return (
-                    <Card
-                      key={course._id}
-                      onClick={() => handleCourseSelect(course)}
-                      className="group cursor-pointer border dark:border-gray-700 hover:border-primary/50 dark:hover:border-primary/50 hover:shadow-xl transition-all duration-300 overflow-hidden dark:bg-gray-800"
-                    >
-                      {/* Course Thumbnail */}
-                      <div className="relative h-40 bg-linear-to-br from-primary/20 to-primary/5 overflow-hidden">
-                        <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent"></div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+              {courses.map((course) => {
+                const levelConfig = getLevelConfig(course.level);
+                return (
+                  <Card
+                    key={course._id}
+                    onClick={() => handleCourseSelect(course)}
+                    className="group cursor-pointer border dark:border-gray-700 hover:border-primary/50 dark:hover:border-primary/50 hover:shadow-xl transition-all duration-300 overflow-hidden dark:bg-gray-800"
+                  >
+                    {/* Course Thumbnail */}
+                    <div className="relative h-40 bg-linear-to-br from-primary/20 to-primary/5 overflow-hidden">
+                      <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent"></div>
 
-                        {/* Status Badge */}
-                        <div className="absolute top-3 right-3 flex gap-2">
-                          <button
-                            onClick={(e) => handleTogglePublish(e, course)}
-                            disabled={publishingCourse === course._id}
-                            className="transition-opacity hover:opacity-80"
-                          >
-                            {publishingCourse === course._id ? (
-                              <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-slate-700 text-white text-xs">
-                                <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              </span>
-                            ) : (
-                              <CommonBadge
-                                status={
-                                  course.isPublished ? "প্রকাশিত ✓" : "ড্রাফট"
-                                }
-                                size="sm"
-                              />
-                            )}
-                          </button>
-                        </div>
-
-                        {/* Price */}
-                        <div className="absolute bottom-3 left-3">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-2xl font-bold text-white">
-                              ৳{course.discountPrice}
+                      {/* Status Badge */}
+                      <div className="absolute top-3 right-3 flex gap-2">
+                        <button
+                          onClick={(e) => handleTogglePublish(e, course)}
+                          disabled={publishingCourse === course._id}
+                          className="transition-opacity hover:opacity-80"
+                        >
+                          {publishingCourse === course._id ? (
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-slate-700 text-white text-xs">
+                              <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                             </span>
-                            {course.price !== course.discountPrice && (
-                              <span className="text-sm text-white/70 line-through">
-                                ৳{course.price}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Play Button Overlay */}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                            <div className="text-primary ml-1 scale-150">
-                              <Icons.play />
-                            </div>
-                          </div>
-                        </div>
+                          ) : (
+                            <CommonBadge
+                              status={
+                                course.isPublished ? "প্রকাশিত ✓" : "ড্রাফট"
+                              }
+                              size="sm"
+                            />
+                          )}
+                        </button>
                       </div>
 
-                      <CardContent className="p-4">
-                        {/* Title */}
-                        <h3 className="font-semibold text-slate-900 dark:text-white line-clamp-2 group-hover:text-primary transition-colors">
-                          {course.title}
-                        </h3>
-
-                        {/* Description */}
-                        <p className="text-sm text-slate-500 dark:text-gray-400 line-clamp-2 mt-2">
-                          {course.description}
-                        </p>
-
-                        {/* Tags */}
-                        <div className="flex flex-wrap gap-1.5 mt-3">
-                          <span
-                            className={`px-2 py-0.5 rounded text-xs font-medium ${levelConfig.bg} ${levelConfig.text}`}
-                          >
-                            {levelConfig.label}
+                      {/* Price */}
+                      <div className="absolute bottom-3 left-3">
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-2xl font-bold text-white">
+                            ৳{course.discountPrice}
                           </span>
-                          <span className="px-2 py-0.5 rounded text-xs font-medium bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300">
-                            {course.category}
-                          </span>
-                          <span className="px-2 py-0.5 rounded text-xs font-medium bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300">
-                            {course.language}
-                          </span>
-                        </div>
-
-                        {/* Stats */}
-                        <div className="flex items-center justify-between mt-4 pt-3 border-t dark:border-gray-700">
-                          <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-gray-400">
-                            <span className="flex items-center gap-1">
-                              <Icons.book />
-                              {course.totalLessons} লেসন
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Icons.users />
-                              {course.enrolledStudents}
-                            </span>
-                          </div>
-                          {course.rating > 0 && (
-                            <span className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
-                              <Icons.star />
-                              {course.rating.toFixed(1)}
+                          {course.price !== course.discountPrice && (
+                            <span className="text-sm text-white/70 line-through">
+                              ৳{course.price}
                             </span>
                           )}
                         </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                      </div>
+
+                      {/* Play Button Overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                          <div className="text-primary ml-1 scale-150">
+                            <Icons.play />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <CardContent className="p-4">
+                      {/* Title */}
+                      <h3 className="font-semibold text-slate-900 dark:text-white line-clamp-2 group-hover:text-primary transition-colors">
+                        {course.title}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="text-sm text-slate-500 dark:text-gray-400 line-clamp-2 mt-2">
+                        {course.description}
+                      </p>
+
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-1.5 mt-3">
+                        <span
+                          className={`px-2 py-0.5 rounded text-xs font-medium ${levelConfig.bg} ${levelConfig.text}`}
+                        >
+                          {levelConfig.label}
+                        </span>
+                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300">
+                          {course.category}
+                        </span>
+                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300">
+                          {course.language}
+                        </span>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-gray-400">
+                          <span className="flex items-center gap-1">
+                            <Icons.book />
+                            {course.totalLessons} লেসন
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Icons.users />
+                            {course.enrolledStudents}
+                          </span>
+                        </div>
+                        {course.rating > 0 && (
+                          <span className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+                            <Icons.star />
+                            {course.rating.toFixed(1)}
+                          </span>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Create Course Modal */}

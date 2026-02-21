@@ -26,16 +26,33 @@ interface LeaderboardEntry {
 }
 
 const MEDAL_COLORS = [
-  { bg: "bg-amber-100 dark:bg-amber-500/20", text: "text-amber-600 dark:text-amber-400", border: "border-amber-300 dark:border-amber-500/40", label: "1ম" },
-  { bg: "bg-slate-100 dark:bg-slate-500/20", text: "text-slate-500 dark:text-slate-400", border: "border-slate-300 dark:border-slate-500/40", label: "2য়" },
-  { bg: "bg-orange-100 dark:bg-orange-500/20", text: "text-orange-600 dark:text-orange-400", border: "border-orange-300 dark:border-orange-500/40", label: "3য়" },
+  {
+    bg: "bg-amber-100 dark:bg-amber-500/20",
+    text: "text-amber-600 dark:text-amber-400",
+    border: "border-amber-200 dark:border-amber-500/40",
+    label: "১ম",
+  },
+  {
+    bg: "bg-slate-100 dark:bg-slate-500/20",
+    text: "text-slate-500 dark:text-slate-400",
+    border: "border-slate-200 dark:border-slate-500/40",
+    label: "২য়",
+  },
+  {
+    bg: "bg-orange-100 dark:bg-orange-500/20",
+    text: "text-orange-600 dark:text-orange-400",
+    border: "border-orange-200 dark:border-orange-500/40",
+    label: "৩য়",
+  },
 ];
 
 function RankBadge({ rank }: { rank: number }) {
   if (rank <= 3) {
     const color = MEDAL_COLORS[rank - 1];
     return (
-      <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm border ${color.bg} ${color.text} ${color.border}`}>
+      <div
+        className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm border ${color.bg} ${color.text} ${color.border}`}
+      >
         {rank === 1 ? "🥇" : rank === 2 ? "🥈" : "🥉"}
       </div>
     );
@@ -88,7 +105,9 @@ export default function LeaderboardPage() {
         ]);
 
         if (examsRes.success) {
-          const published = (examsRes.data as McqExam[]).filter((e) => e.isResultPublished);
+          const published = (examsRes.data as McqExam[]).filter(
+            (e) => e.isResultPublished,
+          );
           setExams(published);
           if (published.length > 0) {
             setSelectedExamId(published[0]._id);
@@ -160,21 +179,28 @@ export default function LeaderboardPage() {
 
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
-
           {/* Header */}
           <div className="mb-8 text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-500/20 mb-4">
               <Trophy className="w-8 h-8 text-amber-600 dark:text-amber-400" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">লিডারবোর্ড</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">পরীক্ষার সেরা পারফর্মারদের র‍্যাংকিং</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              লিডারবোর্ড
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">
+              পরীক্ষার সেরা পারফর্মারদের র‍্যাংকিং
+            </p>
           </div>
 
           {exams.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800/50 rounded-2xl p-16 text-center shadow-sm border border-gray-100 dark:border-gray-700/50">
+            <div className="bg-white dark:bg-gray-800/50 rounded-2xl p-16 text-center shadow-sm border border-gray-200 dark:border-gray-700/50">
               <Trophy className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">এখনো কোনো ফলাফল প্রকাশিত হয়নি</h3>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">পরীক্ষা সম্পন্ন হলে লিডারবোর্ড এখানে দেখা যাবে</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                এখনো কোনো ফলাফল প্রকাশিত হয়নি
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
+                পরীক্ষা সম্পন্ন হলে লিডারবোর্ড এখানে দেখা যাবে
+              </p>
             </div>
           ) : (
             <>
@@ -214,18 +240,27 @@ export default function LeaderboardPage() {
 
               {/* Exam Info Bar */}
               {selectedExam && (
-                <div className="flex flex-wrap gap-4 mb-6 p-4 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700/50 shadow-sm text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex flex-wrap gap-4 mb-6 p-4 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700/50 shadow-sm text-sm text-gray-600 dark:text-gray-400">
                   <span className="flex items-center gap-1.5">
                     <Star className="w-4 h-4 text-amber-500" />
-                    মোট নম্বর: <strong className="text-gray-900 dark:text-white">{selectedExam.totalMarks}</strong>
+                    মোট নম্বর:{" "}
+                    <strong className="text-gray-900 dark:text-white">
+                      {selectedExam.totalMarks}
+                    </strong>
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Clock className="w-4 h-4 text-sky-500" />
-                    সময়: <strong className="text-gray-900 dark:text-white">{selectedExam.duration} মিনিট</strong>
+                    সময়:{" "}
+                    <strong className="text-gray-900 dark:text-white">
+                      {selectedExam.duration} মিনিট
+                    </strong>
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Users className="w-4 h-4 text-purple-500" />
-                    অংশগ্রহণকারী: <strong className="text-gray-900 dark:text-white">{leaderboard.length}+</strong>
+                    অংশগ্রহণকারী:{" "}
+                    <strong className="text-gray-900 dark:text-white">
+                      {leaderboard.length}+
+                    </strong>
                   </span>
                 </div>
               )}
@@ -239,22 +274,27 @@ export default function LeaderboardPage() {
                       আপনার র‍্যাংক: #{myEntry.rank}
                     </p>
                     <p className="text-xs text-purple-600 dark:text-purple-400">
-                      {myEntry.obtainedMarks}/{selectedExam?.totalMarks} নম্বর · {myEntry.percentage.toFixed(1)}%
+                      {myEntry.obtainedMarks}/{selectedExam?.totalMarks} নম্বর ·{" "}
+                      {myEntry.percentage.toFixed(1)}%
                     </p>
                   </div>
                 </div>
               )}
 
               {/* Leaderboard Table */}
-              <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/50 overflow-hidden">
+              <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700/50 overflow-hidden">
                 {lbLoading ? (
                   <div className="divide-y divide-gray-100 dark:divide-gray-700/50">
-                    {[...Array(5)].map((_, i) => <SkeletonRow key={i} />)}
+                    {[...Array(5)].map((_, i) => (
+                      <SkeletonRow key={i} />
+                    ))}
                   </div>
                 ) : leaderboard.length === 0 ? (
                   <div className="py-16 text-center">
                     <Trophy className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                    <p className="text-gray-500 dark:text-gray-400">এখনো কোনো submission নেই</p>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      এখনো কোনো submission নেই
+                    </p>
                   </div>
                 ) : (
                   <div className="divide-y divide-gray-100 dark:divide-gray-700/50">
@@ -267,15 +307,17 @@ export default function LeaderboardPage() {
                             isMe
                               ? "bg-purple-50 dark:bg-purple-500/10"
                               : entry.rank <= 3
-                              ? "bg-amber-50/40 dark:bg-amber-500/5"
-                              : "hover:bg-gray-50 dark:hover:bg-gray-700/30"
+                                ? "bg-amber-50/40 dark:bg-amber-500/5"
+                                : "hover:bg-gray-50 dark:hover:bg-gray-700/30"
                           }`}
                         >
                           <RankBadge rank={entry.rank} />
 
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
-                              <p className={`font-semibold truncate ${isMe ? "text-purple-700 dark:text-purple-300" : "text-gray-900 dark:text-white"}`}>
+                              <p
+                                className={`font-semibold truncate ${isMe ? "text-purple-700 dark:text-purple-300" : "text-gray-900 dark:text-white"}`}
+                              >
                                 {entry.studentId?.fullName ?? "—"}
                               </p>
                               {isMe && (
@@ -290,15 +332,17 @@ export default function LeaderboardPage() {
                           </div>
 
                           <div className="text-right shrink-0">
-                            <p className={`font-bold text-base ${
-                              entry.rank === 1
-                                ? "text-amber-600 dark:text-amber-400"
-                                : entry.rank === 2
-                                ? "text-slate-500 dark:text-slate-400"
-                                : entry.rank === 3
-                                ? "text-orange-600 dark:text-orange-400"
-                                : "text-gray-800 dark:text-gray-200"
-                            }`}>
+                            <p
+                              className={`font-bold text-base ${
+                                entry.rank === 1
+                                  ? "text-amber-600 dark:text-amber-400"
+                                  : entry.rank === 2
+                                    ? "text-slate-500 dark:text-slate-400"
+                                    : entry.rank === 3
+                                      ? "text-orange-600 dark:text-orange-400"
+                                      : "text-gray-800 dark:text-gray-200"
+                              }`}
+                            >
                               {entry.obtainedMarks}
                               <span className="text-xs font-normal text-gray-400 dark:text-gray-500">
                                 /{selectedExam?.totalMarks}

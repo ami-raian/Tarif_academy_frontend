@@ -57,7 +57,7 @@ export const CommonTableDiv: React.FC<{
   return (
     <div
       className={cn(
-        "overflow-x-auto rounded-xl border border-slate-200 dark:border-gray-700",
+        "overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700",
         className,
       )}
     >

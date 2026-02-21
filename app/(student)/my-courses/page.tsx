@@ -8,7 +8,14 @@ import { Navbar } from "@/app/(home)/_components/navbar";
 import { Button } from "@/components/ui/button";
 import { getMyEnrollments, getCourseProgress, getCookie } from "@/lib/api";
 import type { Enrollment } from "@/types";
-import { Play, Clock, BookOpen, CheckCircle2, BarChart2, Inbox } from "lucide-react";
+import {
+  Play,
+  Clock,
+  BookOpen,
+  CheckCircle2,
+  BarChart2,
+  Inbox,
+} from "lucide-react";
 
 interface CourseWithProgress extends Enrollment {
   progressData?: {
@@ -159,7 +166,9 @@ export default function MyCoursesPage() {
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">আমার কোর্স</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                আমার কোর্স
+              </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
                 আপনার এনরোল করা কোর্স সমূহ এখানে দেখুন
               </p>
@@ -217,7 +226,7 @@ export default function MyCoursesPage() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
                   <BookOpen className="w-5 h-5" />
@@ -226,11 +235,13 @@ export default function MyCoursesPage() {
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {enrollments.length}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">মোট এনরোল</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    মোট এনরোল
+                  </p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
                   <Clock className="w-4 h-4" />
@@ -239,11 +250,13 @@ export default function MyCoursesPage() {
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {enrollments.filter((e) => e.status === "pending").length}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">অপেক্ষমাণ</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    অপেক্ষমাণ
+                  </p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                   <CheckCircle2 className="w-5 h-5" />
@@ -252,11 +265,13 @@ export default function MyCoursesPage() {
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {enrollments.filter((e) => e.status === "approved").length}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">অনুমোদিত</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    অনুমোদিত
+                  </p>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
+            <div className="bg-white dark:bg-gray-800/50 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-500/20 flex items-center justify-center text-red-600 dark:text-red-400">
                   <BarChart2 className="w-5 h-5" />
@@ -265,7 +280,9 @@ export default function MyCoursesPage() {
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {enrollments.filter((e) => e.status === "rejected").length}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">প্রত্যাখ্যাত</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    প্রত্যাখ্যাত
+                  </p>
                 </div>
               </div>
             </div>
@@ -273,7 +290,7 @@ export default function MyCoursesPage() {
 
           {/* Courses Grid */}
           {filteredEnrollments.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800/50 rounded-2xl p-16 text-center shadow-sm border border-gray-100 dark:border-gray-700/50">
+            <div className="bg-white dark:bg-gray-800/50 rounded-2xl p-16 text-center shadow-sm border border-gray-200 dark:border-gray-700/50">
               <div className="flex justify-center text-gray-300 dark:text-gray-600 mb-4">
                 <Inbox className="w-16 h-16" />
               </div>
@@ -320,7 +337,7 @@ export default function MyCoursesPage() {
                     className={`bg-white dark:bg-gray-800/50 rounded-2xl overflow-hidden shadow-sm border hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow ${
                       enrollment.status === "rejected"
                         ? "border-red-200 dark:border-red-500/30 opacity-75"
-                        : "border-gray-100 dark:border-gray-700/50"
+                        : "border-gray-200 dark:border-gray-700/50"
                     }`}
                   >
                     {/* Thumbnail */}
@@ -380,7 +397,9 @@ export default function MyCoursesPage() {
                       {isApproved && (
                         <div className="mb-4">
                           <div className="flex items-center justify-between text-sm mb-1">
-                            <span className="text-gray-600 dark:text-gray-400">অগ্রগতি</span>
+                            <span className="text-gray-600 dark:text-gray-400">
+                              অগ্রগতি
+                            </span>
                             <span className="text-gray-900 dark:text-white font-medium">
                               {completedVideos}/{totalVideos} ভিডিও
                             </span>

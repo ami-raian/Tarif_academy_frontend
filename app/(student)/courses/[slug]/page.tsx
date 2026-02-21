@@ -279,7 +279,7 @@ export default function CourseDetailPage({ params }: PageProps) {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
               {/* Course Header */}
-              <div className="bg-white dark:bg-gray-800/50 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50">
+              <div className="bg-white dark:bg-gray-800/50 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700/50">
                 <div className="flex items-center gap-2 mb-4">
                   <span className="px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium">
                     {course.category}
@@ -334,8 +334,8 @@ export default function CourseDetailPage({ params }: PageProps) {
               )}
 
               {/* Course Content */}
-              <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/50">
-                <div className="p-6 border-b border-gray-100 dark:border-gray-700/50">
+              <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700/50">
+                <div className="p-6 border-b border-gray-200 dark:border-gray-700/50">
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                     কোর্স কনটেন্ট
                   </h2>
@@ -448,7 +448,7 @@ export default function CourseDetailPage({ params }: PageProps) {
 
             {/* Sidebar - Purchase Card */}
             <div className="lg:col-span-1">
-              <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-lg dark:shadow-gray-900/50 border border-gray-100 dark:border-gray-700/50 overflow-hidden sticky top-24">
+              <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-lg dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700/50 overflow-hidden sticky top-24">
                 {/* Preview Image */}
                 <div className="relative aspect-video bg-linear-to-br from-purple-500 to-cyan-500">
                   {/* {course.thumbnail ? (
@@ -553,7 +553,7 @@ export default function CourseDetailPage({ params }: PageProps) {
                   )}
 
                   {/* Course Features */}
-                  <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                  <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700/50">
                     <h3 className="font-semibold text-gray-900 dark:text-white">
                       কোর্সে যা আছে:
                     </h3>
@@ -590,7 +590,7 @@ export default function CourseDetailPage({ params }: PageProps) {
       {/* Enrollment Modal */}
       {showEnrollModal && course && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-700/50 shadow-2xl dark:shadow-gray-900/60">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700/50 shadow-2xl dark:shadow-gray-900/60">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 text-center">
               কোর্সে এনরোল করুন
             </h3>

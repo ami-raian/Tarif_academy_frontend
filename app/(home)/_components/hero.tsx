@@ -79,7 +79,7 @@ export function Hero() {
             <div className="absolute w-72 h-72 bg-linear-to-br from-purple-500/30 to-purple-700/30 rounded-full blur-3xl hidden dark:block" />
             <div className="absolute w-72 h-72 bg-linear-to-br from-cyan-500/30 to-cyan-700/30 rounded-full blur-3xl translate-x-16 translate-y-8 hidden dark:block" />
 
-            <div className="relative bg-white dark:bg-gray-800/90 rounded-2xl shadow-2xl dark:shadow-purple-500/10 p-8 backdrop-blur-sm border border-gray-100 dark:border-gray-700/50">
+            <div className="relative bg-white dark:bg-gray-800/90 rounded-2xl shadow-2xl dark:shadow-purple-500/10 p-8 backdrop-blur-sm border border-gray-200 dark:border-gray-700/50">
               <Image
                 src="/tarifacademy-logo.png"
                 alt="Tarif Academy"
