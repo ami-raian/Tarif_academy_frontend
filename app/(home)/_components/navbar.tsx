@@ -2,6 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  GraduationCap,
   Menu,
   X,
   LogIn,
@@ -85,12 +85,16 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 bg-linear-to-br from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:shadow-indigo-500/50 transition-all duration-300">
-              <GraduationCap className="w-5 h-5 text-white" />
+            <div className="bg-white dark:bg-white px-2 py-1 rounded-md">
+              <Image
+                src="/tarifAcademyLogo.png"
+                alt="Tarif Academy"
+                width={150}
+                height={40}
+                className="transition-all duration-300 group-hover:opacity-90"
+                priority
+              />
             </div>
-            <span className="text-lg font-bold text-slate-900 dark:text-white">
-              Tarif Academy
-            </span>
           </Link>
 
           {/* Desktop Nav */}
