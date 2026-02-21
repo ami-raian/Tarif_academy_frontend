@@ -553,7 +553,7 @@ export default function VideoPlayerPage({ params }: PageProps) {
           </div>
 
           {/* Sections - Scrollable */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
             {Object.entries(sections).map(([sectionTitle, videos]) => (
               <div key={sectionTitle} className="border-b border-white/5">
                 {/* Section Header */}

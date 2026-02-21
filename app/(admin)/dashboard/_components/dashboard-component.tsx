@@ -622,7 +622,7 @@ const DashboardComponent = () => {
                     </span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-0 max-h-[calc(100vh-200px)] overflow-y-auto">
+                <CardContent className="p-0 max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
                   {videosLoading ? (
                     <div className="flex items-center justify-center py-12">
                       <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>

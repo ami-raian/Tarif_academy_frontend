@@ -95,7 +95,7 @@ export default function DashboardSidebar({
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
           <p className="px-3 mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-gray-500">
             মেনু
           </p>

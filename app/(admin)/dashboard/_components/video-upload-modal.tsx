@@ -273,7 +273,7 @@ export const VideoUploadModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-125 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-125 max-h-[90vh] overflow-y-auto custom-scrollbar">
         <DialogHeader>
           <DialogTitle className="text-xl">ভিডিও আপলোড করুন</DialogTitle>
           <p className="text-sm text-slate-500 mt-1">{courseTitle}</p>

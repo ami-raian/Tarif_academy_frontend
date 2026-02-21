@@ -819,7 +819,7 @@ const McqManagement = () => {
           open={isAddQuestionModalOpen}
           onOpenChange={setIsAddQuestionModalOpen}
         >
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
             <DialogHeader>
               <DialogTitle>নতুন প্রশ্ন যোগ করুন</DialogTitle>
             </DialogHeader>
