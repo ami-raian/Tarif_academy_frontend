@@ -41,7 +41,7 @@ const staticLinks: QuickLink[] = [
   {
     title: "Result",
     subtitle: "Exam history",
-    href: "#",
+    href: "/results",
     icon: FileText,
     accent: "text-emerald-700",
     tint: "bg-emerald-100",
