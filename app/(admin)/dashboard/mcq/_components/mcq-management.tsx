@@ -298,12 +298,27 @@ const McqManagement = () => {
   // Fetch exams
   useEffect(() => {
     fetchExams();
-  }, []);
+  }, [filter]);
 
   const fetchExams = async () => {
     try {
       setLoading(true);
-      const response = await getMcqExams();
+
+      // Prepare filter params for API
+      const params: {
+        isPublished?: boolean;
+        isResultPublished?: boolean;
+      } = {};
+
+      if (filter === "published") {
+        params.isPublished = true;
+      } else if (filter === "draft") {
+        params.isPublished = false;
+      } else if (filter === "result-published") {
+        params.isResultPublished = true;
+      }
+
+      const response = await getMcqExams(params);
       if (response.success) {
         setExams(response.data);
       }
@@ -547,17 +562,8 @@ const McqManagement = () => {
     setLeaderboard([]);
   };
 
-  // Filter exams based on selected filter
-  const filteredExams = exams.filter((exam) => {
-    if (filter === "all") return true;
-    if (filter === "published") return exam.isPublished;
-    if (filter === "draft") return !exam.isPublished;
-    if (filter === "result-published") return exam.isResultPublished;
-    return true;
-  });
-
   // Transform exams data for DataTable
-  const tableData = filteredExams.map((exam) => ({
+  const tableData = exams.map((exam) => ({
     title: (
       <div>
         <p className="font-semibold text-slate-900 dark:text-white text-sm">
@@ -1212,16 +1218,15 @@ const McqManagement = () => {
       <div className="sticky top-0 z-30 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div>
-                <h1 className="text-lg font-bold text-slate-900 dark:text-white">
-                  MCQ পরীক্ষা
-                </h1>
-                <p className="text-xs text-slate-500 dark:text-gray-400">
-                  পরীক্ষা তৈরি এবং ম্যানেজ করুন
-                </p>
-              </div>
-              <div className="h-10 w-px bg-slate-200 dark:bg-gray-600 hidden sm:block" />
+            <div>
+              <h1 className="text-lg font-bold text-slate-900 dark:text-white">
+                MCQ পরীক্ষা
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-gray-400">
+                পরীক্ষা তৈরি এবং ম্যানেজ করুন
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
               <Tabs
                 value={filter}
                 onValueChange={(val) => setFilter(val as typeof filter)}
@@ -1254,15 +1259,15 @@ const McqManagement = () => {
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
+              <Button
+                size="sm"
+                onClick={() => setIsCreateExamModalOpen(true)}
+                className="gap-1.5 shadow-md shadow-primary/20"
+              >
+                <Icons.plus />
+                নতুন পরীক্ষা তৈরি করুন
+              </Button>
             </div>
-            <Button
-              size="sm"
-              onClick={() => setIsCreateExamModalOpen(true)}
-              className="gap-1.5 shadow-md shadow-primary/20"
-            >
-              <Icons.plus />
-              নতুন পরীক্ষা তৈরি করুন
-            </Button>
           </div>
         </div>
       </div>
@@ -1316,7 +1321,7 @@ const McqManagement = () => {
         <DataTable
           columns={examColumns}
           data={tableData}
-          totalItems={filteredExams.length}
+          totalItems={exams.length}
           isLoading={loading}
           showSerial={true}
           pagination={false}

@@ -450,6 +450,7 @@ export async function getMcqExams(params?: {
   page?: number;
   limit?: number;
   isPublished?: boolean;
+  isResultPublished?: boolean;
   search?: string;
 }) {
   const searchParams = new URLSearchParams();
@@ -457,6 +458,8 @@ export async function getMcqExams(params?: {
   if (params?.limit) searchParams.set("limit", params.limit.toString());
   if (params?.isPublished !== undefined)
     searchParams.set("isPublished", params.isPublished.toString());
+  if (params?.isResultPublished !== undefined)
+    searchParams.set("isResultPublished", params.isResultPublished.toString());
   if (params?.search) searchParams.set("search", params.search);
 
   const response = await fetch(
