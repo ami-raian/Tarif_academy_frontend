@@ -97,7 +97,7 @@ export const FormField = (props: FormFieldProps) => {
 
       {props.type === "select" && (
         <Select
-          value={props.value}
+          value={props.value || undefined}
           onValueChange={props.onValueChange}
           disabled={props.disabled}
         >
@@ -105,11 +105,17 @@ export const FormField = (props: FormFieldProps) => {
             <SelectValue placeholder={props.placeholder} />
           </SelectTrigger>
           <SelectContent>
-            {props.options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
+            {props.options.length === 0 ? (
+              <SelectItem value="__empty__" disabled>
+                কোনো অপশন নেই
               </SelectItem>
-            ))}
+            ) : (
+              props.options.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))
+            )}
           </SelectContent>
         </Select>
       )}
