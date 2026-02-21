@@ -61,7 +61,7 @@ const quickLinks: QuickLink[] = [
     tint: "bg-indigo-100",
   },
   {
-    title: "Quiz Command",
+    title: "MCQ Exam & Challenges",
     subtitle: "Fast challenges",
     href: "/exams",
     icon: Command,
