@@ -38,15 +38,11 @@ export function Footer() {
           <div>
             <div className="flex items-center mb-4">
               <Image
-                src="/tarifacademy-logo.png"
+                src="/tarifAcademyLogo.png"
                 alt="Tarif Academy"
-                width={36}
-                height={36}
-                className="mr-2"
+                width={150}
+                height={40}
               />
-              <span className="text-lg font-bold text-gray-900 dark:text-white">
-                তারিফ একাডেমি
-              </span>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               বাংলাদেশের সেরা অনলাইন শিক্ষা প্ল্যাটফর্ম
