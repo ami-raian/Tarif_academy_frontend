@@ -805,6 +805,25 @@ export async function getAllStudents(params?: {
   return response.json();
 }
 
+export async function getStudent(studentId: string) {
+  const response = await fetch(`${API_BASE_URL}/students/${studentId}`, {
+    headers: getAuthHeaders(),
+  });
+  return response.json();
+}
+
+export async function updateStudent(
+  studentId: string,
+  data: Record<string, unknown>,
+) {
+  const response = await fetch(`${API_BASE_URL}/students/${studentId}`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
 export async function deleteStudent(studentId: string) {
   const response = await fetch(`${API_BASE_URL}/students/${studentId}`, {
     method: "DELETE",
