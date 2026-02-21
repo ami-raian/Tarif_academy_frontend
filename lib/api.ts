@@ -89,6 +89,15 @@ export async function getStudentProfile() {
   return response.json();
 }
 
+export async function updateStudentProfile(data: Record<string, unknown>) {
+  const response = await fetch(`${API_BASE_URL}/auth/student/me`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
 export async function getAdminProfile() {
   const response = await fetch(`${API_BASE_URL}/auth/admin/me`, {
     headers: getAuthHeaders(),
