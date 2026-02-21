@@ -8,7 +8,12 @@ import { ReactNode } from "react";
 export function AppWrapper({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
-      <SimpleBar style={{ height: "100vh" }} autoHide={false}>
+      {/* Use dvh for mobile browser compatibility, fallback to vh for older browsers */}
+      <SimpleBar
+        className="app-scrollbar"
+        style={{ height: "100dvh", maxHeight: "100dvh" }}
+        autoHide={false}
+      >
         {children}
       </SimpleBar>
     </ThemeProvider>

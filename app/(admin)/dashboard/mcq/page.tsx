@@ -1,11 +1,9 @@
 import McqManagement from "./_components/mcq-management";
 
+export const dynamic = "force-dynamic";
+
 const McqPage = () => {
-  return (
-    <div>
-      <McqManagement />
-    </div>
-  );
+  return <McqManagement />;
 };
 
 export default McqPage;
