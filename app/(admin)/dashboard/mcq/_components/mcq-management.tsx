@@ -1228,6 +1228,7 @@ const McqManagement = () => {
             </div>
             <div className="flex items-center gap-3">
               <Tabs
+                defaultValue="all"
                 value={filter}
                 onValueChange={(val) => setFilter(val as typeof filter)}
                 className="hidden sm:block"
