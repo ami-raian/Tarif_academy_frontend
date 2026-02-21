@@ -278,21 +278,19 @@ export default function StudentsManagement() {
         </div>
 
         {/* DataTable */}
-        <Card className="border-0 shadow-lg dark:bg-gray-800">
-          <DataTable
-            columns={columns}
-            data={tableData}
-            totalItems={pagination.totalItems}
-            isLoading={loading}
-            showSerial={true}
-            title={
-              <div className="p-4 text-lg font-bold text-slate-900 dark:text-white">
-                শিক্ষার্থী তালিকা
-              </div>
-            }
-            pagination={true}
-          />
-        </Card>
+        <DataTable
+          columns={columns}
+          data={tableData}
+          totalItems={pagination.totalItems}
+          isLoading={loading}
+          showSerial={true}
+          // title={
+          //   <div className="p-4 text-lg font-bold text-slate-900 dark:text-white">
+          //     শিক্ষার্থী তালিকা
+          //   </div>
+          // }
+          pagination={true}
+        />
       </div>
 
       {/* Delete Confirmation Dialog */}

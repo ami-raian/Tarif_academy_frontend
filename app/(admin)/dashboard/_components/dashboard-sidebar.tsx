@@ -71,7 +71,7 @@ export default function DashboardSidebar({
         }`}
       >
         {/* Brand */}
-        <div className="flex items-center justify-between h-16 px-5 border-b border-slate-200 dark:border-gray-800">
+        <div className="flex items-center justify-between h-16 px-5 border-b border-slate-200 dark:border-gray-800 my-1">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-linear-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/30">
               <GraduationCap className="w-4.5 h-4.5 text-white" />
