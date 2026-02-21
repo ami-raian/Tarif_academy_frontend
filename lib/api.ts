@@ -412,6 +412,7 @@ export interface McqExam {
   totalQuestions: number;
   totalMarks: number;
   passingMarks: number;
+  negativeMarking: number; // marks to deduct per wrong answer (0 means no negative marking)
   isPublished: boolean;
   isResultPublished: boolean;
   hasAccessCode?: boolean; // true if exam requires an access code
@@ -516,6 +517,7 @@ export async function createMcqExam(data: {
   description?: string;
   duration: number;
   passingMarks: number;
+  negativeMarking?: number;
   accessCode?: string;
   startTime?: string;
   endTime?: string;
@@ -536,6 +538,7 @@ export async function updateMcqExam(
     description?: string;
     duration?: number;
     passingMarks?: number;
+    negativeMarking?: number;
     accessCode?: string;
     startTime?: string;
     endTime?: string;
@@ -799,6 +802,25 @@ export async function getAllStudents(params?: {
       headers: getAuthHeaders(),
     },
   );
+  return response.json();
+}
+
+export async function getStudent(studentId: string) {
+  const response = await fetch(`${API_BASE_URL}/students/${studentId}`, {
+    headers: getAuthHeaders(),
+  });
+  return response.json();
+}
+
+export async function updateStudent(
+  studentId: string,
+  data: Record<string, unknown>,
+) {
+  const response = await fetch(`${API_BASE_URL}/students/${studentId}`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
   return response.json();
 }
 
