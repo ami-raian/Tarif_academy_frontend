@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,11 +10,13 @@ import { VideoPlayer } from "@/components/video-player";
 import { VideoUploadModal } from "./video-upload-modal";
 import { CommonBadge } from "@/components/common/common-badge";
 import { CreateCourseModal } from "./create-course-modal";
+import { EditCourseModal } from "./edit-course-modal";
 import {
   toggleCoursePublish,
   getCourses,
   getCourseVideos,
   syncAllVideos as syncAllVideosApi,
+  getThumbnailUrl,
 } from "@/lib/api";
 import type {
   Course,
@@ -21,200 +24,23 @@ import type {
   VideoWithAccess,
   CourseVideosResponse,
 } from "@/types";
-
-// Icons as simple components
-const Icons = {
-  back: () => (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M15 19l-7-7 7-7"
-      />
-    </svg>
-  ),
-  play: () => (
-    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M8 5v14l11-7z" />
-    </svg>
-  ),
-  close: () => (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M6 18L18 6M6 6l12 12"
-      />
-    </svg>
-  ),
-  video: () => (
-    <svg
-      className="w-5 h-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-      />
-    </svg>
-  ),
-  clock: () => (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-  ),
-  users: () => (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-      />
-    </svg>
-  ),
-  book: () => (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-      />
-    </svg>
-  ),
-  star: () => (
-    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-    </svg>
-  ),
-  plus: () => (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 4v16m8-8H4"
-      />
-    </svg>
-  ),
-  chart: () => (
-    <svg
-      className="w-6 h-6"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-      />
-    </svg>
-  ),
-  checkCircle: () => (
-    <svg
-      className="w-6 h-6"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-  ),
-  draft: () => (
-    <svg
-      className="w-6 h-6"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-      />
-    </svg>
-  ),
-  chevronDown: () => (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M19 9l-7 7-7-7"
-      />
-    </svg>
-  ),
-  refresh: () => (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-      />
-    </svg>
-  ),
-};
+import {
+  ChevronLeft,
+  Play,
+  X,
+  Video as VideoIcon,
+  Clock,
+  Users,
+  BookOpen,
+  Star,
+  Plus,
+  BarChart3,
+  CheckCircle,
+  FileEdit,
+  ChevronDown,
+  RefreshCw,
+  Pencil,
+} from "lucide-react";
 
 const DashboardComponent = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -232,6 +58,8 @@ const DashboardComponent = () => {
   const [syncing, setSyncing] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isCreateCourseModalOpen, setIsCreateCourseModalOpen] = useState(false);
+  const [isEditCourseModalOpen, setIsEditCourseModalOpen] = useState(false);
+  const [courseToEdit, setCourseToEdit] = useState<Course | null>(null);
   const [publishingCourse, setPublishingCourse] = useState<string | null>(null);
 
   // Fetch all courses
@@ -458,7 +286,7 @@ const DashboardComponent = () => {
                 onClick={handleBackToCourses}
                 className="gap-2 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white"
               >
-                <Icons.back />
+                <ChevronLeft className="w-4 h-4" />
                 <span className="hidden sm:inline">ফিরে যান</span>
               </Button>
               <div className="h-6 w-px bg-slate-200 dark:bg-gray-600"></div>
@@ -468,11 +296,11 @@ const DashboardComponent = () => {
                 </h1>
                 <div className="flex items-center gap-3 text-sm text-slate-500 dark:text-gray-400 mt-0.5">
                   <span className="flex items-center gap-1">
-                    <Icons.video />
+                    <VideoIcon className="w-5 h-5" />
                     {getTotalVideos()} টি ভিডিও
                   </span>
                   <span className="flex items-center gap-1">
-                    <Icons.users />
+                    <Users className="w-4 h-4" />
                     {selectedCourse.enrolledStudents} শিক্ষার্থী
                   </span>
                 </div>
@@ -485,7 +313,7 @@ const DashboardComponent = () => {
                 className="gap-2 shrink-0"
               >
                 <span className={syncing ? "animate-spin" : ""}>
-                  <Icons.refresh />
+                  <RefreshCw className="w-4 h-4" />
                 </span>
                 <span className="hidden sm:inline">
                   {syncing ? "সিঙ্ক হচ্ছে..." : "ভিডিও সিঙ্ক"}
@@ -496,7 +324,7 @@ const DashboardComponent = () => {
                 onClick={() => setIsUploadModalOpen(true)}
                 className="gap-2 shrink-0"
               >
-                <Icons.plus />
+                <Plus className="w-4 h-4" />
                 <span className="hidden sm:inline">ভিডিও আপলোড</span>
               </Button>
             </div>
@@ -525,7 +353,7 @@ const DashboardComponent = () => {
                         onClick={handleCloseVideo}
                         className="shrink-0 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
                       >
-                        <Icons.close />
+                        <X className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
@@ -550,7 +378,7 @@ const DashboardComponent = () => {
                     ) : (
                       <div className="aspect-video bg-linear-to-br from-rose-50 to-rose-100 flex flex-col items-center justify-center">
                         <div className="w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center mb-4">
-                          <Icons.close />
+                          <X className="w-4 h-4" />
                         </div>
                         <p className="text-rose-800 font-medium">
                           ভিডিও প্রসেস ব্যর্থ হয়েছে
@@ -566,9 +394,7 @@ const DashboardComponent = () => {
                 <Card className="overflow-hidden border-0 shadow-lg dark:bg-gray-800">
                   <div className="aspect-video bg-linear-to-br from-slate-100 to-slate-200 dark:from-gray-700 dark:to-gray-800 flex flex-col items-center justify-center">
                     <div className="w-16 h-16 rounded-full bg-white dark:bg-gray-600 shadow-lg flex items-center justify-center mb-4">
-                      <div className="text-slate-400 dark:text-gray-300 scale-150">
-                        <Icons.play />
-                      </div>
+                      <Play className="w-6 h-6 text-slate-400 dark:text-gray-300" />
                     </div>
                     <p className="text-slate-600 dark:text-gray-300 font-medium">
                       একটি ভিডিও সিলেক্ট করুন
@@ -630,7 +456,7 @@ const DashboardComponent = () => {
                   ) : Object.keys(sections).length === 0 ? (
                     <div className="text-center py-12 px-4">
                       <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-3">
-                        <Icons.video />
+                        <VideoIcon className="w-5 h-5" />
                       </div>
                       <p className="text-slate-500 dark:text-gray-400">
                         কোনো ভিডিও পাওয়া যায়নি
@@ -659,11 +485,9 @@ const DashboardComponent = () => {
                                   {videos.length} টি ভিডিও
                                 </p>
                               </div>
-                              <div
-                                className={`transition-transform text-slate-500 dark:text-gray-400 ${expandedSections.has(sectionTitle) ? "rotate-180" : ""}`}
-                              >
-                                <Icons.chevronDown />
-                              </div>
+                              <ChevronDown
+                                className={`w-4 h-4 transition-transform text-slate-500 dark:text-gray-400 ${expandedSections.has(sectionTitle) ? "rotate-180" : ""}`}
+                              />
                             </button>
 
                             {/* Videos List */}
@@ -694,7 +518,7 @@ const DashboardComponent = () => {
                                         }`}
                                       >
                                         {isSelected ? (
-                                          <Icons.play />
+                                          <Play className="w-4 h-4" />
                                         ) : (
                                           <span className="text-xs font-medium">
                                             {videoIndex + 1}
@@ -724,7 +548,7 @@ const DashboardComponent = () => {
                                             </span>
                                           )}
                                           <span className="text-[10px] text-slate-400 dark:text-gray-500 flex items-center gap-1">
-                                            <Icons.clock />
+                                            <Clock className="w-4 h-4" />
                                             {formatDuration(video.duration)}
                                           </span>
                                         </div>
@@ -808,7 +632,7 @@ const DashboardComponent = () => {
                 onClick={() => setIsCreateCourseModalOpen(true)}
                 className="gap-1.5 shadow-md shadow-primary/20"
               >
-                <Icons.plus />
+                <Plus className="w-4 h-4" />
                 নতুন কোর্স যোগ করুন
               </Button>
             </div>
@@ -831,7 +655,7 @@ const DashboardComponent = () => {
                   </p>
                 </div>
                 <div className="w-12 h-12 rounded-xl bg-linear-to-br from-violet-500 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-violet-500/25">
-                  <Icons.chart />
+                  <BarChart3 className="w-6 h-6" />
                 </div>
               </div>
             </CardContent>
@@ -849,7 +673,7 @@ const DashboardComponent = () => {
                   </p>
                 </div>
                 <div className="w-12 h-12 rounded-xl bg-linear-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/25">
-                  <Icons.checkCircle />
+                  <CheckCircle className="w-6 h-6" />
                 </div>
               </div>
             </CardContent>
@@ -867,7 +691,7 @@ const DashboardComponent = () => {
                   </p>
                 </div>
                 <div className="w-12 h-12 rounded-xl bg-linear-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-500/25">
-                  <Icons.draft />
+                  <FileEdit className="w-6 h-6" />
                 </div>
               </div>
             </CardContent>
@@ -885,7 +709,7 @@ const DashboardComponent = () => {
                   </p>
                 </div>
                 <div className="w-12 h-12 rounded-xl bg-linear-to-br from-sky-500 to-sky-600 flex items-center justify-center text-white shadow-lg shadow-sky-500/25">
-                  <Icons.users />
+                  <Users className="w-6 h-6" />
                 </div>
               </div>
             </CardContent>
@@ -897,7 +721,7 @@ const DashboardComponent = () => {
           {courses.length === 0 ? (
             <div className="text-center py-12">
               <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
-                <Icons.book />
+                <BookOpen className="w-4 h-4" />
               </div>
               <p className="text-slate-500 dark:text-gray-400 font-medium">
                 কোনো কোর্স পাওয়া যায়নি
@@ -918,10 +742,28 @@ const DashboardComponent = () => {
                   >
                     {/* Course Thumbnail */}
                     <div className="relative h-40 bg-linear-to-br from-primary/20 to-primary/5 overflow-hidden">
+                      <Image
+                        src={getThumbnailUrl(course.thumbnail)}
+                        alt={course.title}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
                       <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent"></div>
 
                       {/* Status Badge */}
-                      <div className="absolute top-3 right-3 flex gap-2">
+                      <div className="absolute top-3 right-3 flex gap-2 z-10">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCourseToEdit(course);
+                            setIsEditCourseModalOpen(true);
+                          }}
+                          className="w-8 h-8 rounded-full bg-white/90 dark:bg-gray-800/90 flex items-center justify-center hover:bg-white dark:hover:bg-gray-800 transition-colors shadow-sm"
+                          title="সম্পাদনা করুন"
+                        >
+                          <Pencil className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                        </button>
                         <button
                           onClick={(e) => handleTogglePublish(e, course)}
                           disabled={publishingCourse === course._id}
@@ -957,11 +799,9 @@ const DashboardComponent = () => {
                       </div>
 
                       {/* Play Button Overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                         <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                          <div className="text-primary ml-1 scale-150">
-                            <Icons.play />
-                          </div>
+                          <Play className="w-6 h-6 text-primary ml-1" />
                         </div>
                       </div>
                     </div>
@@ -996,17 +836,17 @@ const DashboardComponent = () => {
                       <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
                         <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-gray-400">
                           <span className="flex items-center gap-1">
-                            <Icons.book />
+                            <BookOpen className="w-4 h-4" />
                             {course.totalLessons} লেসন
                           </span>
                           <span className="flex items-center gap-1">
-                            <Icons.users />
+                            <Users className="w-4 h-4" />
                             {course.enrolledStudents}
                           </span>
                         </div>
                         {course.rating > 0 && (
                           <span className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
-                            <Icons.star />
+                            <Star className="w-4 h-4" />
                             {course.rating.toFixed(1)}
                           </span>
                         )}
@@ -1028,6 +868,20 @@ const DashboardComponent = () => {
           // Refresh courses list
           window.location.reload();
         }}
+      />
+
+      {/* Edit Course Modal */}
+      <EditCourseModal
+        isOpen={isEditCourseModalOpen}
+        onClose={() => {
+          setIsEditCourseModalOpen(false);
+          setCourseToEdit(null);
+        }}
+        onCourseUpdated={() => {
+          // Refresh courses list
+          window.location.reload();
+        }}
+        course={courseToEdit}
       />
     </div>
   );

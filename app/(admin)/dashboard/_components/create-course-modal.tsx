@@ -1,7 +1,8 @@
 // app/(admin)/dashboard/_components/create-course-modal.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/common/form-field";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import {
   createCourse,
+  uploadCourseThumbnail,
   getAuthToken,
   getCourseCategories,
   type CourseCategory,
@@ -42,6 +44,21 @@ const Icons = {
       />
     </svg>
   ),
+  image: () => (
+    <svg
+      className="w-8 h-8"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+      />
+    </svg>
+  ),
 };
 
 export const CreateCourseModal = ({
@@ -62,6 +79,11 @@ export const CreateCourseModal = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  // Thumbnail state
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Dynamic categories
   const [categories, setCategories] = useState<CourseCategory[]>([]);
@@ -89,6 +111,33 @@ export const CreateCourseModal = ({
   }, [isOpen, categories.length]);
 
   const languages = ["Bangla", "English", "Hindi"];
+
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        setError("ছবি সাইজ ৫MB এর বেশি হতে পারবে না");
+        return;
+      }
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        setError("শুধুমাত্র ছবি ফাইল আপলোড করা যাবে");
+        return;
+      }
+      setThumbnail(file);
+      setThumbnailPreview(URL.createObjectURL(file));
+      setError("");
+    }
+  };
+
+  const removeThumbnail = () => {
+    setThumbnail(null);
+    setThumbnailPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,6 +189,16 @@ export const CreateCourseModal = ({
       const data = await createCourse(courseData);
 
       if (data.success) {
+        // Upload thumbnail if selected
+        if (thumbnail && data.data?._id) {
+          try {
+            await uploadCourseThumbnail(data.data._id, thumbnail);
+          } catch (uploadErr) {
+            console.error("Thumbnail upload failed:", uploadErr);
+            // Don't fail the whole process if thumbnail upload fails
+          }
+        }
+
         setSuccess(true);
         setTimeout(() => {
           onCourseCreated();
@@ -169,6 +228,11 @@ export const CreateCourseModal = ({
       setIsPublished(false);
       setError("");
       setSuccess(false);
+      setThumbnail(null);
+      setThumbnailPreview(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
       onClose();
     }
   };
@@ -218,6 +282,52 @@ export const CreateCourseModal = ({
               rows={3}
               disabled={loading}
             />
+
+            {/* Thumbnail Upload */}
+            <div className="space-y-2">
+              <Label>থাম্বনেইল (ঐচ্ছিক)</Label>
+              <div className="relative">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleThumbnailChange}
+                  className="hidden"
+                  disabled={loading}
+                />
+                {thumbnailPreview ? (
+                  <div className="relative w-full h-40 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-700">
+                    <Image
+                      src={thumbnailPreview}
+                      alt="Thumbnail preview"
+                      fill
+                      className="object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeThumbnail}
+                      className="absolute top-2 right-2 w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
+                      disabled={loading}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full h-40 border-2 border-dashed border-gray-300 dark:border-slate-600 rounded-lg flex flex-col items-center justify-center gap-2 hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors text-slate-500 dark:text-slate-400"
+                    disabled={loading}
+                  >
+                    <Icons.image />
+                    <span className="text-sm">ছবি আপলোড করতে ক্লিক করুন</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500">
+                      সর্বোচ্চ ৫MB (JPG, PNG, GIF, WebP)
+                    </span>
+                  </button>
+                )}
+              </div>
+            </div>
 
             {/* Price & Discount Price */}
             <div className="grid grid-cols-2 gap-4">

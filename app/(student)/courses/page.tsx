@@ -3,11 +3,13 @@
 
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Navbar } from "@/app/(home)/_components/navbar";
 import {
   getCourses,
   getCourseCategories,
+  getThumbnailUrl,
   type CourseCategory,
 } from "@/lib/api";
 import { FormField } from "@/components/common/form-field";
@@ -396,29 +398,15 @@ function CoursesContent() {
                     className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-purple-200 dark:hover:border-purple-500"
                   >
                     {/* Thumbnail */}
-                    {/* <div className="relative h-48 overflow-hidden bg-linear-to-br from-purple-100 to-cyan-100">
-                      {course?.thumbnail ? (
-                        <Image
-                          src={
-                            course.thumbnail || "/default-course-thumbnail.jpg"
-                          }
-                          alt={course.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-6xl">📚</span>
-                        </div>
-                      )}
-                      <div className="absolute top-3 left-3">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${levelBadge.bg} ${levelBadge.text}`}
-                        >
-                          {levelBadge.label}
-                        </span>
-                      </div>
-                    </div> */}
+                    <div className="relative h-48 overflow-hidden bg-linear-to-br from-purple-100 to-cyan-100">
+                      <Image
+                        src={getThumbnailUrl(course.thumbnail)}
+                        alt={course.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        unoptimized
+                      />
+                    </div>
 
                     {/* Content */}
                     <div className="p-5">

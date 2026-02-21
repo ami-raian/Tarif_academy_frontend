@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/app/(home)/_components/navbar";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import {
   checkEnrollment,
   createEnrollment,
   getCookie,
+  getThumbnailUrl,
 } from "@/lib/api";
 import type { Course, VideoWithAccess, EnrollmentStatus } from "@/types";
 import {
@@ -332,16 +334,14 @@ export default function CourseDetailPage({ params }: PageProps) {
               </div>
 
               {/* Course Thumbnail */}
-              {course.thumbnail && (
-                <div className="relative aspect-video rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-700">
-                  {/* <Image
-                    src={course.thumbnail}
-                    alt={course.title}
-                    fill
-                    className="object-cover"
-                  /> */}
-                </div>
-              )}
+              <div className="relative aspect-video rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-700">
+                <Image
+                  src={getThumbnailUrl(course.thumbnail)}
+                  alt={course.title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
 
               {/* Course Content */}
               <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700/50">
@@ -463,18 +463,12 @@ export default function CourseDetailPage({ params }: PageProps) {
               <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-lg dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700/50 overflow-hidden sticky top-24">
                 {/* Preview Image */}
                 <div className="relative aspect-video bg-linear-to-br from-purple-500 to-cyan-500">
-                  {/* {course.thumbnail ? (
-                    <Image
-                      src={course.thumbnail}
-                      alt={course.title}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-6xl">📚</span>
-                    </div>
-                  )} */}
+                  <Image
+                    src={getThumbnailUrl(course.thumbnail)}
+                    alt={course.title}
+                    fill
+                    className="object-cover"
+                  />
                   <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                     <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center shadow-lg text-gray-800">
                       <Play className="w-7 h-7" />

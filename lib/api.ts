@@ -2,6 +2,28 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_TARIFACADEMY_API_URL ||
   "http://localhost:5000/api/v1";
 
+// Get backend base URL (without /api/v1)
+export function getBackendUrl(): string {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_TARIFACADEMY_API_URL ||
+    "http://localhost:5000/api/v1";
+  return baseUrl.replace(/\/api\/v1/i, "");
+}
+
+// Get full thumbnail URL (returns default if no thumbnail or invalid path)
+export function getThumbnailUrl(thumbnail: string | undefined): string {
+  // Return local default for empty/undefined thumbnails
+  if (!thumbnail) return "/default-course-thumbnail.png";
+
+  // Only use backend URL for actual uploads (paths starting with /uploads)
+  if (thumbnail.startsWith("/uploads")) {
+    return `${getBackendUrl()}${thumbnail}`;
+  }
+
+  // For any other value, return the local default
+  return "/default-course-thumbnail.png";
+}
+
 // Cookie utilities
 export function getCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
@@ -89,6 +111,15 @@ export async function getStudentProfile() {
   return response.json();
 }
 
+export async function updateStudentProfile(data: Record<string, unknown>) {
+  const response = await fetch(`${API_BASE_URL}/auth/student/me`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
 export async function getAdminProfile() {
   const response = await fetch(`${API_BASE_URL}/auth/admin/me`, {
     headers: getAuthHeaders(),
@@ -159,6 +190,24 @@ export async function createCourse(data: Record<string, unknown>) {
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
+  return response.json();
+}
+
+export async function uploadCourseThumbnail(courseId: string, file: File) {
+  const formData = new FormData();
+  formData.append("thumbnail", file);
+
+  const token = getAuthToken();
+  const response = await fetch(
+    `${API_BASE_URL}/courses/${courseId}/thumbnail`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+      body: formData,
+    },
+  );
   return response.json();
 }
 

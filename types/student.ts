@@ -29,6 +29,7 @@ export interface Student {
   gender: "male" | "female" | "other";
   bloodGroup: string;
   photo: string;
+  nidOrBirthCert?: string;
   educationalInfo: {
     ssc: EducationalInfoSSC;
     hsc: EducationalInfoHSC;
@@ -38,6 +39,7 @@ export interface Student {
     name: string;
     mobile: string;
     occupation: string;
+    relation?: string;
   };
   address?: {
     present: string;
