@@ -85,14 +85,16 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <Image
-              src="/tarifAcademyLogo.png"
-              alt="Tarif Academy"
-              width={150}
-              height={40}
-              className="transition-all duration-300 group-hover:opacity-90"
-              priority
-            />
+            <div className="bg-white dark:bg-white px-2 py-1 rounded-md">
+              <Image
+                src="/tarifAcademyLogo.png"
+                alt="Tarif Academy"
+                width={150}
+                height={40}
+                className="transition-all duration-300 group-hover:opacity-90"
+                priority
+              />
+            </div>
           </Link>
 
           {/* Desktop Nav */}
