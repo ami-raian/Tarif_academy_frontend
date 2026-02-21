@@ -283,12 +283,15 @@ const McqManagement = () => {
     description: "",
     duration: "30",
     passingMarks: "40",
+    negativeMarking: "0",
     accessCode: "",
   });
 
   const [questionForm, setQuestionForm] = useState({
     questionText: "",
     options: [
+      { text: "", isCorrect: false },
+      { text: "", isCorrect: false },
       { text: "", isCorrect: false },
       { text: "", isCorrect: false },
     ],
@@ -362,9 +365,15 @@ const McqManagement = () => {
 
     const duration = parseInt(examForm.duration) || 30;
     const passingMarks = parseInt(examForm.passingMarks) || 40;
+    const negativeMarking = parseFloat(examForm.negativeMarking) || 0;
 
     if (duration < 1) {
       alert("সময়কাল কমপক্ষে ১ মিনিট হতে হবে");
+      return;
+    }
+
+    if (negativeMarking < 0) {
+      alert("নেগেটিভ মার্কিং শূন্য বা তার বেশি হতে হবে");
       return;
     }
 
@@ -373,6 +382,7 @@ const McqManagement = () => {
         ...examForm,
         duration,
         passingMarks,
+        negativeMarking,
         accessCode: examForm.accessCode.trim() || undefined,
       });
       if (response.success) {
@@ -382,6 +392,7 @@ const McqManagement = () => {
           description: "",
           duration: "30",
           passingMarks: "40",
+          negativeMarking: "0",
           accessCode: "",
         });
         fetchExams();
@@ -473,6 +484,8 @@ const McqManagement = () => {
         setQuestionForm({
           questionText: "",
           options: [
+            { text: "", isCorrect: false },
+            { text: "", isCorrect: false },
             { text: "", isCorrect: false },
             { text: "", isCorrect: false },
           ],
@@ -596,6 +609,11 @@ const McqManagement = () => {
         <div className="text-xs text-slate-500 dark:text-gray-400">
           পাস: {exam.passingMarks}
         </div>
+        {exam.negativeMarking > 0 && (
+          <div className="text-xs text-rose-600 dark:text-rose-400">
+            -নেগেটিভ: {exam.negativeMarking}
+          </div>
+        )}
       </div>
     ),
     publishStatus: (
@@ -1393,6 +1411,27 @@ const McqManagement = () => {
                   className="mt-1"
                 />
               </div>
+            </div>
+            <div>
+              <Label>নেগেটিভ মার্কিং (ভুল উত্তরের জন্য কাটা নম্বর)</Label>
+              <Input
+                type="number"
+                min="0"
+                step="0.25"
+                value={examForm.negativeMarking}
+                onChange={(e) =>
+                  setExamForm({
+                    ...examForm,
+                    negativeMarking: e.target.value,
+                  })
+                }
+                placeholder="যেমন: 0.25 — 0 দিলে নেগেটিভ মার্কিং থাকবে না"
+                className="mt-1"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                প্রতিটি ভুল উত্তরের জন্য কত নম্বর কাটা হবে (0 দিলে কোনো নম্বর
+                কাটা হবে না)
+              </p>
             </div>
             <div>
               <Label>অ্যাক্সেস কোড (ঐচ্ছিক)</Label>

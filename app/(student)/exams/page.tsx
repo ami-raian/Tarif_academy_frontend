@@ -348,6 +348,11 @@ export default function ExamsPage() {
                           {exam.totalQuestions} প্রশ্ন
                         </span>
                         <span>মোট: {exam.totalMarks} নম্বর</span>
+                        {exam.negativeMarking > 0 && (
+                          <span className="text-rose-600 dark:text-rose-400 font-medium">
+                            -নেগেটিভ: {exam.negativeMarking}
+                          </span>
+                        )}
                       </div>
 
                       {/* Result Section */}

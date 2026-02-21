@@ -414,6 +414,14 @@ export default function ExamPage() {
                 {exam.passingMarks}
               </span>
             </div>
+            {exam.negativeMarking > 0 && (
+              <div className="flex justify-between items-center p-4 bg-rose-50 rounded-lg border border-rose-200">
+                <span className="text-rose-700">নেগেটিভ মার্কিং</span>
+                <span className="font-semibold text-rose-700">
+                  -{exam.negativeMarking} (প্রতি ভুল উত্তরে)
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
@@ -427,6 +435,11 @@ export default function ExamPage() {
                   <li>সময় শেষ হলে পরীক্ষা স্বয়ংক্রিয়ভাবে জমা হয়ে যাবে</li>
                   <li>যেকোনো সময় জমা দিতে পারবেন</li>
                   <li>পৃষ্ঠা রিফ্রেশ করলেও উত্তর সংরক্ষিত থাকবে</li>
+                  {exam.negativeMarking > 0 && (
+                    <li className="text-rose-700 font-medium">
+                      ভুল উত্তরের জন্য {exam.negativeMarking} নম্বর কাটা হবে
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>
