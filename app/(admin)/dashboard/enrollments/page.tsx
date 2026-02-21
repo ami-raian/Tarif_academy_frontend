@@ -2,11 +2,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CommonBadge } from "@/components/common/common-badge";
+import { DataTable } from "@/components/table/data-table";
+import type { Column } from "@/components/table/data-table";
+import { PAGE_SIZE } from "@/components/table/page-size";
 import {
   getAllEnrollments,
   approveEnrollment,
@@ -109,28 +112,43 @@ const Icons = {
   ),
 };
 
+// Column definitions
+const columns: Column[] = [
+  { key: "student", name: "শিক্ষার্থী", width: 220 },
+  { key: "course", name: "কোর্স", width: 200 },
+  { key: "payment", name: "পেমেন্ট", width: 150 },
+  { key: "transactionId", name: "TxID", width: 130 },
+  { key: "enrolledAt", name: "তারিখ", width: 150 },
+  { key: "status", name: "স্ট্যাটাস", width: 110, align: "center" },
+  { key: "actions", name: "অ্যাকশন", width: 200, align: "right" },
+];
+
 export default function EnrollmentsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | EnrollmentStatus>("pending");
   const [pagination, setPagination] = useState({
     total: 0,
-    page: 1,
-    limit: 20,
     totalPages: 0,
+    page: 1,
+    limit: PAGE_SIZE,
   });
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const [showRejectModal, setShowRejectModal] = useState<string | null>(null);
+
+  const page = Number(searchParams.get("page")) || 1;
+  const pageSize = Number(searchParams.get("pageSize")) || PAGE_SIZE;
 
   const fetchEnrollments = useCallback(async () => {
     try {
       setLoading(true);
       const res = await getAllEnrollments({
         status: filter === "all" ? undefined : filter,
-        page: pagination.page,
-        limit: pagination.limit,
+        page,
+        limit: pageSize,
       });
       if (res.success) {
         setEnrollments(res.data.enrollments);
@@ -141,11 +159,11 @@ export default function EnrollmentsPage() {
     } finally {
       setLoading(false);
     }
-  }, [filter, pagination.page, pagination.limit]);
+  }, [filter, page, pageSize]);
 
   useEffect(() => {
     fetchEnrollments();
-  }, [filter, pagination.page, fetchEnrollments]);
+  }, [fetchEnrollments]);
 
   const handleApprove = async (enrollmentId: string) => {
     try {
@@ -217,6 +235,74 @@ export default function EnrollmentsPage() {
     };
     return <CommonBadge status={statusMap[status]} size="sm" />;
   };
+
+  // Transform enrollments data for DataTable
+  const tableData = enrollments.map((enrollment) => ({
+    student: (
+      <div className="flex items-center gap-2">
+        <div className="w-9 h-9 rounded-full bg-linear-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-white font-semibold text-sm">
+          {enrollment.studentId?.fullName?.charAt(0) || "S"}
+        </div>
+        <div>
+          <p className="font-medium text-slate-900 dark:text-white text-sm">
+            {enrollment.studentId?.fullName || "Unknown"}
+          </p>
+          <p className="text-xs text-slate-500 dark:text-gray-400">
+            {enrollment.studentId?.email}
+          </p>
+        </div>
+      </div>
+    ),
+    course: (
+      <span className="text-sm text-slate-700 dark:text-gray-300">
+        {enrollment.courseId?.title || "Unknown Course"}
+      </span>
+    ),
+    payment: (
+      <span className="text-sm font-medium text-slate-900 dark:text-white">
+        ৳{enrollment.paymentAmount}
+      </span>
+    ),
+    transactionId: (
+      <span className="text-xs text-slate-500 dark:text-gray-400 font-mono">
+        {enrollment.transactionId || "-"}
+      </span>
+    ),
+    enrolledAt: (
+      <span className="text-sm text-slate-600 dark:text-gray-400">
+        {formatDate(enrollment.enrolledAt)}
+      </span>
+    ),
+    status: getStatusBadge(enrollment.status),
+    actions:
+      enrollment.status === "pending" ? (
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            size="sm"
+            onClick={() => handleApprove(enrollment._id)}
+            disabled={processingId === enrollment._id}
+            className="bg-emerald-500 hover:bg-emerald-600 text-white h-8 px-3 text-xs"
+          >
+            <Icons.check />
+            <span className="ml-1">অনুমোদন</span>
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setShowRejectModal(enrollment._id)}
+            disabled={processingId === enrollment._id}
+            className="text-red-600 border-red-200 hover:bg-red-50 dark:border-red-500 dark:hover:bg-red-950 h-8 px-3 text-xs"
+          >
+            <Icons.x />
+            <span className="ml-1">প্রত্যাখ্যান</span>
+          </Button>
+        </div>
+      ) : (
+        <div className="flex justify-end">
+          <span className="text-xs text-slate-400 dark:text-gray-500">-</span>
+        </div>
+      ),
+  }));
 
   if (loading && enrollments.length === 0) {
     return (
@@ -371,130 +457,15 @@ export default function EnrollmentsPage() {
           </Card>
         </div>
 
-        {/* Enrollments List */}
-        <Card className="border-0 shadow-lg dark:bg-gray-800">
-          <CardHeader className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-            <CardTitle className="text-lg dark:text-white">
-              এনরোলমেন্ট তালিকা
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            {enrollments.length === 0 ? (
-              <div className="text-center py-16">
-                <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
-                  <Icons.user />
-                </div>
-                <p className="text-slate-500 dark:text-gray-400 font-medium">
-                  কোনো এনরোলমেন্ট পাওয়া যায়নি
-                </p>
-              </div>
-            ) : (
-              <div className="divide-y dark:divide-gray-700">
-                {enrollments.map((enrollment) => (
-                  <div
-                    key={enrollment._id}
-                    className="p-4 hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-white font-semibold">
-                            {enrollment.studentId?.fullName?.charAt(0) || "S"}
-                          </div>
-                          <div>
-                            <p className="font-semibold text-slate-900 dark:text-white">
-                              {enrollment.studentId?.fullName ||
-                                "Unknown Student"}
-                            </p>
-                            <p className="text-sm text-slate-500 dark:text-gray-400">
-                              {enrollment.studentId?.email}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="ml-13 space-y-1">
-                          <p className="text-sm text-slate-700 dark:text-gray-300">
-                            <span className="font-medium">কোর্স:</span>{" "}
-                            {enrollment.courseId?.title || "Unknown Course"}
-                          </p>
-                          <p className="text-sm text-slate-500 dark:text-gray-400">
-                            <span className="font-medium">পেমেন্ট:</span> ৳
-                            {enrollment.paymentAmount}{" "}
-                            {enrollment.transactionId && (
-                              <span className="text-slate-400 dark:text-gray-500">
-                                (TxID: {enrollment.transactionId})
-                              </span>
-                            )}
-                          </p>
-                          <p className="text-sm text-slate-500 dark:text-gray-400">
-                            <span className="font-medium">তারিখ:</span>{" "}
-                            {formatDate(enrollment.enrolledAt)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        {getStatusBadge(enrollment.status)}
-                        {enrollment.status === "pending" && (
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              onClick={() => handleApprove(enrollment._id)}
-                              disabled={processingId === enrollment._id}
-                              className="bg-emerald-500 hover:bg-emerald-600"
-                            >
-                              <Icons.check />
-                              অনুমোদন
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => setShowRejectModal(enrollment._id)}
-                              disabled={processingId === enrollment._id}
-                              className="text-red-600 border-red-200 hover:bg-red-50"
-                            >
-                              <Icons.x />
-                              প্রত্যাখ্যান
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Pagination */}
-            {pagination.totalPages > 1 && (
-              <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-700">
-                <p className="text-sm text-slate-500 dark:text-gray-400">
-                  পেজ {pagination.page} / {pagination.totalPages}
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={pagination.page <= 1}
-                    onClick={() =>
-                      setPagination((p) => ({ ...p, page: p.page - 1 }))
-                    }
-                  >
-                    আগের
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={pagination.page >= pagination.totalPages}
-                    onClick={() =>
-                      setPagination((p) => ({ ...p, page: p.page + 1 }))
-                    }
-                  >
-                    পরের
-                  </Button>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* Enrollments DataTable */}
+        <DataTable
+          columns={columns}
+          data={tableData}
+          totalItems={pagination.total}
+          isLoading={loading}
+          showSerial={true}
+          pagination={true}
+        />
       </div>
 
       {/* Reject Modal */}
