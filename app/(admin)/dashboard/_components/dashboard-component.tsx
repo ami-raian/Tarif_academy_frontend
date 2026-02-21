@@ -762,20 +762,21 @@ const DashboardComponent = () => {
   return (
     <div>
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="sticky top-0 z-30 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-slate-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+              <h1 className="text-lg font-bold text-slate-900 dark:text-white">
                 ড্যাশবোর্ড
               </h1>
-              <p className="text-slate-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-slate-500 dark:text-gray-400">
                 আপনার কোর্স এবং কনটেন্ট ম্যানেজ করুন
               </p>
             </div>
             <Button
+              size="sm"
               onClick={() => setIsCreateCourseModalOpen(true)}
-              className="gap-2 shadow-lg shadow-primary/25"
+              className="gap-1.5 shadow-md shadow-primary/20"
             >
               <Icons.plus />
               নতুন কোর্স যোগ করুন

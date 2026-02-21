@@ -26,10 +26,19 @@ import {
   createMcqQuestion,
   deleteMcqQuestion,
   getMcqExamSubmissions,
+  getMcqLeaderboard,
   type McqExam,
   type McqQuestion,
   type McqSubmission,
 } from "@/lib/api";
+
+interface LeaderboardEntry {
+  rank: number;
+  studentId: { _id: string; fullName: string; email: string };
+  obtainedMarks: number;
+  percentage: number;
+  submittedAt: string;
+}
 
 // Icons
 const Icons = {
@@ -189,6 +198,21 @@ const Icons = {
       />
     </svg>
   ),
+  trophy: () => (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M8 21h8m-4-4v4M5 3H3a2 2 0 000 4c0 1.5.5 3 2 4m14-8h2a2 2 0 010 4c0 1.5-.5 3-2 4M5 7h14v4a7 7 0 01-14 0V7z"
+      />
+    </svg>
+  ),
 };
 
 const McqManagement = () => {
@@ -198,7 +222,8 @@ const McqManagement = () => {
   const [questions, setQuestions] = useState<McqQuestion[]>([]);
   const [submissions, setSubmissions] = useState<McqSubmission[]>([]);
   const [questionsLoading, setQuestionsLoading] = useState(false);
-  const [view, setView] = useState<"list" | "questions" | "results">("list");
+  const [view, setView] = useState<"list" | "questions" | "results" | "leaderboard">("list");
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
   // Modal states
   const [isCreateExamModalOpen, setIsCreateExamModalOpen] = useState(false);
@@ -450,11 +475,28 @@ const McqManagement = () => {
     fetchSubmissions(exam._id);
   };
 
+  const handleViewLeaderboard = async (exam: McqExam) => {
+    setSelectedExam(exam);
+    setView("leaderboard");
+    try {
+      setQuestionsLoading(true);
+      const res = await getMcqLeaderboard(exam._id, 50);
+      if (res.success) setLeaderboard(res.data);
+      else setLeaderboard([]);
+    } catch (e) {
+      console.error("Failed to fetch leaderboard:", e);
+      setLeaderboard([]);
+    } finally {
+      setQuestionsLoading(false);
+    }
+  };
+
   const handleBack = () => {
     setView("list");
     setSelectedExam(null);
     setQuestions([]);
     setSubmissions([]);
+    setLeaderboard([]);
   };
 
   // Loading State
@@ -864,24 +906,116 @@ const McqManagement = () => {
     );
   }
 
+  // Leaderboard View
+  if (view === "leaderboard" && selectedExam) {
+    return (
+      <div>
+        <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-40 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" onClick={handleBack} className="gap-2">
+                <Icons.back />
+                ফিরে যান
+              </Button>
+              <div className="h-6 w-px bg-slate-200 dark:bg-gray-600" />
+              <div className="flex-1 min-w-0">
+                <h1 className="text-lg font-bold text-slate-900 dark:text-white truncate">
+                  {selectedExam.title} — লিডারবোর্ড
+                </h1>
+                <p className="text-sm text-slate-500 dark:text-gray-400">
+                  {leaderboard.length} জন শীর্ষ পারফর্মার (সর্বোচ্চ ৫০)
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          {questionsLoading ? (
+            <div className="flex justify-center py-12">
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : leaderboard.length === 0 ? (
+            <Card className="border-0 shadow-md dark:bg-gray-800">
+              <CardContent className="py-12 text-center">
+                <Icons.trophy />
+                <p className="text-slate-500 dark:text-gray-400 mt-2">
+                  এখনো কোনো submission নেই
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="border-0 shadow-md overflow-hidden dark:bg-gray-800">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-amber-50 dark:bg-amber-900/20 border-b dark:border-gray-600">
+                    <tr>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">র‍্যাংক</th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">শিক্ষার্থী</th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">প্রাপ্ত নম্বর</th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">শতাংশ</th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">জমার সময়</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y dark:divide-gray-700">
+                    {leaderboard.map((entry, idx) => (
+                      <tr key={entry.studentId?._id ?? idx} className={`hover:bg-slate-50 dark:hover:bg-gray-700 ${entry.rank <= 3 ? "bg-amber-50/40 dark:bg-amber-500/5" : ""}`}>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
+                            entry.rank === 1 ? "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300" :
+                            entry.rank === 2 ? "bg-slate-100 dark:bg-slate-600/30 text-slate-600 dark:text-slate-300" :
+                            entry.rank === 3 ? "bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300" :
+                            "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                          }`}>
+                            {entry.rank === 1 ? "🥇" : entry.rank === 2 ? "🥈" : entry.rank === 3 ? "🥉" : entry.rank}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="font-medium text-slate-900 dark:text-white">{entry.studentId?.fullName ?? "—"}</p>
+                          <p className="text-xs text-slate-500 dark:text-gray-400">{entry.studentId?.email ?? ""}</p>
+                        </td>
+                        <td className="px-4 py-3 font-medium dark:text-white">
+                          {entry.obtainedMarks} / {selectedExam.totalMarks}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`font-medium ${entry.percentage >= (selectedExam.passingMarks / selectedExam.totalMarks * 100) ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                            {entry.percentage.toFixed(1)}%
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-slate-500 dark:text-gray-400">
+                          {entry.submittedAt ? new Date(entry.submittedAt).toLocaleString("bn-BD") : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   // Main List View
   return (
     <div>
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="sticky top-0 z-30 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-slate-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+              <h1 className="text-lg font-bold text-slate-900 dark:text-white">
                 MCQ পরীক্ষা
               </h1>
-              <p className="text-slate-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-slate-500 dark:text-gray-400">
                 পরীক্ষা তৈরি এবং ম্যানেজ করুন
               </p>
             </div>
             <Button
+              size="sm"
               onClick={() => setIsCreateExamModalOpen(true)}
-              className="gap-2 shadow-lg shadow-primary/25"
+              className="gap-1.5 shadow-md shadow-primary/20"
             >
               <Icons.plus />
               নতুন পরীক্ষা তৈরি করুন
@@ -1022,6 +1156,15 @@ const McqManagement = () => {
                     >
                       <Icons.results />
                       ফলাফল
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleViewLeaderboard(exam)}
+                      className="gap-1 text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/20"
+                    >
+                      <Icons.trophy />
+                      লিডারবোর্ড
                     </Button>
                     <Button
                       variant="outline"

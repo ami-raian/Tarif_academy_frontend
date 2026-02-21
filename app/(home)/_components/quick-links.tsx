@@ -23,7 +23,7 @@ const quickLinks: QuickLink[] = [
   {
     title: "Leaderboard",
     subtitle: "Top scorers",
-    href: "#",
+    href: "/leaderboard",
     icon: Trophy,
     accent: "text-amber-700",
     tint: "bg-amber-100",

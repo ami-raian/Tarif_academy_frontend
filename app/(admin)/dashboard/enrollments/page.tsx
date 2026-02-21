@@ -235,18 +235,19 @@ export default function EnrollmentsPage() {
   return (
     <div>
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="sticky top-0 z-30 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-slate-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+              <h1 className="text-lg font-bold text-slate-900 dark:text-white">
                 এনরোলমেন্ট ম্যানেজমেন্ট
               </h1>
-              <p className="text-slate-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-slate-500 dark:text-gray-400">
                 শিক্ষার্থীদের এনরোলমেন্ট অনুমোদন করুন
               </p>
             </div>
             <Button
+              size="sm"
               variant="outline"
               onClick={fetchEnrollments}
               disabled={loading}
