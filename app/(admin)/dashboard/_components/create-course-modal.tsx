@@ -1,7 +1,7 @@
 // app/(admin)/dashboard/_components/create-course-modal.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/common/form-field";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,7 +12,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { createCourse, getAuthToken } from "@/lib/api";
+import {
+  createCourse,
+  getAuthToken,
+  getCourseCategories,
+  type CourseCategory,
+} from "@/lib/api";
 
 interface CreateCourseModalProps {
   isOpen: boolean;
@@ -48,7 +53,7 @@ export const CreateCourseModal = ({
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [discountPrice, setDiscountPrice] = useState("");
-  const [category, setCategory] = useState("Programming");
+  const [categoryId, setCategoryId] = useState("");
   const [level, setLevel] = useState<"beginner" | "intermediate" | "advanced">(
     "beginner",
   );
@@ -58,19 +63,30 @@ export const CreateCourseModal = ({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const categories = [
-    "Programming",
-    "Web Development",
-    "Mobile Development",
-    "Data Science",
-    "Machine Learning",
-    "DevOps",
-    "Cyber Security",
-    "Design",
-    "Business",
-    "Marketing",
-    "Other",
-  ];
+  // Dynamic categories
+  const [categories, setCategories] = useState<CourseCategory[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+
+  // Fetch categories when modal opens
+  useEffect(() => {
+    if (isOpen && categories.length === 0) {
+      const fetchCategories = async () => {
+        try {
+          setCategoriesLoading(true);
+          const res = await getCourseCategories({ isActive: true, limit: 50 });
+          if (res.success && res.data.length > 0) {
+            setCategories(res.data);
+            setCategoryId(res.data[0]._id);
+          }
+        } catch (err) {
+          console.error("Failed to fetch categories:", err);
+        } finally {
+          setCategoriesLoading(false);
+        }
+      };
+      fetchCategories();
+    }
+  }, [isOpen, categories.length]);
 
   const languages = ["Bangla", "English", "Hindi"];
 
@@ -90,6 +106,10 @@ export const CreateCourseModal = ({
       setError("Valid price is required");
       return;
     }
+    if (!categoryId) {
+      setError("Please select a category");
+      return;
+    }
 
     setError("");
     setLoading(true);
@@ -100,6 +120,9 @@ export const CreateCourseModal = ({
         throw new Error("Authentication required");
       }
 
+      // Find category name for backward compatibility
+      const selectedCategory = categories.find((c) => c._id === categoryId);
+
       const courseData = {
         title: title.trim(),
         description: description.trim(),
@@ -107,7 +130,8 @@ export const CreateCourseModal = ({
         discountPrice: discountPrice
           ? parseFloat(discountPrice)
           : parseFloat(price),
-        category,
+        categoryId,
+        category: selectedCategory?.name || "",
         level,
         language,
         isPublished,
@@ -139,7 +163,7 @@ export const CreateCourseModal = ({
       setDescription("");
       setPrice("");
       setDiscountPrice("");
-      setCategory("Programming");
+      setCategoryId(categories.length > 0 ? categories[0]._id : "");
       setLevel("beginner");
       setLanguage("Bangla");
       setIsPublished(false);
@@ -151,7 +175,7 @@ export const CreateCourseModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-125 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-125 max-h-[90vh] overflow-y-auto custom-scrollbar">
         <DialogHeader>
           <DialogTitle className="text-xl">Create New Course</DialogTitle>
         </DialogHeader>
@@ -228,11 +252,16 @@ export const CreateCourseModal = ({
                 type="select"
                 id="category"
                 label="Category"
-                value={category}
-                onValueChange={setCategory}
-                disabled={loading}
-                placeholder="Select category"
-                options={categories.map((cat) => ({ value: cat, label: cat }))}
+                value={categoryId}
+                onValueChange={setCategoryId}
+                disabled={loading || categoriesLoading}
+                placeholder={
+                  categoriesLoading ? "Loading..." : "Select category"
+                }
+                options={categories.map((cat) => ({
+                  value: cat._id,
+                  label: cat.name,
+                }))}
               />
               <FormField
                 type="select"

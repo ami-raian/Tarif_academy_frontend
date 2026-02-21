@@ -287,7 +287,8 @@ export default function ExamPage() {
   const handleStartExam = async () => {
     try {
       setLoading(true);
-      const savedCode = localStorage.getItem(`exam_${examId}_code`) ?? undefined;
+      const savedCode =
+        localStorage.getItem(`exam_${examId}_code`) ?? undefined;
       const response = await startMcqExam(examId, savedCode);
       if (response.success) {
         setExamStarted(true);
@@ -362,7 +363,7 @@ export default function ExamPage() {
       <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
           <div className="relative w-16 h-16 mx-auto mb-4">
-            <div className="absolute inset-0 rounded-full border-4 border-slate-200"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-gray-200"></div>
             <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
           </div>
           <p className="text-slate-600 font-medium">লোড হচ্ছে...</p>
@@ -529,7 +530,7 @@ export default function ExamPage() {
                           className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left ${
                             currentAnswer === optionIndex
                               ? "border-purple-500 bg-purple-50"
-                              : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                              : "border-gray-200 hover:border-gray-200 hover:bg-gray-50"
                           }`}
                         >
                           <span

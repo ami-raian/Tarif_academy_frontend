@@ -264,22 +264,30 @@ export default function CourseDetailPage({ params }: PageProps) {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
-            <Link href="/" className="hover:text-purple-600 dark:hover:text-purple-400">
+            <Link
+              href="/"
+              className="hover:text-purple-600 dark:hover:text-purple-400"
+            >
               হোম
             </Link>
             <span>/</span>
-            <Link href="/courses" className="hover:text-purple-600 dark:hover:text-purple-400">
+            <Link
+              href="/courses"
+              className="hover:text-purple-600 dark:hover:text-purple-400"
+            >
               কোর্স
             </Link>
             <span>/</span>
-            <span className="text-gray-900 dark:text-white">{course.title}</span>
+            <span className="text-gray-900 dark:text-white">
+              {course.title}
+            </span>
           </nav>
 
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
               {/* Course Header */}
-              <div className="bg-white dark:bg-gray-800/50 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50">
+              <div className="bg-white dark:bg-gray-800/50 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700/50">
                 <div className="flex items-center gap-2 mb-4">
                   <span className="px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium">
                     {course.category}
@@ -293,7 +301,9 @@ export default function CourseDetailPage({ params }: PageProps) {
                   {course.title}
                 </h1>
 
-                <p className="text-gray-600 dark:text-gray-400 mb-6">{course.description}</p>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                  {course.description}
+                </p>
 
                 {/* Stats */}
                 <div className="flex flex-wrap items-center gap-6 text-gray-600 dark:text-gray-400">
@@ -334,8 +344,8 @@ export default function CourseDetailPage({ params }: PageProps) {
               )}
 
               {/* Course Content */}
-              <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/50">
-                <div className="p-6 border-b border-gray-100 dark:border-gray-700/50">
+              <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700/50">
+                <div className="p-6 border-b border-gray-200 dark:border-gray-700/50">
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                     কোর্স কনটেন্ট
                   </h2>
@@ -348,7 +358,9 @@ export default function CourseDetailPage({ params }: PageProps) {
                 {Object.keys(sections).length === 0 ? (
                   <div className="p-8 text-center">
                     <div className="text-4xl mb-3">📹</div>
-                    <p className="text-gray-500 dark:text-gray-400">এখনো কোন ভিডিও যুক্ত হয়নি</p>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      এখনো কোন ভিডিও যুক্ত হয়নি
+                    </p>
                   </div>
                 ) : (
                   <div className="divide-y divide-gray-100 dark:divide-gray-700/50">
@@ -448,7 +460,7 @@ export default function CourseDetailPage({ params }: PageProps) {
 
             {/* Sidebar - Purchase Card */}
             <div className="lg:col-span-1">
-              <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-lg dark:shadow-gray-900/50 border border-gray-100 dark:border-gray-700/50 overflow-hidden sticky top-24">
+              <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-lg dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700/50 overflow-hidden sticky top-24">
                 {/* Preview Image */}
                 <div className="relative aspect-video bg-linear-to-br from-purple-500 to-cyan-500">
                   {/* {course.thumbnail ? (
@@ -553,7 +565,7 @@ export default function CourseDetailPage({ params }: PageProps) {
                   )}
 
                   {/* Course Features */}
-                  <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                  <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700/50">
                     <h3 className="font-semibold text-gray-900 dark:text-white">
                       কোর্সে যা আছে:
                     </h3>
@@ -590,7 +602,7 @@ export default function CourseDetailPage({ params }: PageProps) {
       {/* Enrollment Modal */}
       {showEnrollModal && course && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-700/50 shadow-2xl dark:shadow-gray-900/60">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto custom-scrollbar border border-gray-200 dark:border-gray-700/50 shadow-2xl dark:shadow-gray-900/60">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 text-center">
               কোর্সে এনরোল করুন
             </h3>
@@ -618,19 +630,25 @@ export default function CourseDetailPage({ params }: PageProps) {
                   <p className="font-semibold text-gray-900 dark:text-white">
                     বিকাশে পেমেন্ট করুন
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Send Money</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Send Money
+                  </p>
                 </div>
               </div>
 
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between items-center bg-white dark:bg-gray-700 rounded-lg px-3 py-2">
-                  <span className="text-gray-600 dark:text-gray-400">বিকাশ নম্বর:</span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    বিকাশ নম্বর:
+                  </span>
                   <span className="font-bold text-pink-600 dark:text-pink-400 text-lg">
                     {BKASH_NUMBER}
                   </span>
                 </div>
                 <div className="flex justify-between items-center bg-white dark:bg-gray-700 rounded-lg px-3 py-2">
-                  <span className="text-gray-600 dark:text-gray-400">পরিমাণ:</span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    পরিমাণ:
+                  </span>
                   <span className="font-bold text-gray-900 dark:text-white">
                     ৳{course.discountPrice || course.price}
                   </span>

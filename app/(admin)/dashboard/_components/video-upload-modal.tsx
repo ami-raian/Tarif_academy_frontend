@@ -273,7 +273,7 @@ export const VideoUploadModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-125 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-125 max-h-[90vh] overflow-y-auto custom-scrollbar">
         <DialogHeader>
           <DialogTitle className="text-xl">ভিডিও আপলোড করুন</DialogTitle>
           <p className="text-sm text-slate-500 mt-1">{courseTitle}</p>
@@ -297,7 +297,7 @@ export const VideoUploadModal = ({
               className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
                 selectedFile
                   ? "border-emerald-300 bg-emerald-50"
-                  : "border-slate-300 hover:border-primary hover:bg-slate-50"
+                  : "border-gray-200 hover:border-primary hover:bg-slate-50"
               }`}
             >
               <input
@@ -421,7 +421,7 @@ export const VideoUploadModal = ({
                       checked={isFree}
                       onChange={(e) => setIsFree(e.target.checked)}
                       disabled={uploading}
-                      className="w-4 h-4 rounded border-slate-300"
+                      className="w-4 h-4 rounded border-gray-200"
                     />
                     <span className="text-sm text-slate-600">
                       হ্যাঁ, এটি ফ্রি

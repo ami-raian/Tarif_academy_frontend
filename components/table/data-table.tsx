@@ -240,7 +240,7 @@ export function DataTable<T = Record<string, unknown>>({
                   ); // ensure unique key
                   return (
                     <React.Fragment key={rowKey}>
-                      <TableRow className="bg-white dark:bg-black">
+                      <TableRow className="bg-white dark:bg-gray-900/50">
                         {showExpandable && (
                           <TableCell align="center" className="px-0 pl-2">
                             <Button

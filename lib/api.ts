@@ -116,6 +116,7 @@ export async function registerStudent(data: Record<string, unknown>) {
 export async function getCourses(params?: {
   page?: number;
   limit?: number;
+  categoryId?: string;
   category?: string;
   level?: string;
   isPublished?: boolean;
@@ -123,6 +124,7 @@ export async function getCourses(params?: {
   const searchParams = new URLSearchParams();
   if (params?.page) searchParams.set("page", params.page.toString());
   if (params?.limit) searchParams.set("limit", params.limit.toString());
+  if (params?.categoryId) searchParams.set("categoryId", params.categoryId);
   if (params?.category) searchParams.set("category", params.category);
   if (params?.level) searchParams.set("level", params.level);
   if (params?.isPublished !== undefined)
@@ -413,7 +415,7 @@ export interface McqExam {
   isPublished: boolean;
   isResultPublished: boolean;
   hasAccessCode?: boolean; // true if exam requires an access code
-  accessCode?: string;     // only present in admin responses
+  accessCode?: string; // only present in admin responses
   startTime?: string;
   endTime?: string;
   createdBy?: { name: string; email: string };
@@ -448,6 +450,7 @@ export async function getMcqExams(params?: {
   page?: number;
   limit?: number;
   isPublished?: boolean;
+  isResultPublished?: boolean;
   search?: string;
 }) {
   const searchParams = new URLSearchParams();
@@ -455,6 +458,8 @@ export async function getMcqExams(params?: {
   if (params?.limit) searchParams.set("limit", params.limit.toString());
   if (params?.isPublished !== undefined)
     searchParams.set("isPublished", params.isPublished.toString());
+  if (params?.isResultPublished !== undefined)
+    searchParams.set("isResultPublished", params.isResultPublished.toString());
   if (params?.search) searchParams.set("search", params.search);
 
   const response = await fetch(
@@ -802,5 +807,90 @@ export async function deleteStudent(studentId: string) {
     method: "DELETE",
     headers: getAuthHeaders(),
   });
+  return response.json();
+}
+
+// ========================
+// COURSE CATEGORIES API
+// ========================
+
+export interface CourseCategory {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function getCourseCategories(params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  isActive?: boolean;
+}) {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.set("page", params.page.toString());
+  if (params?.limit) searchParams.set("limit", params.limit.toString());
+  if (params?.search) searchParams.set("search", params.search);
+  if (params?.isActive !== undefined)
+    searchParams.set("isActive", params.isActive.toString());
+
+  const response = await fetch(
+    `${API_BASE_URL}/course-categories?${searchParams.toString()}`,
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+  return response.json();
+}
+
+export async function getCourseCategory(categoryId: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/course-categories/${categoryId}`,
+    {
+      headers: getAuthHeaders(),
+    },
+  );
+  return response.json();
+}
+
+export async function createCourseCategory(data: {
+  name: string;
+  description?: string;
+  isActive?: boolean;
+}) {
+  const response = await fetch(`${API_BASE_URL}/course-categories`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
+export async function updateCourseCategory(
+  categoryId: string,
+  data: { name?: string; description?: string; isActive?: boolean },
+) {
+  const response = await fetch(
+    `${API_BASE_URL}/course-categories/${categoryId}`,
+    {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    },
+  );
+  return response.json();
+}
+
+export async function deleteCourseCategory(categoryId: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/course-categories/${categoryId}`,
+    {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    },
+  );
   return response.json();
 }

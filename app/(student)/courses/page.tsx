@@ -3,14 +3,18 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Navbar } from "@/app/(home)/_components/navbar";
-import { getCourses } from "@/lib/api";
+import {
+  getCourses,
+  getCourseCategories,
+  type CourseCategory,
+} from "@/lib/api";
 import { FormField } from "@/components/common/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { Course, CoursesResponse } from "@/types";
 
-// Icons
 const Icons = {
   clock: () => (
     <svg
@@ -94,19 +98,6 @@ const Icons = {
   ),
 };
 
-const categories = [
-  "সব",
-  "Programming",
-  "Web Development",
-  "Mobile Development",
-  "Data Science",
-  "Machine Learning",
-  "DevOps",
-  "Cyber Security",
-  "Design",
-  "Business",
-];
-
 const levels = [
   { value: "all", label: "সব লেভেল" },
   { value: "beginner", label: "শুরু" },
@@ -115,10 +106,19 @@ const levels = [
 ];
 
 export default function CoursesPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const categoryIdFromUrl = searchParams.get("categoryId");
+  const categorySlug = searchParams.get("category");
+
   const [courses, setCourses] = useState<Course[]>([]);
+  const [categories, setCategories] = useState<CourseCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("সব");
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    categoryIdFromUrl,
+  );
   const [selectedLevel, setSelectedLevel] = useState("all");
   const [pagination, setPagination] = useState({
     totalItems: 0,
@@ -127,6 +127,38 @@ export default function CoursesPage() {
     pageSize: 12,
   });
 
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setCategoriesLoading(true);
+        const res = await getCourseCategories({ isActive: true, limit: 50 });
+        if (res.success) {
+          setCategories(res.data);
+          // If categoryId is already in URL, use it directly
+          if (categoryIdFromUrl) {
+            setSelectedCategoryId(categoryIdFromUrl);
+          }
+          // Otherwise, if category slug is in URL, find and select that category
+          else if (categorySlug) {
+            const matchedCategory = res.data.find(
+              (cat: CourseCategory) => cat.slug === categorySlug,
+            );
+            if (matchedCategory) {
+              setSelectedCategoryId(matchedCategory._id);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+    fetchCategories();
+  }, [categorySlug, categoryIdFromUrl]);
+
+  // Fetch courses when filters change
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -136,8 +168,8 @@ export default function CoursesPage() {
           limit: pagination.pageSize,
           isPublished: true,
         };
-        if (selectedCategory !== "সব") {
-          params.category = selectedCategory;
+        if (selectedCategoryId) {
+          params.categoryId = selectedCategoryId;
         }
         if (selectedLevel !== "all") {
           params.level = selectedLevel;
@@ -159,7 +191,7 @@ export default function CoursesPage() {
 
     fetchCourses();
   }, [
-    selectedCategory,
+    selectedCategoryId,
     selectedLevel,
     pagination.currentPage,
     pagination.pageSize,
@@ -238,7 +270,7 @@ export default function CoursesPage() {
           </div>
 
           {/* Filters */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Search */}
               <div className="flex-1 relative">
@@ -271,23 +303,58 @@ export default function CoursesPage() {
 
             {/* Category Pills */}
             <div className="flex flex-wrap gap-2 mt-4">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={
-                    selectedCategory === category ? "default" : "outline"
-                  }
-                  size="sm"
-                  onClick={() => setSelectedCategory(category)}
-                  className={`rounded-full ${
-                    selectedCategory === category
-                      ? "bg-purple-600 hover:bg-purple-700"
-                      : ""
-                  }`}
-                >
-                  {category}
-                </Button>
-              ))}
+              {categoriesLoading ? (
+                <div className="flex gap-2">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <>
+                  <Button
+                    variant={
+                      selectedCategoryId === null ? "default" : "outline"
+                    }
+                    size="sm"
+                    onClick={() => {
+                      setSelectedCategoryId(null);
+                      router.push("/courses");
+                    }}
+                    className={`rounded-full ${
+                      selectedCategoryId === null
+                        ? "bg-purple-600 hover:bg-purple-700"
+                        : ""
+                    }`}
+                  >
+                    সব
+                  </Button>
+                  {categories.map((category) => (
+                    <Button
+                      key={category._id}
+                      variant={
+                        selectedCategoryId === category._id
+                          ? "default"
+                          : "outline"
+                      }
+                      size="sm"
+                      onClick={() => {
+                        setSelectedCategoryId(category._id);
+                        router.push(`/courses?categoryId=${category._id}`);
+                      }}
+                      className={`rounded-full ${
+                        selectedCategoryId === category._id
+                          ? "bg-purple-600 hover:bg-purple-700"
+                          : ""
+                      }`}
+                    >
+                      {category.name}
+                    </Button>
+                  ))}
+                </>
+              )}
             </div>
           </div>
 
@@ -326,7 +393,7 @@ export default function CoursesPage() {
                   <Link
                     key={course._id}
                     href={`/courses/${course.slug}`}
-                    className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-purple-200 dark:hover:border-purple-500"
+                    className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-purple-200 dark:hover:border-purple-500"
                   >
                     {/* Thumbnail */}
                     {/* <div className="relative h-48 overflow-hidden bg-linear-to-br from-purple-100 to-cyan-100">
@@ -393,7 +460,7 @@ export default function CoursesPage() {
                       </div>
 
                       {/* Price */}
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
                         <div>
                           {course.discountPrice > 0 ? (
                             <div className="flex items-center gap-2">

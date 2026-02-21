@@ -79,7 +79,7 @@ export function Navbar() {
   };
 
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 bg-white/85 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-200/40 dark:border-slate-700/50">
+    <nav className="fixed inset-x-0 top-0 z-50 bg-white/85 dark:bg-slate-900/90 backdrop-blur-xl border-b border-gray-200/40 dark:border-slate-700/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -141,7 +141,7 @@ export function Navbar() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="w-52 p-2 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+                    className="w-52 p-2 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900"
                   >
                     {isLoggedIn ? (
                       <>
@@ -156,7 +156,9 @@ export function Navbar() {
                             <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
                               <User className="w-4 h-4" />
                             </div>
-                            <span className="font-medium">{dashboardLabel}</span>
+                            <span className="font-medium">
+                              {dashboardLabel}
+                            </span>
                           </Link>
                         </DropdownMenuItem>
                         {userType === "student" && (
@@ -258,7 +260,7 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-slate-200/50 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/30">
+          <div className="md:hidden py-4 border-t border-gray-200/50 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/30">
             <div className="flex flex-col gap-1">
               {NAV_LINKS.map((link) => {
                 const active = isActive(link.href);
@@ -277,7 +279,7 @@ export function Navbar() {
                   </Link>
                 );
               })}
-              <div className="border-t border-slate-200/50 dark:border-slate-700/50 mt-2 pt-3 px-4 flex flex-col gap-2">
+              <div className="border-t border-gray-200/50 dark:border-slate-700/50 mt-2 pt-3 px-4 flex flex-col gap-2">
                 {!mounted ? (
                   <>
                     <div className="h-10 w-full bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
@@ -289,7 +291,7 @@ export function Navbar() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="w-full border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 bg-transparent"
+                        className="w-full border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 bg-transparent"
                       >
                         <User className="w-4 h-4 mr-1" />
                         {dashboardLabel}
@@ -300,7 +302,7 @@ export function Navbar() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="w-full border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 bg-transparent"
+                          className="w-full border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 bg-transparent"
                         >
                           <ClipboardList className="w-4 h-4 mr-1" />
                           MCQ পরীক্ষা
@@ -326,7 +328,7 @@ export function Navbar() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="w-full border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 bg-transparent"
+                        className="w-full border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800 bg-transparent"
                       >
                         <LogIn className="w-4 h-4 mr-1" />
                         লগইন

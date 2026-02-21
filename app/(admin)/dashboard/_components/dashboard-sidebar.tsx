@@ -15,10 +15,16 @@ import {
   Sun,
   ChevronRight,
   UserCircle2,
+  FolderKanban,
 } from "lucide-react";
 
 const navLinks = [
   { href: "/dashboard", label: "ড্যাশবোর্ড", icon: LayoutDashboard },
+  {
+    href: "/dashboard/categories",
+    label: "কোর্স ক্যাটাগরি",
+    icon: FolderKanban,
+  },
   { href: "/dashboard/mcq", label: "MCQ পরীক্ষা", icon: HelpCircle },
   { href: "/dashboard/enrollments", label: "এনরোলমেন্ট", icon: Users },
   { href: "/dashboard/students", label: "শিক্ষার্থী", icon: GraduationCap },
@@ -66,13 +72,13 @@ export default function DashboardSidebar({
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-50 h-full w-64 bg-white dark:bg-gray-900 border-r border-slate-200 dark:border-gray-800 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 left-0 z-50 h-full w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Brand */}
-        <div className="flex items-center justify-between h-16 px-5 border-b border-slate-200 dark:border-gray-800">
-          <Link href="/dashboard" className="flex items-center gap-2.5">
+        <div className="flex items-center justify-between h-16 px-5 border-b border-gray-200 dark:border-gray-800 my-1">
+          <Link href="/" className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-linear-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/30">
               <GraduationCap className="w-4.5 h-4.5 text-white" />
             </div>
@@ -89,7 +95,7 @@ export default function DashboardSidebar({
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
           <p className="px-3 mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-gray-500">
             মেনু
           </p>
@@ -124,7 +130,7 @@ export default function DashboardSidebar({
         </nav>
 
         {/* Bottom section */}
-        <div className="px-4 py-4 border-t border-slate-200 dark:border-gray-800 space-y-4">
+        <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-800 space-y-4">
           {/* Appearance Toggle */}
           <div className="flex items-center justify-between py-2">
             <span className="text-sm font-medium text-slate-600 dark:text-gray-400">
