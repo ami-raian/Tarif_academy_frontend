@@ -39,7 +39,7 @@ const quickLinks: QuickLink[] = [
   {
     title: "HSC",
     subtitle: "Full syllabus",
-    href: "#",
+    href: "/courses?category=hsc",
     icon: GraduationCap,
     accent: "text-sky-700",
     tint: "bg-sky-100",
@@ -47,7 +47,7 @@ const quickLinks: QuickLink[] = [
   {
     title: "SSC",
     subtitle: "Crash prep",
-    href: "#",
+    href: "/courses?category=ssc",
     icon: School,
     accent: "text-rose-700",
     tint: "bg-rose-100",
@@ -55,7 +55,7 @@ const quickLinks: QuickLink[] = [
   {
     title: "GK-English Crush Course",
     subtitle: "Daily practice",
-    href: "#",
+    href: "/courses?category=gk-english",
     icon: Globe,
     accent: "text-indigo-700",
     tint: "bg-indigo-100",

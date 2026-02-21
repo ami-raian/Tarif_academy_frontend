@@ -15,10 +15,16 @@ import {
   Sun,
   ChevronRight,
   UserCircle2,
+  FolderKanban,
 } from "lucide-react";
 
 const navLinks = [
   { href: "/dashboard", label: "ড্যাশবোর্ড", icon: LayoutDashboard },
+  {
+    href: "/dashboard/categories",
+    label: "কোর্স ক্যাটাগরি",
+    icon: FolderKanban,
+  },
   { href: "/dashboard/mcq", label: "MCQ পরীক্ষা", icon: HelpCircle },
   { href: "/dashboard/enrollments", label: "এনরোলমেন্ট", icon: Users },
   { href: "/dashboard/students", label: "শিক্ষার্থী", icon: GraduationCap },

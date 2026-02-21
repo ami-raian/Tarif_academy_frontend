@@ -6,6 +6,7 @@ export interface Course {
   discountPrice: number;
   thumbnail: string;
   instructor: string | null;
+  categoryId?: string;
   category: string;
   level: "beginner" | "intermediate" | "advanced";
   language: string;
