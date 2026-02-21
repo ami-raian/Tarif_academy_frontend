@@ -1,7 +1,7 @@
 // app/(student)/courses/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Navbar } from "@/app/(home)/_components/navbar";
@@ -105,7 +105,7 @@ const levels = [
   { value: "advanced", label: "উন্নত" },
 ];
 
-export default function CoursesPage() {
+function CoursesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const categoryIdFromUrl = searchParams.get("categoryId");
@@ -542,5 +542,32 @@ export default function CoursesPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function CoursesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
+          <Navbar />
+          <div className="pt-24 pb-16">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center">
+                <div className="relative w-16 h-16 mx-auto mb-4">
+                  <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700" />
+                  <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+                </div>
+                <p className="text-slate-600 dark:text-slate-400 font-medium">
+                  লোড হচ্ছে...
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <CoursesContent />
+    </Suspense>
   );
 }
