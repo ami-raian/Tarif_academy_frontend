@@ -202,56 +202,83 @@ export const VideoUploadModal = ({
         throw new Error("Authentication required");
       }
 
-      const formData = new FormData();
-      formData.append("video", selectedFile);
-      formData.append("title", title);
-      formData.append("description", description);
-      formData.append("courseId", courseId);
-      formData.append("sectionTitle", sectionTitle);
-      formData.append("order", order.toString());
-      formData.append("isFree", isFree.toString());
-
-      // Use XMLHttpRequest for progress tracking
-      const xhr = new XMLHttpRequest();
-
-      xhr.upload.addEventListener("progress", (event) => {
-        if (event.lengthComputable) {
-          const progress = Math.round((event.loaded / event.total) * 100);
-          setUploadProgress(progress);
-        }
+      // Step 1: Create video session — metadata only, returns bunnyGuid (instant)
+      const sessionRes = await fetch(`${API_BASE_URL}/videos/create-session`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          courseId,
+          sectionTitle,
+          order,
+          isFree,
+        }),
       });
 
-      xhr.addEventListener("load", () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          const response = JSON.parse(xhr.responseText);
-          if (response.success) {
-            setSuccess(true);
-            setTimeout(() => {
-              onUploadSuccess();
-              handleClose();
-            }, 1500);
-          } else {
-            setError(response.message || "আপলোড ব্যর্থ হয়েছে");
+      if (!sessionRes.ok) {
+        const err = await sessionRes.json();
+        throw new Error(err.message || "ভিডিও সেশন তৈরি ব্যর্থ হয়েছে");
+      }
+
+      const sessionData = await sessionRes.json();
+      const bunnyGuid = sessionData.data?.bunnyGuid;
+
+      if (!bunnyGuid) {
+        throw new Error("Invalid session response from server");
+      }
+
+      // Step 2: Stream raw file to backend — piped directly to BunnyCDN (no RAM buffering)
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener("progress", (event) => {
+          if (event.lengthComputable) {
+            const progress = Math.round((event.loaded / event.total) * 100);
+            setUploadProgress(progress);
           }
-        } else {
-          const response = JSON.parse(xhr.responseText);
-          setError(response.message || "আপলোড ব্যর্থ হয়েছে");
-        }
-        setUploading(false);
+        });
+
+        xhr.addEventListener("load", () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const response = JSON.parse(xhr.responseText);
+              if (response.success) resolve();
+              else reject(new Error(response.message || "আপলোড ব্যর্থ হয়েছে"));
+            } catch {
+              reject(new Error("আপলোড ব্যর্থ হয়েছে"));
+            }
+          } else {
+            try {
+              const response = JSON.parse(xhr.responseText);
+              reject(new Error(response.message || "আপলোড ব্যর্থ হয়েছে"));
+            } catch {
+              reject(new Error("আপলোড ব্যর্থ হয়েছে"));
+            }
+          }
+        });
+
+        xhr.addEventListener("error", () =>
+          reject(new Error("নেটওয়ার্ক ত্রুটি। আবার চেষ্টা করুন।"))
+        );
+
+        xhr.open("PUT", `${API_BASE_URL}/videos/${bunnyGuid}/upload-stream`);
+        xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+        xhr.setRequestHeader("Content-Type", "application/octet-stream");
+        xhr.send(selectedFile);
       });
 
-      xhr.addEventListener("error", () => {
-        setError("নেটওয়ার্ক ত্রুটি। আবার চেষ্টা করুন।");
-        setUploading(false);
-      });
-
-      xhr.open("POST", `${API_BASE_URL}/videos/upload`);
-      xhr.setRequestHeader("Authorization", `Bearer ${token}`);
-      xhr.send(formData);
+      setSuccess(true);
+      setTimeout(() => {
+        onUploadSuccess();
+        handleClose();
+      }, 1500);
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "আপলোড ব্যর্থ হয়েছে";
-      setError(errorMessage);
+      setError(err instanceof Error ? err.message : "আপলোড ব্যর্থ হয়েছে");
+    } finally {
       setUploading(false);
     }
   };
