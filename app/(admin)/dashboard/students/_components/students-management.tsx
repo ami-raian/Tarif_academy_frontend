@@ -33,6 +33,7 @@ import DeleteConfirmationDialog from "@/components/common/delete-confirmation-di
 
 interface StudentRow {
   _id: string;
+  roll: string;
   fullName: string;
   email: string;
   mobile: string;
@@ -54,6 +55,7 @@ const genderMap: Record<string, string> = {
 function transformStudentToRow(student: Student): StudentRow {
   return {
     _id: student._id,
+    roll: student.roll || "—",
     fullName: student.fullName,
     email: student.email,
     mobile: student.mobile,
@@ -74,6 +76,7 @@ function transformStudentToRow(student: Student): StudentRow {
 }
 
 const columns: Column<StudentRow>[] = [
+  { key: "roll", name: "রোল", width: 80, align: "center" },
   { key: "fullName", name: "নাম", width: 180 },
   { key: "email", name: "ইমেইল", width: 200 },
   { key: "mobile", name: "মোবাইল", width: 130 },

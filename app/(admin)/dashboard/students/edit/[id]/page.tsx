@@ -29,6 +29,7 @@ export default function EditStudentPage() {
   const [saving, setSaving] = useState(false);
 
   const [formData, setFormData] = useState({
+    roll: "",
     fullName: "",
     mobile: "",
     whatsapp: "",
@@ -75,6 +76,7 @@ export default function EditStudentPage() {
 
           // Populate form with existing data
           setFormData({
+            roll: s.roll || "",
             fullName: s.fullName || "",
             mobile: s.mobile || "",
             whatsapp: s.whatsapp || "",
@@ -187,6 +189,7 @@ export default function EditStudentPage() {
           : undefined;
 
       const updateData: Record<string, unknown> = {
+        roll: formData.roll || undefined,
         fullName: formData.fullName,
         mobile: formData.mobile,
         whatsapp: formData.whatsapp || undefined,
@@ -271,6 +274,21 @@ export default function EditStudentPage() {
               <CardTitle>ব্যক্তিগত তথ্য</CardTitle>
             </CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="roll">রোল নম্বর</Label>
+                <Input
+                  id="roll"
+                  value={formData.roll}
+                  onChange={(e) =>
+                    setFormData({ ...formData, roll: e.target.value })
+                  }
+                  placeholder="যেমন: 1001"
+                  className="mt-1"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  শুধুমাত্র অ্যাডমিন রোল নম্বর পরিবর্তন করতে পারেন
+                </p>
+              </div>
               <div>
                 <Label htmlFor="fullName">পূর্ণ নাম *</Label>
                 <Input

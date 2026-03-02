@@ -296,6 +296,19 @@ export default function StudentProfilePage() {
               {editing ? (
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
+                    <Label htmlFor="roll">রোল নম্বর</Label>
+                    <Input
+                      id="roll"
+                      value={student.roll || "—"}
+                      disabled
+                      className="mt-1 bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
+                      title="রোল নম্বর পরিবর্তন করা যাবে না"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      শুধুমাত্র অ্যাডমিন রোল নম্বর পরিবর্তন করতে পারবেন
+                    </p>
+                  </div>
+                  <div>
                     <Label htmlFor="fullName">পূর্ণ নাম *</Label>
                     <Input
                       id="fullName"
@@ -370,6 +383,11 @@ export default function StudentProfilePage() {
                 </div>
               ) : (
                 <div className="grid md:grid-cols-2 gap-6">
+                  <InfoRow
+                    icon={<IdCard className="w-4 h-4" />}
+                    label="রোল নম্বর"
+                    value={student.roll || "—"}
+                  />
                   <InfoRow
                     icon={<User className="w-4 h-4" />}
                     label="পূর্ণ নাম"
