@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -652,12 +653,11 @@ const McqManagement = () => {
               <Icons.questions />
               <span>প্রশ্ন দেখুন</span>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => handleViewResults(exam)}
-              className="gap-2"
-            >
-              <Icons.results />
-              <span>ফলাফল দেখুন</span>
+            <DropdownMenuItem asChild className="gap-2">
+              <Link href={`/dashboard/mcq/${exam._id}/submissions`}>
+                <Icons.results />
+                <span>ফলাফল দেখুন</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => handleViewLeaderboard(exam)}
