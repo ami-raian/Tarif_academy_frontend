@@ -98,6 +98,7 @@ export interface Enrollment {
   student: string;
   studentId?: {
     _id: string;
+    roll?: string;
     fullName: string;
     email: string;
     phone?: string;

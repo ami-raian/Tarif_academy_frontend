@@ -246,6 +246,11 @@ export default function EnrollmentsManagement() {
         <div>
           <p className="font-medium text-slate-900 dark:text-white text-sm">
             {enrollment.studentId?.fullName || "Unknown"}
+            {enrollment.studentId?.roll && (
+              <span className="text-xs text-slate-400 dark:text-gray-500 ml-1 font-normal">
+                (রোল: {enrollment.studentId.roll})
+              </span>
+            )}
           </p>
           <p className="text-xs text-slate-500 dark:text-gray-400">
             {enrollment.studentId?.email}

@@ -17,6 +17,7 @@ interface LeaderboardEntry {
   rank: number;
   studentId: {
     _id: string;
+    roll: string;
     fullName: string;
     email: string;
   };
@@ -319,6 +320,11 @@ export default function LeaderboardPage() {
                                 className={`font-semibold truncate ${isMe ? "text-purple-700 dark:text-purple-300" : "text-gray-900 dark:text-white"}`}
                               >
                                 {entry.studentId?.fullName ?? "—"}
+                                {entry.studentId?.roll && (
+                                  <span className="text-xs text-gray-400 dark:text-gray-500 ml-1 font-normal">
+                                    ({entry.studentId.roll})
+                                  </span>
+                                )}
                               </p>
                               {isMe && (
                                 <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 font-medium shrink-0">
