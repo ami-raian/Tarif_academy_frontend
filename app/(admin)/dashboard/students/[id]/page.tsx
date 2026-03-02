@@ -159,6 +159,14 @@ export default function StudentDetailsPage() {
           <CardContent className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="text-sm font-medium text-slate-500 dark:text-gray-400">
+                রোল নম্বর
+              </label>
+              <p className="text-lg font-semibold text-slate-900 dark:text-white mt-1">
+                {student.roll || "—"}
+              </p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-500 dark:text-gray-400">
                 পূর্ণ নাম
               </label>
               <p className="text-lg font-semibold text-slate-900 dark:text-white mt-1">

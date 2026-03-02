@@ -314,6 +314,12 @@ export default function ExamPage() {
     questionId: string,
     optionIndex: number,
   ) => {
+    // Prevent changing answer if already answered
+    const currentAnswer = answers.get(questionId);
+    if (currentAnswer !== null && currentAnswer !== undefined) {
+      return; // Answer already selected, cannot change
+    }
+
     const newAnswers = new Map(answers);
     newAnswers.set(questionId, optionIndex);
     setAnswers(newAnswers);
@@ -534,43 +540,52 @@ export default function ExamPage() {
                     </div>
 
                     <div className="space-y-3">
-                      {question.options.map((option, optionIndex) => (
-                        <button
-                          key={optionIndex}
-                          onClick={() =>
-                            handleSelectAnswer(question._id, optionIndex)
-                          }
-                          className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left ${
-                            currentAnswer === optionIndex
-                              ? "border-purple-500 bg-purple-50"
-                              : "border-gray-200 hover:border-gray-200 hover:bg-gray-50"
-                          }`}
-                        >
-                          <span
-                            className={`w-10 h-10 rounded-full flex items-center justify-center font-medium ${
-                              currentAnswer === optionIndex
-                                ? "bg-purple-500 text-white"
-                                : "bg-gray-100 text-gray-700"
+                      {question.options.map((option, optionIndex) => {
+                        const isAnswered =
+                          currentAnswer !== null && currentAnswer !== undefined;
+                        const isSelected = currentAnswer === optionIndex;
+
+                        return (
+                          <button
+                            key={optionIndex}
+                            onClick={() =>
+                              handleSelectAnswer(question._id, optionIndex)
+                            }
+                            disabled={isAnswered}
+                            className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left ${
+                              isSelected
+                                ? "border-purple-500 bg-purple-50"
+                                : isAnswered
+                                  ? "border-gray-200 bg-gray-100 opacity-60 cursor-not-allowed"
+                                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 cursor-pointer"
                             }`}
                           >
-                            {String.fromCharCode(65 + optionIndex)}
-                          </span>
-                          <span
-                            className={`flex-1 ${
-                              currentAnswer === optionIndex
-                                ? "text-purple-900 font-medium"
-                                : "text-gray-700"
-                            }`}
-                          >
-                            {option.text}
-                          </span>
-                          {currentAnswer === optionIndex && (
-                            <span className="text-purple-500">
-                              <Icons.check />
+                            <span
+                              className={`w-10 h-10 rounded-full flex items-center justify-center font-medium ${
+                                isSelected
+                                  ? "bg-purple-500 text-white"
+                                  : "bg-gray-100 text-gray-700"
+                              }`}
+                            >
+                              {String.fromCharCode(65 + optionIndex)}
                             </span>
-                          )}
-                        </button>
-                      ))}
+                            <span
+                              className={`flex-1 ${
+                                isSelected
+                                  ? "text-purple-900 font-medium"
+                                  : "text-gray-700"
+                              }`}
+                            >
+                              {option.text}
+                            </span>
+                            {isSelected && (
+                              <span className="text-purple-500">
+                                <Icons.check />
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 );

@@ -483,7 +483,9 @@ export interface StudentAnswer {
 export interface McqSubmission {
   _id: string;
   examId: McqExam | string;
-  studentId: { _id: string; fullName: string; email: string } | string;
+  studentId:
+    | { _id: string; roll?: string; fullName: string; email: string }
+    | string;
   answers: StudentAnswer[];
   totalMarks: number;
   obtainedMarks: number;
@@ -812,9 +814,16 @@ export async function getMcqExamResult(examId: string) {
 }
 
 // Admin: Get exam submissions
-export async function getMcqExamSubmissions(examId: string) {
+export async function getMcqExamSubmissions(
+  examId: string,
+  params?: { page?: number; limit?: number },
+) {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.set("page", params.page.toString());
+  if (params?.limit) searchParams.set("limit", params.limit.toString());
+
   const response = await fetch(
-    `${API_BASE_URL}/mcq/exams/${examId}/submissions`,
+    `${API_BASE_URL}/mcq/exams/${examId}/submissions?${searchParams.toString()}`,
     {
       headers: getAuthHeaders(),
     },

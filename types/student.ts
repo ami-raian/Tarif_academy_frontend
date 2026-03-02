@@ -20,7 +20,7 @@ export interface EducationalInfoHSC {
 
 export interface Student {
   _id: string;
-  roll: number;
+  roll: string;
   fullName: string;
   email: string;
   mobile: string;

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -45,6 +46,11 @@ export default function DashboardSidebar({
 }: DashboardSidebarProps) {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
@@ -59,6 +65,8 @@ export default function DashboardSidebar({
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
+
+  const currentTheme = mounted ? theme : "light";
 
   return (
     <>
@@ -139,14 +147,14 @@ export default function DashboardSidebar({
             <button
               onClick={toggleTheme}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                theme === "dark"
+                currentTheme === "dark"
                   ? "bg-slate-400 dark:bg-gray-600"
                   : "bg-slate-300"
               }`}
             >
               <span
                 className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
-                  theme === "dark" ? "translate-x-6" : "translate-x-1"
+                  currentTheme === "dark" ? "translate-x-6" : "translate-x-1"
                 }`}
               />
             </button>

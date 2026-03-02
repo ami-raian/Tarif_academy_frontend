@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -45,7 +46,7 @@ import {
 
 interface LeaderboardEntry {
   rank: number;
-  studentId: { _id: string; fullName: string; email: string };
+  studentId: { _id: string; roll: string; fullName: string; email: string };
   obtainedMarks: number;
   percentage: number;
   submittedAt: string;
@@ -652,12 +653,11 @@ const McqManagement = () => {
               <Icons.questions />
               <span>প্রশ্ন দেখুন</span>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => handleViewResults(exam)}
-              className="gap-2"
-            >
-              <Icons.results />
-              <span>ফলাফল দেখুন</span>
+            <DropdownMenuItem asChild className="gap-2">
+              <Link href={`/dashboard/mcq/${exam._id}/submissions`}>
+                <Icons.results />
+                <span>ফলাফল দেখুন</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => handleViewLeaderboard(exam)}
@@ -1014,6 +1014,9 @@ const McqManagement = () => {
                         শিক্ষার্থী
                       </th>
                       <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">
+                        রোল
+                      </th>
+                      <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">
                         প্রাপ্ত নম্বর
                       </th>
                       <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 dark:text-gray-300">
@@ -1031,6 +1034,7 @@ const McqManagement = () => {
                     {submissions.map((submission, index) => {
                       const student = submission.studentId as {
                         _id: string;
+                        roll: string;
                         fullName: string;
                         email: string;
                       };
@@ -1049,6 +1053,9 @@ const McqManagement = () => {
                             <p className="text-xs text-slate-500 dark:text-gray-400">
                               {student?.email || ""}
                             </p>
+                          </td>
+                          <td className="px-4 py-3 text-sm font-medium text-slate-700 dark:text-gray-300">
+                            {student?.roll || "-"}
                           </td>
                           <td className="px-4 py-3">
                             <span className="font-medium dark:text-white">
@@ -1195,6 +1202,11 @@ const McqManagement = () => {
                         <td className="px-4 py-3">
                           <p className="font-medium text-slate-900 dark:text-white">
                             {entry.studentId?.fullName ?? "—"}
+                            {entry.studentId?.roll && (
+                              <span className="text-xs text-slate-400 dark:text-gray-500 ml-1 font-normal">
+                                (রোল: {entry.studentId.roll})
+                              </span>
+                            )}
                           </p>
                           <p className="text-xs text-slate-500 dark:text-gray-400">
                             {entry.studentId?.email ?? ""}
