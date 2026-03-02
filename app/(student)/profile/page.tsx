@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,9 +29,11 @@ import {
   MapPin,
   Droplets,
   IdCard,
+  ArrowLeft,
 } from "lucide-react";
 
 export default function StudentProfilePage() {
+  const router = useRouter();
   const [student, setStudent] = useState<Student | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -249,7 +252,15 @@ export default function StudentProfilePage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => router.back()}
+                className="shrink-0"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+              <div className="w-16 h-16 rounded-full bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                 {student.fullName?.charAt(0).toUpperCase()}
               </div>
               <div>
