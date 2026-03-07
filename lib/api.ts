@@ -587,6 +587,7 @@ export async function createMcqExam(data: {
   passingMarks: number;
   negativeMarking?: number;
   accessCode?: string;
+  instantResult?: boolean;
   startTime?: string;
   endTime?: string;
 }) {
