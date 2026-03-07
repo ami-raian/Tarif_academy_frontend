@@ -12,16 +12,21 @@ export function getBackendUrl(): string {
 
 // Get full thumbnail URL (returns default if no thumbnail or invalid path)
 export function getThumbnailUrl(thumbnail: string | undefined): string {
-  // Return local default for empty/undefined thumbnails
-  if (!thumbnail) return "/default-course-thumbnail.png";
+  const fallback = "/default-course-thumbnail.png";
+  if (!thumbnail) return fallback;
 
-  // Only use backend URL for actual uploads (paths starting with /uploads)
-  if (thumbnail.startsWith("/uploads")) {
-    return `${getBackendUrl()}${thumbnail}`;
+  const value = thumbnail.trim().replace(/\\/g, "/");
+  if (!value) return fallback;
+
+  if (/^(data:|blob:|https?:\/\/)/i.test(value)) return value;
+  if (value.startsWith("//")) return `https:${value}`;
+
+  if (value.startsWith("/uploads/") || value.startsWith("uploads/")) {
+    return `${getBackendUrl()}${value.startsWith("/") ? value : `/${value}`}`;
   }
 
-  // For any other value, return the local default
-  return "/default-course-thumbnail.png";
+  if (value.startsWith("/")) return value;
+  return `${getBackendUrl()}/${value.replace(/^\/+/, "")}`;
 }
 
 // Cookie utilities
@@ -165,8 +170,14 @@ export async function getCourses(params?: {
     `${API_BASE_URL}/courses?${searchParams.toString()}`,
     {
       headers: getAuthHeaders(),
+      cache: "no-store", // For Next.js server components
     },
   );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch courses: ${response.statusText}`);
+  }
+
   return response.json();
 }
 
@@ -457,6 +468,7 @@ export interface McqExam {
   _id: string;
   title: string;
   description?: string;
+  courseId?: { _id: string; title: string } | string;
   duration: number;
   totalQuestions: number;
   totalMarks: number;
@@ -504,6 +516,7 @@ export async function getMcqExams(params?: {
   isPublished?: boolean;
   isResultPublished?: boolean;
   search?: string;
+  courseId?: string;
 }) {
   const searchParams = new URLSearchParams();
   if (params?.page) searchParams.set("page", params.page.toString());
@@ -513,6 +526,7 @@ export async function getMcqExams(params?: {
   if (params?.isResultPublished !== undefined)
     searchParams.set("isResultPublished", params.isResultPublished.toString());
   if (params?.search) searchParams.set("search", params.search);
+  if (params?.courseId) searchParams.set("courseId", params.courseId);
 
   const response = await fetch(
     `${API_BASE_URL}/mcq/exams?${searchParams.toString()}`,
@@ -528,11 +542,13 @@ export async function getPublishedMcqExams(params?: {
   page?: number;
   limit?: number;
   search?: string;
+  courseId?: string;
 }) {
   const searchParams = new URLSearchParams();
   if (params?.page) searchParams.set("page", params.page.toString());
   if (params?.limit) searchParams.set("limit", params.limit.toString());
   if (params?.search) searchParams.set("search", params.search);
+  if (params?.courseId) searchParams.set("courseId", params.courseId);
 
   const response = await fetch(
     `${API_BASE_URL}/mcq/exams/published?${searchParams.toString()}`,
@@ -566,10 +582,12 @@ export async function getMcqExamForStudent(examId: string) {
 export async function createMcqExam(data: {
   title: string;
   description?: string;
+  courseId?: string;
   duration: number;
   passingMarks: number;
   negativeMarking?: number;
   accessCode?: string;
+  instantResult?: boolean;
   startTime?: string;
   endTime?: string;
 }) {

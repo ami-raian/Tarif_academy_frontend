@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Switch } from "@/components/ui/switch";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +42,7 @@ import {
   deleteMcqQuestion,
   getMcqExamSubmissions,
   getMcqLeaderboard,
+  getCourses,
   type McqExam,
   type McqQuestion,
   type McqSubmission,
@@ -55,7 +59,8 @@ interface LeaderboardEntry {
 // Column definitions for exams table
 const examColumns: Column[] = [
   { key: "title", name: "পরীক্ষার নাম", width: 220 },
-  { key: "description", name: "বিবরণ", width: 250 },
+  { key: "course", name: "কোর্স", width: 150 },
+  { key: "description", name: "বিবরণ", width: 200 },
   { key: "duration", name: "সময়কাল", width: 100, align: "center" },
   { key: "questions", name: "প্রশ্ন", width: 90, align: "center" },
   { key: "marks", name: "নম্বর", width: 120, align: "center" },
@@ -259,7 +264,18 @@ const Icons = {
   ),
 };
 
-const McqManagement = () => {
+interface McqManagementProps {
+  embedded?: boolean;
+  embeddedCourseId?: string;
+}
+
+const McqManagement = ({
+  embedded = false,
+  embeddedCourseId,
+}: McqManagementProps) => {
+  const searchParams = useSearchParams();
+  const queryCourseId = searchParams.get("courseId");
+  const initialCourseFilter = embeddedCourseId ?? queryCourseId ?? "all";
   const [exams, setExams] = useState<McqExam[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedExam, setSelectedExam] = useState<McqExam | null>(null);
@@ -273,6 +289,8 @@ const McqManagement = () => {
   const [filter, setFilter] = useState<
     "all" | "published" | "draft" | "result-published"
   >("all");
+  const [courseFilter, setCourseFilter] = useState<string>(initialCourseFilter);
+  const [courses, setCourses] = useState<{ _id: string; title: string }[]>([]);
 
   // Modal states
   const [isCreateExamModalOpen, setIsCreateExamModalOpen] = useState(false);
@@ -282,10 +300,12 @@ const McqManagement = () => {
   const [examForm, setExamForm] = useState({
     title: "",
     description: "",
+    courseId: embeddedCourseId ?? "",
     duration: "30",
     passingMarks: "40",
     negativeMarking: "0",
     accessCode: "",
+    instantResult: false,
   });
 
   const [questionForm, setQuestionForm] = useState({
@@ -302,7 +322,29 @@ const McqManagement = () => {
   // Fetch exams
   useEffect(() => {
     fetchExams();
-  }, [filter]);
+  }, [filter, courseFilter]);
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  useEffect(() => {
+    if (!embeddedCourseId) return;
+
+    setCourseFilter(embeddedCourseId);
+    setExamForm((prev) => ({ ...prev, courseId: embeddedCourseId }));
+  }, [embeddedCourseId]);
+
+  const fetchCourses = async () => {
+    try {
+      const response = await getCourses({ limit: 100, isPublished: true });
+      if (response.success) {
+        setCourses(response.data || []);
+      }
+    } catch (error) {
+      console.error("Failed to fetch courses:", error);
+    }
+  };
 
   const fetchExams = async () => {
     try {
@@ -312,6 +354,7 @@ const McqManagement = () => {
       const params: {
         isPublished?: boolean;
         isResultPublished?: boolean;
+        courseId?: string;
       } = {};
 
       if (filter === "published") {
@@ -320,6 +363,10 @@ const McqManagement = () => {
         params.isPublished = false;
       } else if (filter === "result-published") {
         params.isResultPublished = true;
+      }
+
+      if (courseFilter !== "all") {
+        params.courseId = courseFilter;
       }
 
       const response = await getMcqExams(params);
@@ -385,16 +432,20 @@ const McqManagement = () => {
         passingMarks,
         negativeMarking,
         accessCode: examForm.accessCode.trim() || undefined,
+        courseId: examForm.courseId || undefined,
+        instantResult: examForm.instantResult,
       });
       if (response.success) {
         setIsCreateExamModalOpen(false);
         setExamForm({
           title: "",
           description: "",
+          courseId: embeddedCourseId ?? "",
           duration: "30",
           passingMarks: "40",
           negativeMarking: "0",
           accessCode: "",
+          instantResult: false,
         });
         fetchExams();
       } else {
@@ -585,6 +636,17 @@ const McqManagement = () => {
         </p>
       </div>
     ),
+    course: (
+      <div className="text-sm text-slate-600 dark:text-gray-400">
+        {exam.courseId && typeof exam.courseId === "object" ? (
+          (exam.courseId as { _id: string; title: string }).title
+        ) : (
+          <span className="text-slate-400 dark:text-gray-500 text-xs">
+            সাধারণ
+          </span>
+        )}
+      </div>
+    ),
     description: (
       <p className="text-sm text-slate-600 dark:text-gray-400 line-clamp-2">
         {exam.description || "-"}
@@ -713,8 +775,20 @@ const McqManagement = () => {
   if (view === "questions" && selectedExam) {
     return (
       <div>
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-14 lg:top-0 z-20 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div
+          className={
+            embedded
+              ? "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm"
+              : "bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-14 lg:top-0 z-20 shadow-sm"
+          }
+        >
+          <div
+            className={
+              embedded
+                ? "px-4 sm:px-6 py-4"
+                : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+            }
+          >
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
@@ -745,7 +819,13 @@ const McqManagement = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
+        <div
+          className={
+            embedded
+              ? "px-0 py-6 space-y-4"
+              : "max-w-4xl mx-auto px-4 py-6 space-y-4"
+          }
+        >
           {questionsLoading ? (
             <div className="flex justify-center py-12">
               <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -950,8 +1030,20 @@ const McqManagement = () => {
   if (view === "results" && selectedExam) {
     return (
       <div>
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-14 lg:top-0 z-20 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div
+          className={
+            embedded
+              ? "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm"
+              : "bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-14 lg:top-0 z-20 shadow-sm"
+          }
+        >
+          <div
+            className={
+              embedded
+                ? "px-4 sm:px-6 py-4"
+                : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+            }
+          >
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
@@ -987,7 +1079,7 @@ const McqManagement = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className={embedded ? "px-0 py-6" : "max-w-4xl mx-auto px-4 py-6"}>
           {questionsLoading ? (
             <div className="flex justify-center py-12">
               <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -1110,8 +1202,20 @@ const McqManagement = () => {
   if (view === "leaderboard" && selectedExam) {
     return (
       <div>
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-14 lg:top-0 z-20 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div
+          className={
+            embedded
+              ? "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm"
+              : "bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-14 lg:top-0 z-20 shadow-sm"
+          }
+        >
+          <div
+            className={
+              embedded
+                ? "px-4 sm:px-6 py-4"
+                : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+            }
+          >
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
@@ -1135,7 +1239,7 @@ const McqManagement = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className={embedded ? "px-0 py-6" : "max-w-4xl mx-auto px-4 py-6"}>
           {questionsLoading ? (
             <div className="flex justify-center py-12">
               <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -1245,15 +1349,29 @@ const McqManagement = () => {
   return (
     <div>
       {/* Header */}
-      <div className="sticky top-14 lg:top-0 z-20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div
+        className={
+          embedded
+            ? "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm"
+            : "sticky top-14 lg:top-0 z-20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700"
+        }
+      >
+        <div
+          className={
+            embedded
+              ? "px-4 sm:px-6 py-3"
+              : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3"
+          }
+        >
           <div className="flex items-center justify-between gap-4">
             <div>
               <h1 className="text-lg font-bold text-slate-900 dark:text-white">
-                MCQ পরীক্ষা
+                {embedded ? "এই কোর্সের MCQ পরীক্ষা" : "MCQ পরীক্ষা"}
               </h1>
               <p className="text-xs text-slate-500 dark:text-gray-400">
-                পরীক্ষা তৈরি এবং ম্যানেজ করুন
+                {embedded
+                  ? "এই কোর্সের পরীক্ষা তৈরি, সম্পাদনা ও ম্যানেজ করুন"
+                  : "পরীক্ষা তৈরি এবং ম্যানেজ করুন"}
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -1290,6 +1408,20 @@ const McqManagement = () => {
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
+              {!embedded && (
+                <select
+                  value={courseFilter}
+                  onChange={(e) => setCourseFilter(e.target.value)}
+                  className="text-xs border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1.5 bg-white dark:bg-gray-700 text-slate-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-primary hidden sm:block"
+                >
+                  <option value="all">সব কোর্স</option>
+                  {courses.map((c) => (
+                    <option key={c._id} value={c._id}>
+                      {c.title}
+                    </option>
+                  ))}
+                </select>
+              )}
               <Button
                 size="sm"
                 onClick={() => setIsCreateExamModalOpen(true)}
@@ -1303,7 +1435,11 @@ const McqManagement = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div
+        className={
+          embedded ? "px-0 py-6" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6"
+        }
+      >
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <Card className="border-0 shadow-md dark:bg-gray-800">
@@ -1364,111 +1500,203 @@ const McqManagement = () => {
         open={isCreateExamModalOpen}
         onOpenChange={setIsCreateExamModalOpen}
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>নতুন পরীক্ষা তৈরি করুন</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleCreateExam} className="space-y-4">
-            <div>
-              <Label>পরীক্ষার নাম</Label>
-              <Input
-                value={examForm.title}
-                onChange={(e) =>
-                  setExamForm({ ...examForm, title: e.target.value })
-                }
-                placeholder="যেমন: অধ্যায় ১ - MCQ টেস্ট"
-                required
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label>বিবরণ (ঐচ্ছিক)</Label>
-              <Textarea
-                value={examForm.description}
-                onChange={(e) =>
-                  setExamForm({ ...examForm, description: e.target.value })
-                }
-                placeholder="পরীক্ষা সম্পর্কে কিছু লিখুন..."
-                className="mt-1"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>সময়কাল (মিনিট)</Label>
-                <Input
-                  type="number"
-                  min="1"
-                  value={examForm.duration}
-                  onChange={(e) =>
+        <DialogContent className="flex! flex-col! max-h-[90vh] overflow-hidden p-0 gap-0 rounded-xl">
+          <div className="shrink-0 px-6 pt-5 pb-4 border-b border-gray-100 dark:border-gray-700/50">
+            <DialogTitle className="text-base font-semibold text-gray-900 dark:text-white">
+              নতুন পরীক্ষা তৈরি করুন
+            </DialogTitle>
+          </div>
+          <form
+            onSubmit={handleCreateExam}
+            className="flex flex-col flex-1 min-h-0"
+          >
+            <div className="flex-1 overflow-y-auto">
+              <div className="px-6 py-5 space-y-5">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    পরীক্ষার নাম
+                  </Label>
+                  <Input
+                    value={examForm.title}
+                    onChange={(e) =>
+                      setExamForm({ ...examForm, title: e.target.value })
+                    }
+                    placeholder="যেমন: অধ্যায় ১ - MCQ টেস্ট"
+                    required
+                    className="h-10 bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 focus:border-violet-400 dark:focus:border-violet-500 focus:ring-violet-400/20 rounded-lg"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    বিবরণ{" "}
+                    <span className="normal-case font-normal">(ঐচ্ছিক)</span>
+                  </Label>
+                  <Textarea
+                    value={examForm.description}
+                    onChange={(e) =>
+                      setExamForm({ ...examForm, description: e.target.value })
+                    }
+                    placeholder="পরীক্ষা সম্পর্কে কিছু লিখুন..."
+                    className="bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 focus:border-violet-400 dark:focus:border-violet-500 focus:ring-violet-400/20 rounded-lg resize-none"
+                    rows={3}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    কোর্স{" "}
+                    <span className="normal-case font-normal">(ঐচ্ছিক)</span>
+                  </Label>
+                  <select
+                    value={examForm.courseId}
+                    onChange={(e) =>
+                      setExamForm({ ...examForm, courseId: e.target.value })
+                    }
+                    className="w-full h-10 bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-lg px-3 text-sm text-foreground focus:outline-none focus:border-violet-400 dark:focus:border-violet-500 focus:ring-2 focus:ring-violet-400/20"
+                  >
+                    <option value="">কোনো কোর্স নেই (সাধারণ)</option>
+                    {courses.map((c) => (
+                      <option key={c._id} value={c._id}>
+                        {c.title}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    কোর্স নির্বাচন করলে এই পরীক্ষাটি সেই কোর্সের সাথে যুক্ত হবে
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                      সময়কাল{" "}
+                      <span className="normal-case font-normal">(মিনিট)</span>
+                    </Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={examForm.duration}
+                      onChange={(e) =>
+                        setExamForm({ ...examForm, duration: e.target.value })
+                      }
+                      className="h-10 bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 focus:border-violet-400 dark:focus:border-violet-500 focus:ring-violet-400/20 rounded-lg"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                      পাস মার্কস
+                    </Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={examForm.passingMarks}
+                      onChange={(e) =>
+                        setExamForm({
+                          ...examForm,
+                          passingMarks: e.target.value,
+                        })
+                      }
+                      className="h-10 bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 focus:border-violet-400 dark:focus:border-violet-500 focus:ring-violet-400/20 rounded-lg"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    নেগেটিভ মার্কিং
+                  </Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.25"
+                    value={examForm.negativeMarking}
+                    onChange={(e) =>
+                      setExamForm({
+                        ...examForm,
+                        negativeMarking: e.target.value,
+                      })
+                    }
+                    placeholder="0"
+                    className="h-10 bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 focus:border-violet-400 dark:focus:border-violet-500 focus:ring-violet-400/20 rounded-lg"
+                  />
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    প্রতিটি ভুল উত্তরের জন্য কত নম্বর কাটা হবে (0 দিলে কাটা হবে
+                    না)
+                  </p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    অ্যাক্সেস কোড{" "}
+                    <span className="normal-case font-normal">(ঐচ্ছিক)</span>
+                  </Label>
+                  <Input
+                    value={examForm.accessCode}
+                    onChange={(e) =>
+                      setExamForm({ ...examForm, accessCode: e.target.value })
+                    }
+                    placeholder="যেমন: EXAM2024 — খালি রাখলে সবাই দিতে পারবে"
+                    className="h-10 bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 focus:border-violet-400 dark:focus:border-violet-500 focus:ring-violet-400/20 rounded-lg"
+                  />
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    কোড দিলে শুধু যারা কোড জানে তারাই পরীক্ষায় অংশ নিতে পারবে
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
                     setExamForm({
                       ...examForm,
-                      duration: e.target.value,
+                      instantResult: !examForm.instantResult,
                     })
                   }
-                  className="mt-1"
-                />
+                  className={`w-full flex items-center justify-between p-4 rounded-lg border text-left transition-colors cursor-pointer ${
+                    examForm.instantResult
+                      ? "bg-violet-600 dark:bg-violet-600 border-violet-600"
+                      : "bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 hover:border-violet-300 dark:hover:border-violet-700"
+                  }`}
+                >
+                  <div className="space-y-0.5">
+                    <p
+                      className={`text-sm font-medium ${examForm.instantResult ? "text-white" : "text-gray-700 dark:text-gray-200"}`}
+                    >
+                      তাৎক্ষণিক ফলাফল
+                    </p>
+                    <p
+                      className={`text-xs ${examForm.instantResult ? "text-violet-200" : "text-gray-400 dark:text-gray-500"}`}
+                    >
+                      চালু থাকলে পরীক্ষা শেষে student স্বয়ংক্রিয়ভাবে ফলাফল
+                      দেখতে পাবে
+                    </p>
+                  </div>
+                  <div
+                    className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
+                      examForm.instantResult
+                        ? "bg-white/30"
+                        : "bg-gray-200 dark:bg-gray-600"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+                        examForm.instantResult
+                          ? "translate-x-6"
+                          : "translate-x-1"
+                      }`}
+                    />
+                  </div>
+                </button>
               </div>
-              <div>
-                <Label>পাস মার্কস</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={examForm.passingMarks}
-                  onChange={(e) =>
-                    setExamForm({
-                      ...examForm,
-                      passingMarks: e.target.value,
-                    })
-                  }
-                  className="mt-1"
-                />
-              </div>
             </div>
-            <div>
-              <Label>নেগেটিভ মার্কিং (ভুল উত্তরের জন্য কাটা নম্বর)</Label>
-              <Input
-                type="number"
-                min="0"
-                step="0.25"
-                value={examForm.negativeMarking}
-                onChange={(e) =>
-                  setExamForm({
-                    ...examForm,
-                    negativeMarking: e.target.value,
-                  })
-                }
-                placeholder="যেমন: 0.25 — 0 দিলে নেগেটিভ মার্কিং থাকবে না"
-                className="mt-1"
-              />
-              <p className="mt-1 text-xs text-muted-foreground">
-                প্রতিটি ভুল উত্তরের জন্য কত নম্বর কাটা হবে (0 দিলে কোনো নম্বর
-                কাটা হবে না)
-              </p>
-            </div>
-            <div>
-              <Label>অ্যাক্সেস কোড (ঐচ্ছিক)</Label>
-              <Input
-                value={examForm.accessCode}
-                onChange={(e) =>
-                  setExamForm({ ...examForm, accessCode: e.target.value })
-                }
-                placeholder="যেমন: EXAM2024 — খালি রাখলে সবাই দিতে পারবে"
-                className="mt-1"
-              />
-              <p className="mt-1 text-xs text-muted-foreground">
-                কোড দিলে শুধু যারা কোড জানে তারাই পরীক্ষায় অংশ নিতে পারবে
-              </p>
-            </div>
-            <div className="flex gap-3 pt-4">
+            {/* Sticky footer buttons — always visible */}
+            <div className="shrink-0 flex gap-3 px-6 py-4 border-t border-gray-100 dark:border-gray-700/50">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setIsCreateExamModalOpen(false)}
-                className="flex-1"
+                className="flex-1 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
               >
                 বাতিল
               </Button>
-              <Button type="submit" className="flex-1">
+              <Button
+                type="submit"
+                className="flex-1 bg-violet-600 hover:bg-violet-700 text-white"
+              >
                 পরীক্ষা তৈরি করুন
               </Button>
             </div>

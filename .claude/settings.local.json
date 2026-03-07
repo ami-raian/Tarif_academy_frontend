@@ -15,7 +15,9 @@
       "Bash(npx next build:*)",
       "Bash(dir:*)",
       "Bash(find:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(python3 -c \":*)",
+      "Bash(node -e \":*)"
     ]
   }
 }

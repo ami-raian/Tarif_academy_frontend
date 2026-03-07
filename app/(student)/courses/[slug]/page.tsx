@@ -53,6 +53,7 @@ export default function CourseDetailPage({ params }: PageProps) {
   const [userType, setUserType] = useState<string | null>(null);
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [transactionId, setTransactionId] = useState("");
+  const [thumbnailError, setThumbnailError] = useState(false);
 
   // bKash Payment Info
   const BKASH_NUMBER = "01XXXXXXXXX"; // Change this to your bKash number
@@ -104,6 +105,11 @@ export default function CourseDetailPage({ params }: PageProps) {
 
     fetchCourseData();
   }, [slug, isLoggedIn, userType]);
+
+  useEffect(() => {
+    // Reset fallback state when course thumbnail changes.
+    setThumbnailError(false);
+  }, [course?.thumbnail]);
 
   const handleEnrollClick = () => {
     if (!isLoggedIn) {
@@ -186,10 +192,12 @@ export default function CourseDetailPage({ params }: PageProps) {
     return `${mins}:${String(secs).padStart(2, "0")}`;
   };
 
-  const formatCourseDuration = (minutes: number) => {
-    if (minutes < 60) return `${minutes} মিনিট`;
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
+  const formatCourseDuration = (minutes: number | undefined | null) => {
+    const m = minutes ?? 0;
+    if (m <= 0) return "0 মিনিট";
+    if (m < 60) return `${m} মিনিট`;
+    const hours = Math.floor(m / 60);
+    const mins = m % 60;
     return mins > 0 ? `${hours} ঘন্টা ${mins} মিনিট` : `${hours} ঘন্টা`;
   };
 
@@ -258,6 +266,10 @@ export default function CourseDetailPage({ params }: PageProps) {
     );
   }
 
+  const thumbnailSrc = thumbnailError
+    ? "/default-course-thumbnail.png"
+    : getThumbnailUrl(course.thumbnail);
+
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       <Navbar />
@@ -312,10 +324,10 @@ export default function CourseDetailPage({ params }: PageProps) {
                   <div className="flex items-center gap-2">
                     <Star className="w-5 h-5 text-amber-500" />
                     <span className="font-medium text-gray-900 dark:text-white">
-                      {course.rating.toFixed(1)}
+                      {(course.rating ?? 0).toFixed(1)}
                     </span>
                     <span className="text-gray-400 dark:text-gray-500">
-                      ({course.totalReviews} রিভিউ)
+                      ({course.totalReviews ?? 0} রিভিউ)
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -336,10 +348,12 @@ export default function CourseDetailPage({ params }: PageProps) {
               {/* Course Thumbnail */}
               <div className="relative aspect-video rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-700">
                 <Image
-                  src={getThumbnailUrl(course.thumbnail)}
+                  src={thumbnailSrc}
                   alt={course.title}
                   fill
                   className="object-cover"
+                  unoptimized
+                  onError={() => setThumbnailError(true)}
                 />
               </div>
 
@@ -464,10 +478,12 @@ export default function CourseDetailPage({ params }: PageProps) {
                 {/* Preview Image */}
                 <div className="relative aspect-video bg-linear-to-br from-purple-500 to-cyan-500">
                   <Image
-                    src={getThumbnailUrl(course.thumbnail)}
+                    src={thumbnailSrc}
                     alt={course.title}
                     fill
                     className="object-cover"
+                    unoptimized
+                    onError={() => setThumbnailError(true)}
                   />
                   <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                     <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center shadow-lg text-gray-800">

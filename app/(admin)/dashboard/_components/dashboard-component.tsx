@@ -2,12 +2,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { VideoPlayer } from "@/components/video-player";
 import { VideoUploadModal } from "./video-upload-modal";
+import McqManagement from "../mcq/_components/mcq-management";
 import { CommonBadge } from "@/components/common/common-badge";
 import { CreateCourseModal } from "./create-course-modal";
 import { EditCourseModal } from "./edit-course-modal";
@@ -40,6 +42,7 @@ import {
   ChevronDown,
   RefreshCw,
   Pencil,
+  GraduationCap,
 } from "lucide-react";
 
 const DashboardComponent = () => {
@@ -319,6 +322,15 @@ const DashboardComponent = () => {
                   {syncing ? "সিঙ্ক হচ্ছে..." : "ভিডিও সিঙ্ক"}
                 </span>
               </Button>
+              <Link
+                href={`/dashboard/mcq?courseId=${selectedCourse._id}`}
+                className="shrink-0"
+              >
+                <Button variant="outline" size="sm" className="gap-2">
+                  <GraduationCap className="w-4 h-4" />
+                  <span className="hidden sm:inline">MCQ ফুল পেইজ</span>
+                </Button>
+              </Link>
               <Button
                 size="sm"
                 onClick={() => setIsUploadModalOpen(true)}
@@ -567,6 +579,27 @@ const DashboardComponent = () => {
               </Card>
             </div>
           </div>
+
+          <section className="mt-8">
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <div>
+                <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+                  কোর্স MCQ ম্যানেজমেন্ট
+                </h2>
+                <p className="text-sm text-slate-500 dark:text-gray-400 mt-0.5">
+                  এই কোর্সের পরীক্ষাগুলো এখানেই তৈরি ও ম্যানেজ করুন
+                </p>
+              </div>
+              <Link href={`/dashboard/mcq?courseId=${selectedCourse._id}`}>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <GraduationCap className="w-4 h-4" />
+                  <span>ডিটেইল ভিউ</span>
+                </Button>
+              </Link>
+            </div>
+
+            <McqManagement embedded embeddedCourseId={selectedCourse._id} />
+          </section>
         </div>
 
         {/* Video Upload Modal */}

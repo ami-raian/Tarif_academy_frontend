@@ -3,10 +3,16 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/app/(home)/_components/navbar";
 import { Button } from "@/components/ui/button";
-import { getMyEnrollments, getCourseProgress, getCookie } from "@/lib/api";
+import {
+  getMyEnrollments,
+  getCourseProgress,
+  getCookie,
+  getThumbnailUrl,
+} from "@/lib/api";
 import type { Enrollment } from "@/types";
 import {
   Play,
@@ -342,6 +348,15 @@ export default function MyCoursesPage() {
                   >
                     {/* Thumbnail */}
                     <div className="relative h-44 bg-linear-to-br from-purple-100 to-cyan-100 dark:from-purple-500/20 dark:to-cyan-500/20">
+                      <Image
+                        src={getThumbnailUrl(course?.thumbnail)}
+                        alt={course?.title || "Course thumbnail"}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                      <div className="absolute inset-0 bg-linear-to-t from-black/50 via-black/10 to-transparent" />
+
                       <div className="absolute top-3 left-3">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border}`}
