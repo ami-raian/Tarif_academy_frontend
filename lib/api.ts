@@ -13,31 +13,20 @@ export function getBackendUrl(): string {
 // Get full thumbnail URL (returns default if no thumbnail or invalid path)
 export function getThumbnailUrl(thumbnail: string | undefined): string {
   const fallback = "/default-course-thumbnail.png";
+  if (!thumbnail) return fallback;
 
-  // Return local default for empty/undefined thumbnails
-  if (!thumbnail || typeof thumbnail !== "string") return fallback;
+  const value = thumbnail.trim().replace(/\\/g, "/");
+  if (!value) return fallback;
 
-  const normalized = thumbnail.trim().replace(/\\/g, "/");
-  if (!normalized) return fallback;
+  if (/^(data:|blob:|https?:\/\/)/i.test(value)) return value;
+  if (value.startsWith("//")) return `https:${value}`;
 
-  // Allow data/blob URIs and absolute/protocol-relative URLs
-  if (/^(data:|blob:)/i.test(normalized)) return normalized;
-  if (/^https?:\/\//i.test(normalized)) return normalized;
-  if (normalized.startsWith("//")) return `https:${normalized}`;
-
-  // Resolve uploaded files against backend base URL
-  if (normalized.startsWith("/uploads/") || normalized.startsWith("uploads/")) {
-    const uploadPath = normalized.startsWith("/")
-      ? normalized
-      : `/${normalized}`;
-    return `${getBackendUrl()}${uploadPath}`;
+  if (value.startsWith("/uploads/") || value.startsWith("uploads/")) {
+    return `${getBackendUrl()}${value.startsWith("/") ? value : `/${value}`}`;
   }
 
-  // If it's any other root-relative path, let Next serve it from /public
-  if (normalized.startsWith("/")) return normalized;
-
-  // As a final fallback, try resolving it against backend URL
-  return `${getBackendUrl()}/${normalized.replace(/^\/+/, "")}`;
+  if (value.startsWith("/")) return value;
+  return `${getBackendUrl()}/${value.replace(/^\/+/, "")}`;
 }
 
 // Cookie utilities
