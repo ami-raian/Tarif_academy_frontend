@@ -435,10 +435,10 @@ function CoursesContent() {
                         <div className="flex items-center gap-1 text-amber-500">
                           <Icons.star />
                           <span className="font-medium text-gray-900 dark:text-white">
-                            {course.rating.toFixed(1)}
+                            {(course.rating ?? 0).toFixed(1)}
                           </span>
                           <span className="text-gray-400 dark:text-gray-500">
-                            ({course.totalReviews})
+                            ({course.totalReviews ?? 0})
                           </span>
                         </div>
                         <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400">

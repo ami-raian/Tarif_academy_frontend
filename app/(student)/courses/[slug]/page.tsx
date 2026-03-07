@@ -192,10 +192,12 @@ export default function CourseDetailPage({ params }: PageProps) {
     return `${mins}:${String(secs).padStart(2, "0")}`;
   };
 
-  const formatCourseDuration = (minutes: number) => {
-    if (minutes < 60) return `${minutes} মিনিট`;
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
+  const formatCourseDuration = (minutes: number | undefined | null) => {
+    const m = minutes ?? 0;
+    if (m <= 0) return "0 মিনিট";
+    if (m < 60) return `${m} মিনিট`;
+    const hours = Math.floor(m / 60);
+    const mins = m % 60;
     return mins > 0 ? `${hours} ঘন্টা ${mins} মিনিট` : `${hours} ঘন্টা`;
   };
 
@@ -322,10 +324,10 @@ export default function CourseDetailPage({ params }: PageProps) {
                   <div className="flex items-center gap-2">
                     <Star className="w-5 h-5 text-amber-500" />
                     <span className="font-medium text-gray-900 dark:text-white">
-                      {course.rating.toFixed(1)}
+                      {(course.rating ?? 0).toFixed(1)}
                     </span>
                     <span className="text-gray-400 dark:text-gray-500">
-                      ({course.totalReviews} রিভিউ)
+                      ({course.totalReviews ?? 0} রিভিউ)
                     </span>
                   </div>
                   <div className="flex items-center gap-2">

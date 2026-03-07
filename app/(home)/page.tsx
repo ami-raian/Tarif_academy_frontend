@@ -2,6 +2,7 @@ import { Navbar } from "./_components/navbar";
 import { QuickLinks } from "./_components/quick-links";
 import { Hero } from "./_components/hero";
 import { Features } from "./_components/features";
+import { CourseSlider } from "./_components/course-slider";
 // import { CTA } from "./_components/cta";
 import { Footer } from "./_components/footer";
 
@@ -38,6 +39,9 @@ export default function HomePage() {
             <Features />
           </div>
         </div>
+
+        {/* Course Slider Section */}
+        <CourseSlider />
 
         {/* <CTA /> */}
         <Footer />

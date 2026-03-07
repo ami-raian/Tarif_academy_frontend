@@ -170,8 +170,14 @@ export async function getCourses(params?: {
     `${API_BASE_URL}/courses?${searchParams.toString()}`,
     {
       headers: getAuthHeaders(),
+      cache: "no-store", // For Next.js server components
     },
   );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch courses: ${response.statusText}`);
+  }
+
   return response.json();
 }
 
