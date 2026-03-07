@@ -2,7 +2,7 @@ import { Navbar } from "./_components/navbar";
 import { QuickLinks } from "./_components/quick-links";
 import { Hero } from "./_components/hero";
 import { Features } from "./_components/features";
-import { CTA } from "./_components/cta";
+// import { CTA } from "./_components/cta";
 import { Footer } from "./_components/footer";
 
 export default function HomePage() {
@@ -39,7 +39,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <CTA />
+        {/* <CTA /> */}
         <Footer />
       </div>
     </main>
