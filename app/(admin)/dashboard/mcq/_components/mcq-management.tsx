@@ -19,6 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Switch } from "@/components/ui/switch";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -304,6 +305,7 @@ const McqManagement = ({
     passingMarks: "40",
     negativeMarking: "0",
     accessCode: "",
+    instantResult: false,
   });
 
   const [questionForm, setQuestionForm] = useState({
@@ -431,6 +433,7 @@ const McqManagement = ({
         negativeMarking,
         accessCode: examForm.accessCode.trim() || undefined,
         courseId: examForm.courseId || undefined,
+        instantResult: examForm.instantResult,
       });
       if (response.success) {
         setIsCreateExamModalOpen(false);
@@ -442,6 +445,7 @@ const McqManagement = ({
           passingMarks: "40",
           negativeMarking: "0",
           accessCode: "",
+          instantResult: false,
         });
         fetchExams();
       } else {
@@ -1634,6 +1638,49 @@ const McqManagement = ({
                     কোড দিলে শুধু যারা কোড জানে তারাই পরীক্ষায় অংশ নিতে পারবে
                   </p>
                 </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setExamForm({
+                      ...examForm,
+                      instantResult: !examForm.instantResult,
+                    })
+                  }
+                  className={`w-full flex items-center justify-between p-4 rounded-lg border text-left transition-colors cursor-pointer ${
+                    examForm.instantResult
+                      ? "bg-violet-600 dark:bg-violet-600 border-violet-600"
+                      : "bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 hover:border-violet-300 dark:hover:border-violet-700"
+                  }`}
+                >
+                  <div className="space-y-0.5">
+                    <p
+                      className={`text-sm font-medium ${examForm.instantResult ? "text-white" : "text-gray-700 dark:text-gray-200"}`}
+                    >
+                      তাৎক্ষণিক ফলাফল
+                    </p>
+                    <p
+                      className={`text-xs ${examForm.instantResult ? "text-violet-200" : "text-gray-400 dark:text-gray-500"}`}
+                    >
+                      চালু থাকলে পরীক্ষা শেষে student স্বয়ংক্রিয়ভাবে ফলাফল
+                      দেখতে পাবে
+                    </p>
+                  </div>
+                  <div
+                    className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
+                      examForm.instantResult
+                        ? "bg-white/30"
+                        : "bg-gray-200 dark:bg-gray-600"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+                        examForm.instantResult
+                          ? "translate-x-6"
+                          : "translate-x-1"
+                      }`}
+                    />
+                  </div>
+                </button>
               </div>
             </div>
             {/* Sticky footer buttons — always visible */}

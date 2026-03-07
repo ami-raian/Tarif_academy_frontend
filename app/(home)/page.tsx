@@ -36,12 +36,12 @@ export default function HomePage() {
           <div className="relative">
             <QuickLinks />
             <Hero />
-            <Features />
           </div>
         </div>
 
         {/* Course Slider Section */}
         <CourseSlider />
+        <Features />
 
         {/* <CTA /> */}
         <Footer />
