@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,7 @@ import {
   deleteMcqQuestion,
   getMcqExamSubmissions,
   getMcqLeaderboard,
+  getCourses,
   type McqExam,
   type McqQuestion,
   type McqSubmission,
@@ -55,7 +57,8 @@ interface LeaderboardEntry {
 // Column definitions for exams table
 const examColumns: Column[] = [
   { key: "title", name: "পরীক্ষার নাম", width: 220 },
-  { key: "description", name: "বিবরণ", width: 250 },
+  { key: "course", name: "কোর্স", width: 150 },
+  { key: "description", name: "বিবরণ", width: 200 },
   { key: "duration", name: "সময়কাল", width: 100, align: "center" },
   { key: "questions", name: "প্রশ্ন", width: 90, align: "center" },
   { key: "marks", name: "নম্বর", width: 120, align: "center" },
@@ -260,6 +263,7 @@ const Icons = {
 };
 
 const McqManagement = () => {
+  const searchParams = useSearchParams();
   const [exams, setExams] = useState<McqExam[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedExam, setSelectedExam] = useState<McqExam | null>(null);
@@ -273,6 +277,10 @@ const McqManagement = () => {
   const [filter, setFilter] = useState<
     "all" | "published" | "draft" | "result-published"
   >("all");
+  const [courseFilter, setCourseFilter] = useState<string>(
+    searchParams.get("courseId") ?? "all",
+  );
+  const [courses, setCourses] = useState<{ _id: string; title: string }[]>([]);
 
   // Modal states
   const [isCreateExamModalOpen, setIsCreateExamModalOpen] = useState(false);
@@ -282,6 +290,7 @@ const McqManagement = () => {
   const [examForm, setExamForm] = useState({
     title: "",
     description: "",
+    courseId: "",
     duration: "30",
     passingMarks: "40",
     negativeMarking: "0",
@@ -302,7 +311,22 @@ const McqManagement = () => {
   // Fetch exams
   useEffect(() => {
     fetchExams();
-  }, [filter]);
+  }, [filter, courseFilter]);
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const fetchCourses = async () => {
+    try {
+      const response = await getCourses({ limit: 100, isPublished: true });
+      if (response.success) {
+        setCourses(response.data || []);
+      }
+    } catch (error) {
+      console.error("Failed to fetch courses:", error);
+    }
+  };
 
   const fetchExams = async () => {
     try {
@@ -312,6 +336,7 @@ const McqManagement = () => {
       const params: {
         isPublished?: boolean;
         isResultPublished?: boolean;
+        courseId?: string;
       } = {};
 
       if (filter === "published") {
@@ -320,6 +345,10 @@ const McqManagement = () => {
         params.isPublished = false;
       } else if (filter === "result-published") {
         params.isResultPublished = true;
+      }
+
+      if (courseFilter !== "all") {
+        params.courseId = courseFilter;
       }
 
       const response = await getMcqExams(params);
@@ -385,12 +414,14 @@ const McqManagement = () => {
         passingMarks,
         negativeMarking,
         accessCode: examForm.accessCode.trim() || undefined,
+        courseId: examForm.courseId || undefined,
       });
       if (response.success) {
         setIsCreateExamModalOpen(false);
         setExamForm({
           title: "",
           description: "",
+          courseId: "",
           duration: "30",
           passingMarks: "40",
           negativeMarking: "0",
@@ -583,6 +614,13 @@ const McqManagement = () => {
         <p className="font-semibold text-slate-900 dark:text-white text-sm">
           {exam.title}
         </p>
+      </div>
+    ),
+    course: (
+      <div className="text-sm text-slate-600 dark:text-gray-400">
+        {exam.courseId && typeof exam.courseId === "object"
+          ? (exam.courseId as { _id: string; title: string }).title
+          : <span className="text-slate-400 dark:text-gray-500 text-xs">সাধারণ</span>}
       </div>
     ),
     description: (
@@ -1290,6 +1328,16 @@ const McqManagement = () => {
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
+              <select
+                value={courseFilter}
+                onChange={(e) => setCourseFilter(e.target.value)}
+                className="text-xs border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1.5 bg-white dark:bg-gray-700 text-slate-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-primary hidden sm:block"
+              >
+                <option value="all">সব কোর্স</option>
+                {courses.map((c) => (
+                  <option key={c._id} value={c._id}>{c.title}</option>
+                ))}
+              </select>
               <Button
                 size="sm"
                 onClick={() => setIsCreateExamModalOpen(true)}
@@ -1391,6 +1439,24 @@ const McqManagement = () => {
                 placeholder="পরীক্ষা সম্পর্কে কিছু লিখুন..."
                 className="mt-1"
               />
+            </div>
+            <div>
+              <Label>কোর্স (ঐচ্ছিক)</Label>
+              <select
+                value={examForm.courseId}
+                onChange={(e) =>
+                  setExamForm({ ...examForm, courseId: e.target.value })
+                }
+                className="mt-1 w-full border border-input rounded-md px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              >
+                <option value="">কোনো কোর্স নেই (সাধারণ)</option>
+                {courses.map((c) => (
+                  <option key={c._id} value={c._id}>{c.title}</option>
+                ))}
+              </select>
+              <p className="mt-1 text-xs text-muted-foreground">
+                কোর্স নির্বাচন করলে এই পরীক্ষাটি সেই কোর্সের সাথে যুক্ত হবে
+              </p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>

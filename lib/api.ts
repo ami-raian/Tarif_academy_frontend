@@ -457,6 +457,7 @@ export interface McqExam {
   _id: string;
   title: string;
   description?: string;
+  courseId?: { _id: string; title: string } | string;
   duration: number;
   totalQuestions: number;
   totalMarks: number;
@@ -504,6 +505,7 @@ export async function getMcqExams(params?: {
   isPublished?: boolean;
   isResultPublished?: boolean;
   search?: string;
+  courseId?: string;
 }) {
   const searchParams = new URLSearchParams();
   if (params?.page) searchParams.set("page", params.page.toString());
@@ -513,6 +515,7 @@ export async function getMcqExams(params?: {
   if (params?.isResultPublished !== undefined)
     searchParams.set("isResultPublished", params.isResultPublished.toString());
   if (params?.search) searchParams.set("search", params.search);
+  if (params?.courseId) searchParams.set("courseId", params.courseId);
 
   const response = await fetch(
     `${API_BASE_URL}/mcq/exams?${searchParams.toString()}`,
@@ -528,11 +531,13 @@ export async function getPublishedMcqExams(params?: {
   page?: number;
   limit?: number;
   search?: string;
+  courseId?: string;
 }) {
   const searchParams = new URLSearchParams();
   if (params?.page) searchParams.set("page", params.page.toString());
   if (params?.limit) searchParams.set("limit", params.limit.toString());
   if (params?.search) searchParams.set("search", params.search);
+  if (params?.courseId) searchParams.set("courseId", params.courseId);
 
   const response = await fetch(
     `${API_BASE_URL}/mcq/exams/published?${searchParams.toString()}`,
@@ -566,6 +571,7 @@ export async function getMcqExamForStudent(examId: string) {
 export async function createMcqExam(data: {
   title: string;
   description?: string;
+  courseId?: string;
   duration: number;
   passingMarks: number;
   negativeMarking?: number;

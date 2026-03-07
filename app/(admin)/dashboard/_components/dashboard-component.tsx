@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ import {
   ChevronDown,
   RefreshCw,
   Pencil,
+  GraduationCap,
 } from "lucide-react";
 
 const DashboardComponent = () => {
@@ -319,6 +321,15 @@ const DashboardComponent = () => {
                   {syncing ? "সিঙ্ক হচ্ছে..." : "ভিডিও সিঙ্ক"}
                 </span>
               </Button>
+              <Link
+                href={`/dashboard/mcq?courseId=${selectedCourse._id}`}
+                className="shrink-0"
+              >
+                <Button variant="outline" size="sm" className="gap-2">
+                  <GraduationCap className="w-4 h-4" />
+                  <span className="hidden sm:inline">MCQ পরীক্ষা</span>
+                </Button>
+              </Link>
               <Button
                 size="sm"
                 onClick={() => setIsUploadModalOpen(true)}
