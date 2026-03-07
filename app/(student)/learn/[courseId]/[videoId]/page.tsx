@@ -165,6 +165,7 @@ export default function VideoPlayerPage({ params }: PageProps) {
     new Set(),
   );
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarTab, setSidebarTab] = useState<"videos" | "mcq">("videos");
   const [completingVideo, setCompletingVideo] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [courseExams, setCourseExams] = useState<McqExam[]>([]);
@@ -545,160 +546,201 @@ export default function VideoPlayerPage({ params }: PageProps) {
           {/* Sidebar Header */}
           <div className="p-4 border-b border-white/5">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-white">কোর্স কনটেন্ট</h3>
-              <span className="text-xs text-white/40">
-                {allVideos.filter((v) => v.completed).length}/{allVideos.length}
-              </span>
+              <h3 className="font-semibold text-white">
+                {sidebarTab === "videos" ? "কোর্স কনটেন্ট" : "MCQ পরীক্ষা"}
+              </h3>
+              {sidebarTab === "videos" ? (
+                <span className="text-xs text-white/40">
+                  {allVideos.filter((v) => v.completed).length}/
+                  {allVideos.length}
+                </span>
+              ) : (
+                <span className="text-xs text-white/40">
+                  {courseExams.length} টি
+                </span>
+              )}
             </div>
-            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-linear-to-r from-purple-500 to-cyan-400 rounded-full transition-all duration-700"
-                style={{
-                  width: `${(allVideos.filter((v) => v.completed).length / allVideos.length) * 100}%`,
-                }}
-              />
+
+            <div className="grid grid-cols-2 gap-2 p-1 rounded-lg bg-white/5 border border-white/10">
+              <button
+                onClick={() => setSidebarTab("videos")}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                  sidebarTab === "videos"
+                    ? "bg-white text-black"
+                    : "text-white/70 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                ভিডিও ({allVideos.length})
+              </button>
+              <button
+                onClick={() => setSidebarTab("mcq")}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                  sidebarTab === "mcq"
+                    ? "bg-white text-black"
+                    : "text-white/70 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                MCQ ({courseExams.length})
+              </button>
             </div>
+
+            {sidebarTab === "videos" && (
+              <div className="h-1 bg-white/5 rounded-full overflow-hidden mt-3">
+                <div
+                  className="h-full bg-linear-to-r from-purple-500 to-cyan-400 rounded-full transition-all duration-700"
+                  style={{
+                    width: `${(allVideos.filter((v) => v.completed).length / allVideos.length) * 100}%`,
+                  }}
+                />
+              </div>
+            )}
           </div>
 
           {/* Sections - Scrollable */}
           <div className="flex-1 overflow-y-auto custom-scrollbar">
-            {Object.entries(sections).map(([sectionTitle, videos]) => (
-              <div key={sectionTitle} className="border-b border-white/5">
-                {/* Section Header */}
-                <button
-                  onClick={() => toggleSection(sectionTitle)}
-                  className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`transform transition-transform duration-200 text-white/40 ${
-                        expandedSections.has(sectionTitle) ? "rotate-180" : ""
-                      }`}
-                    >
-                      <Icons.chevronDown />
+            {sidebarTab === "videos" ? (
+              Object.entries(sections).map(([sectionTitle, videos]) => (
+                <div key={sectionTitle} className="border-b border-white/5">
+                  {/* Section Header */}
+                  <button
+                    onClick={() => toggleSection(sectionTitle)}
+                    className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`transform transition-transform duration-200 text-white/40 ${
+                          expandedSections.has(sectionTitle) ? "rotate-180" : ""
+                        }`}
+                      >
+                        <Icons.chevronDown />
+                      </span>
+                      <span className="font-medium text-white/90 text-sm">
+                        {sectionTitle}
+                      </span>
+                    </div>
+                    <span className="text-xs text-white/30 bg-white/5 px-2 py-0.5 rounded">
+                      {videos.length} ভিডিও
                     </span>
-                    <span className="font-medium text-white/90 text-sm">
-                      {sectionTitle}
-                    </span>
-                  </div>
-                  <span className="text-xs text-white/30 bg-white/5 px-2 py-0.5 rounded">
-                    {videos.length} ভিডিও
-                  </span>
-                </button>
+                  </button>
 
-                {/* Videos */}
-                {expandedSections.has(sectionTitle) && (
-                  <div className="pb-2">
-                    {[...videos]
-                      .sort((a, b) => a.order - b.order)
-                      .map((video, index) => (
-                        <button
-                          key={video._id}
-                          onClick={() => handleVideoSelect(video)}
-                          disabled={video.locked}
-                          className={`w-full px-4 py-2.5 flex items-center gap-3 text-left transition-all ${
-                            video._id === videoId
-                              ? "bg-white/10"
-                              : video.locked
-                                ? "opacity-40 cursor-not-allowed"
-                                : "hover:bg-white/5"
-                          }`}
-                        >
-                          {/* Status Circle */}
-                          <div
-                            className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-medium transition-all ${
-                              video.completed
-                                ? "bg-emerald-500 text-white"
-                                : video._id === videoId
-                                  ? "bg-purple-500 text-white"
-                                  : video.locked
-                                    ? "bg-white/10 text-white/30"
-                                    : "bg-white/10 text-white/60"
+                  {/* Videos */}
+                  {expandedSections.has(sectionTitle) && (
+                    <div className="pb-2">
+                      {[...videos]
+                        .sort((a, b) => a.order - b.order)
+                        .map((video, index) => (
+                          <button
+                            key={video._id}
+                            onClick={() => handleVideoSelect(video)}
+                            disabled={video.locked}
+                            className={`w-full px-4 py-2.5 flex items-center gap-3 text-left transition-all ${
+                              video._id === videoId
+                                ? "bg-white/10"
+                                : video.locked
+                                  ? "opacity-40 cursor-not-allowed"
+                                  : "hover:bg-white/5"
                             }`}
                           >
-                            {video.completed ? (
-                              <Icons.check />
-                            ) : video.locked ? (
-                              <Icons.lock />
-                            ) : (
-                              index + 1
-                            )}
-                          </div>
-
-                          {/* Video Info */}
-                          <div className="flex-1 min-w-0">
-                            <p
-                              className={`text-sm truncate ${
-                                video._id === videoId
-                                  ? "text-white font-medium"
-                                  : video.completed
-                                    ? "text-white/50"
-                                    : "text-white/70"
+                            {/* Status Circle */}
+                            <div
+                              className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-medium transition-all ${
+                                video.completed
+                                  ? "bg-emerald-500 text-white"
+                                  : video._id === videoId
+                                    ? "bg-purple-500 text-white"
+                                    : video.locked
+                                      ? "bg-white/10 text-white/30"
+                                      : "bg-white/10 text-white/60"
                               }`}
                             >
-                              {video.title}
-                            </p>
-                            <p className="text-xs text-white/30 mt-0.5">
-                              {formatDuration(video.duration)}
-                            </p>
-                          </div>
-
-                          {/* Now Playing Indicator */}
-                          {video._id === videoId && (
-                            <div className="flex items-end gap-0.5 h-4">
-                              <span className="w-0.75 h-2 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_infinite]"></span>
-                              <span className="w-0.75 h-3 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_0.1s_infinite]"></span>
-                              <span className="w-0.75 h-4 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_0.2s_infinite]"></span>
-                              <span className="w-0.75 h-2 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_0.3s_infinite]"></span>
+                              {video.completed ? (
+                                <Icons.check />
+                              ) : video.locked ? (
+                                <Icons.lock />
+                              ) : (
+                                index + 1
+                              )}
                             </div>
-                          )}
-                        </button>
-                      ))}
-                  </div>
-                )}
-              </div>
-            ))}
 
-            {/* MCQ Exams Section */}
-            {courseExams.length > 0 && (
-              <div className="border-t border-white/10 mt-2">
-                <div className="px-4 py-3">
-                  <p className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">
-                    MCQ পরীক্ষা
-                  </p>
-                  <div className="flex flex-col gap-2">
-                    {courseExams.map((exam) => (
-                      <Link
-                        key={exam._id}
-                        href={`/exams/${exam._id}`}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group"
+                            {/* Video Info */}
+                            <div className="flex-1 min-w-0">
+                              <p
+                                className={`text-sm truncate ${
+                                  video._id === videoId
+                                    ? "text-white font-medium"
+                                    : video.completed
+                                      ? "text-white/50"
+                                      : "text-white/70"
+                                }`}
+                              >
+                                {video.title}
+                              </p>
+                              <p className="text-xs text-white/30 mt-0.5">
+                                {formatDuration(video.duration)}
+                              </p>
+                            </div>
+
+                            {/* Now Playing Indicator */}
+                            {video._id === videoId && (
+                              <div className="flex items-end gap-0.5 h-4">
+                                <span className="w-0.75 h-2 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_infinite]"></span>
+                                <span className="w-0.75 h-3 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_0.1s_infinite]"></span>
+                                <span className="w-0.75 h-4 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_0.2s_infinite]"></span>
+                                <span className="w-0.75 h-2 bg-purple-500 rounded-sm animate-[bounce_0.6s_ease-in-out_0.3s_infinite]"></span>
+                              </div>
+                            )}
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : courseExams.length > 0 ? (
+              <div className="p-4 space-y-2">
+                {courseExams.map((exam) => (
+                  <Link
+                    key={exam._id}
+                    href={`/exams/${exam._id}`}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group"
+                  >
+                    <div className="w-7 h-7 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0">
+                      <svg
+                        className="w-4 h-4 text-purple-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
                       >
-                        <div className="w-7 h-7 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0">
-                          <svg
-                            className="w-4 h-4 text-purple-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                            />
-                          </svg>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-white/70 group-hover:text-white/90 truncate transition-colors">
-                            {exam.title}
-                          </p>
-                          <p className="text-xs text-white/30 mt-0.5">
-                            {exam.totalQuestions} প্রশ্ন · {exam.duration} মিনিট
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-white/70 group-hover:text-white/90 truncate transition-colors">
+                        {exam.title}
+                      </p>
+                      <p className="text-xs text-white/30 mt-0.5">
+                        {exam.totalQuestions} প্রশ্ন · {exam.duration} মিনিট
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4">
+                <div className="rounded-lg border border-dashed border-white/10 bg-white/2 p-3">
+                  <p className="text-xs text-white/45 leading-relaxed">
+                    এই কোর্সের জন্য এখনো কোনো MCQ পরীক্ষা প্রকাশিত হয়নি।
+                  </p>
+                  <Link
+                    href="/exams"
+                    className="inline-flex mt-2 text-xs text-purple-300 hover:text-purple-200 transition-colors"
+                  >
+                    সব পরীক্ষা দেখুন
+                  </Link>
                 </div>
               </div>
             )}

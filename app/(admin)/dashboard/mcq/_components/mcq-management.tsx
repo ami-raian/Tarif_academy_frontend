@@ -262,8 +262,18 @@ const Icons = {
   ),
 };
 
-const McqManagement = () => {
+interface McqManagementProps {
+  embedded?: boolean;
+  embeddedCourseId?: string;
+}
+
+const McqManagement = ({
+  embedded = false,
+  embeddedCourseId,
+}: McqManagementProps) => {
   const searchParams = useSearchParams();
+  const queryCourseId = searchParams.get("courseId");
+  const initialCourseFilter = embeddedCourseId ?? queryCourseId ?? "all";
   const [exams, setExams] = useState<McqExam[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedExam, setSelectedExam] = useState<McqExam | null>(null);
@@ -277,9 +287,7 @@ const McqManagement = () => {
   const [filter, setFilter] = useState<
     "all" | "published" | "draft" | "result-published"
   >("all");
-  const [courseFilter, setCourseFilter] = useState<string>(
-    searchParams.get("courseId") ?? "all",
-  );
+  const [courseFilter, setCourseFilter] = useState<string>(initialCourseFilter);
   const [courses, setCourses] = useState<{ _id: string; title: string }[]>([]);
 
   // Modal states
@@ -290,7 +298,7 @@ const McqManagement = () => {
   const [examForm, setExamForm] = useState({
     title: "",
     description: "",
-    courseId: "",
+    courseId: embeddedCourseId ?? "",
     duration: "30",
     passingMarks: "40",
     negativeMarking: "0",
@@ -316,6 +324,13 @@ const McqManagement = () => {
   useEffect(() => {
     fetchCourses();
   }, []);
+
+  useEffect(() => {
+    if (!embeddedCourseId) return;
+
+    setCourseFilter(embeddedCourseId);
+    setExamForm((prev) => ({ ...prev, courseId: embeddedCourseId }));
+  }, [embeddedCourseId]);
 
   const fetchCourses = async () => {
     try {
@@ -421,7 +436,7 @@ const McqManagement = () => {
         setExamForm({
           title: "",
           description: "",
-          courseId: "",
+          courseId: embeddedCourseId ?? "",
           duration: "30",
           passingMarks: "40",
           negativeMarking: "0",
@@ -618,9 +633,13 @@ const McqManagement = () => {
     ),
     course: (
       <div className="text-sm text-slate-600 dark:text-gray-400">
-        {exam.courseId && typeof exam.courseId === "object"
-          ? (exam.courseId as { _id: string; title: string }).title
-          : <span className="text-slate-400 dark:text-gray-500 text-xs">সাধারণ</span>}
+        {exam.courseId && typeof exam.courseId === "object" ? (
+          (exam.courseId as { _id: string; title: string }).title
+        ) : (
+          <span className="text-slate-400 dark:text-gray-500 text-xs">
+            সাধারণ
+          </span>
+        )}
       </div>
     ),
     description: (
@@ -751,8 +770,20 @@ const McqManagement = () => {
   if (view === "questions" && selectedExam) {
     return (
       <div>
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-14 lg:top-0 z-20 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div
+          className={
+            embedded
+              ? "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm"
+              : "bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-14 lg:top-0 z-20 shadow-sm"
+          }
+        >
+          <div
+            className={
+              embedded
+                ? "px-4 sm:px-6 py-4"
+                : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+            }
+          >
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
@@ -783,7 +814,13 @@ const McqManagement = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
+        <div
+          className={
+            embedded
+              ? "px-0 py-6 space-y-4"
+              : "max-w-4xl mx-auto px-4 py-6 space-y-4"
+          }
+        >
           {questionsLoading ? (
             <div className="flex justify-center py-12">
               <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -988,8 +1025,20 @@ const McqManagement = () => {
   if (view === "results" && selectedExam) {
     return (
       <div>
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-14 lg:top-0 z-20 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div
+          className={
+            embedded
+              ? "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm"
+              : "bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-14 lg:top-0 z-20 shadow-sm"
+          }
+        >
+          <div
+            className={
+              embedded
+                ? "px-4 sm:px-6 py-4"
+                : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+            }
+          >
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
@@ -1025,7 +1074,7 @@ const McqManagement = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className={embedded ? "px-0 py-6" : "max-w-4xl mx-auto px-4 py-6"}>
           {questionsLoading ? (
             <div className="flex justify-center py-12">
               <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -1148,8 +1197,20 @@ const McqManagement = () => {
   if (view === "leaderboard" && selectedExam) {
     return (
       <div>
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-14 lg:top-0 z-20 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div
+          className={
+            embedded
+              ? "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm"
+              : "bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-14 lg:top-0 z-20 shadow-sm"
+          }
+        >
+          <div
+            className={
+              embedded
+                ? "px-4 sm:px-6 py-4"
+                : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+            }
+          >
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
@@ -1173,7 +1234,7 @@ const McqManagement = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className={embedded ? "px-0 py-6" : "max-w-4xl mx-auto px-4 py-6"}>
           {questionsLoading ? (
             <div className="flex justify-center py-12">
               <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -1283,15 +1344,29 @@ const McqManagement = () => {
   return (
     <div>
       {/* Header */}
-      <div className="sticky top-14 lg:top-0 z-20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div
+        className={
+          embedded
+            ? "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm"
+            : "sticky top-14 lg:top-0 z-20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700"
+        }
+      >
+        <div
+          className={
+            embedded
+              ? "px-4 sm:px-6 py-3"
+              : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3"
+          }
+        >
           <div className="flex items-center justify-between gap-4">
             <div>
               <h1 className="text-lg font-bold text-slate-900 dark:text-white">
-                MCQ পরীক্ষা
+                {embedded ? "এই কোর্সের MCQ পরীক্ষা" : "MCQ পরীক্ষা"}
               </h1>
               <p className="text-xs text-slate-500 dark:text-gray-400">
-                পরীক্ষা তৈরি এবং ম্যানেজ করুন
+                {embedded
+                  ? "এই কোর্সের পরীক্ষা তৈরি, সম্পাদনা ও ম্যানেজ করুন"
+                  : "পরীক্ষা তৈরি এবং ম্যানেজ করুন"}
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -1328,16 +1403,20 @@ const McqManagement = () => {
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
-              <select
-                value={courseFilter}
-                onChange={(e) => setCourseFilter(e.target.value)}
-                className="text-xs border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1.5 bg-white dark:bg-gray-700 text-slate-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-primary hidden sm:block"
-              >
-                <option value="all">সব কোর্স</option>
-                {courses.map((c) => (
-                  <option key={c._id} value={c._id}>{c.title}</option>
-                ))}
-              </select>
+              {!embedded && (
+                <select
+                  value={courseFilter}
+                  onChange={(e) => setCourseFilter(e.target.value)}
+                  className="text-xs border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1.5 bg-white dark:bg-gray-700 text-slate-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-primary hidden sm:block"
+                >
+                  <option value="all">সব কোর্স</option>
+                  {courses.map((c) => (
+                    <option key={c._id} value={c._id}>
+                      {c.title}
+                    </option>
+                  ))}
+                </select>
+              )}
               <Button
                 size="sm"
                 onClick={() => setIsCreateExamModalOpen(true)}
@@ -1351,7 +1430,11 @@ const McqManagement = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div
+        className={
+          embedded ? "px-0 py-6" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6"
+        }
+      >
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <Card className="border-0 shadow-md dark:bg-gray-800">
@@ -1451,7 +1534,9 @@ const McqManagement = () => {
               >
                 <option value="">কোনো কোর্স নেই (সাধারণ)</option>
                 {courses.map((c) => (
-                  <option key={c._id} value={c._id}>{c.title}</option>
+                  <option key={c._id} value={c._id}>
+                    {c.title}
+                  </option>
                 ))}
               </select>
               <p className="mt-1 text-xs text-muted-foreground">
