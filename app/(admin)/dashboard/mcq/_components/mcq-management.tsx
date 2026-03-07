@@ -18,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -1495,131 +1496,160 @@ const McqManagement = ({
         open={isCreateExamModalOpen}
         onOpenChange={setIsCreateExamModalOpen}
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>নতুন পরীক্ষা তৈরি করুন</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleCreateExam} className="space-y-4">
-            <div>
-              <Label>পরীক্ষার নাম</Label>
-              <Input
-                value={examForm.title}
-                onChange={(e) =>
-                  setExamForm({ ...examForm, title: e.target.value })
-                }
-                placeholder="যেমন: অধ্যায় ১ - MCQ টেস্ট"
-                required
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label>বিবরণ (ঐচ্ছিক)</Label>
-              <Textarea
-                value={examForm.description}
-                onChange={(e) =>
-                  setExamForm({ ...examForm, description: e.target.value })
-                }
-                placeholder="পরীক্ষা সম্পর্কে কিছু লিখুন..."
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label>কোর্স (ঐচ্ছিক)</Label>
-              <select
-                value={examForm.courseId}
-                onChange={(e) =>
-                  setExamForm({ ...examForm, courseId: e.target.value })
-                }
-                className="mt-1 w-full border border-input rounded-md px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              >
-                <option value="">কোনো কোর্স নেই (সাধারণ)</option>
-                {courses.map((c) => (
-                  <option key={c._id} value={c._id}>
-                    {c.title}
-                  </option>
-                ))}
-              </select>
-              <p className="mt-1 text-xs text-muted-foreground">
-                কোর্স নির্বাচন করলে এই পরীক্ষাটি সেই কোর্সের সাথে যুক্ত হবে
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>সময়কাল (মিনিট)</Label>
-                <Input
-                  type="number"
-                  min="1"
-                  value={examForm.duration}
-                  onChange={(e) =>
-                    setExamForm({
-                      ...examForm,
-                      duration: e.target.value,
-                    })
-                  }
-                  className="mt-1"
-                />
+        <DialogContent className="flex! flex-col! max-h-[90vh] overflow-hidden p-0 gap-0 rounded-xl">
+          <div className="shrink-0 px-6 pt-5 pb-4 border-b border-gray-100 dark:border-gray-700/50">
+            <DialogTitle className="text-base font-semibold text-gray-900 dark:text-white">
+              নতুন পরীক্ষা তৈরি করুন
+            </DialogTitle>
+          </div>
+          <form
+            onSubmit={handleCreateExam}
+            className="flex flex-col flex-1 min-h-0"
+          >
+            <div className="flex-1 overflow-y-auto">
+              <div className="px-6 py-5 space-y-5">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    পরীক্ষার নাম
+                  </Label>
+                  <Input
+                    value={examForm.title}
+                    onChange={(e) =>
+                      setExamForm({ ...examForm, title: e.target.value })
+                    }
+                    placeholder="যেমন: অধ্যায় ১ - MCQ টেস্ট"
+                    required
+                    className="h-10 bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 focus:border-violet-400 dark:focus:border-violet-500 focus:ring-violet-400/20 rounded-lg"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    বিবরণ{" "}
+                    <span className="normal-case font-normal">(ঐচ্ছিক)</span>
+                  </Label>
+                  <Textarea
+                    value={examForm.description}
+                    onChange={(e) =>
+                      setExamForm({ ...examForm, description: e.target.value })
+                    }
+                    placeholder="পরীক্ষা সম্পর্কে কিছু লিখুন..."
+                    className="bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 focus:border-violet-400 dark:focus:border-violet-500 focus:ring-violet-400/20 rounded-lg resize-none"
+                    rows={3}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    কোর্স{" "}
+                    <span className="normal-case font-normal">(ঐচ্ছিক)</span>
+                  </Label>
+                  <select
+                    value={examForm.courseId}
+                    onChange={(e) =>
+                      setExamForm({ ...examForm, courseId: e.target.value })
+                    }
+                    className="w-full h-10 bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-lg px-3 text-sm text-foreground focus:outline-none focus:border-violet-400 dark:focus:border-violet-500 focus:ring-2 focus:ring-violet-400/20"
+                  >
+                    <option value="">কোনো কোর্স নেই (সাধারণ)</option>
+                    {courses.map((c) => (
+                      <option key={c._id} value={c._id}>
+                        {c.title}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    কোর্স নির্বাচন করলে এই পরীক্ষাটি সেই কোর্সের সাথে যুক্ত হবে
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                      সময়কাল{" "}
+                      <span className="normal-case font-normal">(মিনিট)</span>
+                    </Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={examForm.duration}
+                      onChange={(e) =>
+                        setExamForm({ ...examForm, duration: e.target.value })
+                      }
+                      className="h-10 bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 focus:border-violet-400 dark:focus:border-violet-500 focus:ring-violet-400/20 rounded-lg"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                      পাস মার্কস
+                    </Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={examForm.passingMarks}
+                      onChange={(e) =>
+                        setExamForm({
+                          ...examForm,
+                          passingMarks: e.target.value,
+                        })
+                      }
+                      className="h-10 bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 focus:border-violet-400 dark:focus:border-violet-500 focus:ring-violet-400/20 rounded-lg"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    নেগেটিভ মার্কিং
+                  </Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.25"
+                    value={examForm.negativeMarking}
+                    onChange={(e) =>
+                      setExamForm({
+                        ...examForm,
+                        negativeMarking: e.target.value,
+                      })
+                    }
+                    placeholder="0"
+                    className="h-10 bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 focus:border-violet-400 dark:focus:border-violet-500 focus:ring-violet-400/20 rounded-lg"
+                  />
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    প্রতিটি ভুল উত্তরের জন্য কত নম্বর কাটা হবে (0 দিলে কাটা হবে
+                    না)
+                  </p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    অ্যাক্সেস কোড{" "}
+                    <span className="normal-case font-normal">(ঐচ্ছিক)</span>
+                  </Label>
+                  <Input
+                    value={examForm.accessCode}
+                    onChange={(e) =>
+                      setExamForm({ ...examForm, accessCode: e.target.value })
+                    }
+                    placeholder="যেমন: EXAM2024 — খালি রাখলে সবাই দিতে পারবে"
+                    className="h-10 bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700 focus:border-violet-400 dark:focus:border-violet-500 focus:ring-violet-400/20 rounded-lg"
+                  />
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    কোড দিলে শুধু যারা কোড জানে তারাই পরীক্ষায় অংশ নিতে পারবে
+                  </p>
+                </div>
               </div>
-              <div>
-                <Label>পাস মার্কস</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={examForm.passingMarks}
-                  onChange={(e) =>
-                    setExamForm({
-                      ...examForm,
-                      passingMarks: e.target.value,
-                    })
-                  }
-                  className="mt-1"
-                />
-              </div>
             </div>
-            <div>
-              <Label>নেগেটিভ মার্কিং (ভুল উত্তরের জন্য কাটা নম্বর)</Label>
-              <Input
-                type="number"
-                min="0"
-                step="0.25"
-                value={examForm.negativeMarking}
-                onChange={(e) =>
-                  setExamForm({
-                    ...examForm,
-                    negativeMarking: e.target.value,
-                  })
-                }
-                placeholder="যেমন: 0.25 — 0 দিলে নেগেটিভ মার্কিং থাকবে না"
-                className="mt-1"
-              />
-              <p className="mt-1 text-xs text-muted-foreground">
-                প্রতিটি ভুল উত্তরের জন্য কত নম্বর কাটা হবে (0 দিলে কোনো নম্বর
-                কাটা হবে না)
-              </p>
-            </div>
-            <div>
-              <Label>অ্যাক্সেস কোড (ঐচ্ছিক)</Label>
-              <Input
-                value={examForm.accessCode}
-                onChange={(e) =>
-                  setExamForm({ ...examForm, accessCode: e.target.value })
-                }
-                placeholder="যেমন: EXAM2024 — খালি রাখলে সবাই দিতে পারবে"
-                className="mt-1"
-              />
-              <p className="mt-1 text-xs text-muted-foreground">
-                কোড দিলে শুধু যারা কোড জানে তারাই পরীক্ষায় অংশ নিতে পারবে
-              </p>
-            </div>
-            <div className="flex gap-3 pt-4">
+            {/* Sticky footer buttons — always visible */}
+            <div className="shrink-0 flex gap-3 px-6 py-4 border-t border-gray-100 dark:border-gray-700/50">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setIsCreateExamModalOpen(false)}
-                className="flex-1"
+                className="flex-1 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
               >
                 বাতিল
               </Button>
-              <Button type="submit" className="flex-1">
+              <Button
+                type="submit"
+                className="flex-1 bg-violet-600 hover:bg-violet-700 text-white"
+              >
                 পরীক্ষা তৈরি করুন
               </Button>
             </div>
