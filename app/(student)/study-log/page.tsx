@@ -18,6 +18,8 @@ import {
   AlertCircle,
   ArrowLeft,
   History,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 const todayStr = () => {
@@ -164,12 +166,20 @@ function LogForm({ targetDate, onSuccess, onCancel }: LogFormProps) {
   );
 }
 
+const HISTORY_LIMIT = 7;
+
 export default function StudyLogPage() {
   const router = useRouter();
   const [logs, setLogs] = useState<StudyLog[]>([]);
+  const [allLoggedDates, setAllLoggedDates] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [todayLogged, setTodayLogged] = useState(false);
   const [todaySuccess, setTodaySuccess] = useState(false);
+
+  // History pagination
+  const [historyPage, setHistoryPage] = useState(1);
+  const [historyTotal, setHistoryTotal] = useState(0);
+  const historyTotalPages = Math.ceil(historyTotal / HISTORY_LIMIT);
 
   // Previous day form
   const [showPrevForm, setShowPrevForm] = useState(false);
@@ -184,37 +194,60 @@ export default function StudyLogPage() {
       router.push("/login");
       return;
     }
-    fetchLogs();
+    // Fetch all dates once (for duplicate-check logic)
+    fetchAllDates();
   }, [router]);
 
-  const fetchLogs = async () => {
+  useEffect(() => {
+    fetchHistoryPage();
+  }, [historyPage]);
+
+  // Fetch just enough to know which dates are logged (lightweight)
+  const fetchAllDates = async () => {
     try {
       setLoading(true);
-      const res = await getMyStudyLogs({ limit: 60 });
+      const res = await getMyStudyLogs({ limit: 365 });
       if (res.success) {
-        setLogs(res.data);
-        const loggedDates = getLoggedDates(res.data);
-        setTodayLogged(loggedDates.has(todayStr()));
+        const dated = getLoggedDates(res.data);
+        setAllLoggedDates(dated);
+        setTodayLogged(dated.has(todayStr()));
       }
     } catch {
       // silently fail
     } finally {
       setLoading(false);
     }
+    fetchHistoryPage();
+  };
+
+  const fetchHistoryPage = async () => {
+    try {
+      const res = await getMyStudyLogs({ page: historyPage, limit: HISTORY_LIMIT });
+      if (res.success) {
+        setLogs(res.data);
+        setHistoryTotal(res.pagination?.totalItems || 0);
+      }
+    } catch {
+      // silently fail
+    }
+  };
+
+  const refreshAll = () => {
+    fetchAllDates();
+    setHistoryPage(1);
   };
 
   const handleTodaySuccess = () => {
     setTodaySuccess(true);
     setTodayLogged(true);
-    fetchLogs();
+    refreshAll();
   };
 
   const handlePrevSubmit = () => {
     setPrevDateError("");
     if (!prevDate) { setPrevDateError("একটি তারিখ বেছে নিন"); return; }
     if (prevDate >= todayStr()) { setPrevDateError("আজকের বা ভবিষ্যতের তারিখ দেওয়া যাবে না"); return; }
-    const loggedDates = getLoggedDates(logs);
-    if (loggedDates.has(prevDate)) { setPrevDateError("এই তারিখের লগ ইতোমধ্যে জমা আছে"); return; }
+    if (allLoggedDates.has(prevDate)) { setPrevDateError("এই তারিখের লগ ইতোমধ্যে জমা আছে"); return; }
     // valid — show the form
   };
 
@@ -242,11 +275,10 @@ export default function StudyLogPage() {
     );
   }
 
-  const loggedDates = getLoggedDates(logs);
   const prevDateValid =
     prevDate &&
     prevDate < todayStr() &&
-    !loggedDates.has(prevDate);
+    !allLoggedDates.has(prevDate);
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-violet-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
@@ -344,7 +376,7 @@ export default function StudyLogPage() {
                     <Button
                       onClick={() => {
                         handlePrevSubmit();
-                        if (prevDate && prevDate < todayStr() && !loggedDates.has(prevDate)) {
+                        if (prevDate && prevDate < todayStr() && !allLoggedDates.has(prevDate)) {
                           setShowPrevForm(true);
                         }
                       }}
@@ -372,7 +404,7 @@ export default function StudyLogPage() {
                     onSuccess={() => {
                       setPrevSuccess(formatDateLabel(prevDate));
                       setShowPrevForm(false);
-                      fetchLogs();
+                      refreshAll();
                     }}
                     onCancel={() => setShowPrevForm(false)}
                   />
@@ -382,15 +414,27 @@ export default function StudyLogPage() {
           </Card>
 
           {/* History */}
-          {logs.length > 0 && (
-            <Card className="border-0 shadow-xl dark:bg-gray-800/50">
-              <CardHeader className="border-b border-gray-200 dark:border-gray-700">
-                <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
+          <Card className="border-0 shadow-xl dark:bg-gray-800/50">
+            <CardHeader className="border-b border-gray-200 dark:border-gray-700">
+              <CardTitle className="text-gray-900 dark:text-white flex items-center justify-between">
+                <div className="flex items-center gap-2">
                   <BookOpen className="w-5 h-5 text-violet-500" />
                   আগের লগ
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
+                </div>
+                {historyTotal > 0 && (
+                  <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                    মোট {historyTotal} টি
+                  </span>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              {logs.length === 0 ? (
+                <div className="py-12 text-center">
+                  <BookOpen className="w-10 h-10 mx-auto text-gray-300 dark:text-gray-600 mb-2" />
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">এখনো কোনো লগ নেই</p>
+                </div>
+              ) : (
                 <div className="divide-y divide-gray-200 dark:divide-gray-700">
                   {logs.map((log) => (
                     <div
@@ -428,9 +472,36 @@ export default function StudyLogPage() {
                     </div>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              )}
+
+              {/* Pagination */}
+              {historyTotalPages > 1 && (
+                <div className="flex items-center justify-between px-5 py-4 border-t border-gray-200 dark:border-gray-700">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    পেজ {historyPage} / {historyTotalPages}
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setHistoryPage((p) => Math.max(1, p - 1))}
+                      disabled={historyPage === 1}
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setHistoryPage((p) => Math.min(historyTotalPages, p + 1))}
+                      disabled={historyPage === historyTotalPages}
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>
