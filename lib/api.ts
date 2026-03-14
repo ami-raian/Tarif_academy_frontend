@@ -992,3 +992,67 @@ export async function deleteCourseCategory(categoryId: string) {
   );
   return response.json();
 }
+
+// ========================
+// STUDY LOG API
+// ========================
+
+export interface StudyEntry {
+  subject: string;
+  hours: number;
+}
+
+export interface StudyLog {
+  _id: string;
+  studentId: { _id: string; fullName: string; email: string; roll?: string; mobile?: string } | string;
+  date: string;
+  entries: StudyEntry[];
+  totalHours: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Student: submit study log for a given date (once per day, no future dates) */
+export async function logStudy(entries: StudyEntry[], date?: string) {
+  const response = await fetch(`${API_BASE_URL}/study-logs/log`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ entries, date }),
+  });
+  return response.json();
+}
+
+/** Student: get my own study logs */
+export async function getMyStudyLogs(params?: { page?: number; limit?: number }) {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.set("page", params.page.toString());
+  if (params?.limit) searchParams.set("limit", params.limit.toString());
+
+  const response = await fetch(`${API_BASE_URL}/study-logs/my?${searchParams.toString()}`, {
+    headers: getAuthHeaders(),
+  });
+  return response.json();
+}
+
+/** Admin: get all students' study logs */
+export async function getAllStudyLogs(params?: {
+  page?: number;
+  limit?: number;
+  studentId?: string;
+  date?: string;
+  startDate?: string;
+  endDate?: string;
+}) {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.set("page", params.page.toString());
+  if (params?.limit) searchParams.set("limit", params.limit.toString());
+  if (params?.studentId) searchParams.set("studentId", params.studentId);
+  if (params?.date) searchParams.set("date", params.date);
+  if (params?.startDate) searchParams.set("startDate", params.startDate);
+  if (params?.endDate) searchParams.set("endDate", params.endDate);
+
+  const response = await fetch(`${API_BASE_URL}/study-logs?${searchParams.toString()}`, {
+    headers: getAuthHeaders(),
+  });
+  return response.json();
+}

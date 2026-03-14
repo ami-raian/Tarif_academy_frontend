@@ -24,6 +24,7 @@ import {
   Moon,
   ClipboardList,
   Settings,
+  BookCheck,
 } from "lucide-react";
 
 const NAV_LINKS = [
@@ -188,6 +189,22 @@ export function Navbar() {
                             className="rounded-lg px-3 py-2.5 cursor-pointer"
                           >
                             <Link
+                              href="/study-log"
+                              className="flex items-center gap-3"
+                            >
+                              <div className="w-8 h-8 rounded-full bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center text-violet-600 dark:text-violet-400">
+                                <BookCheck className="w-4 h-4" />
+                              </div>
+                              <span className="font-medium">Study Log</span>
+                            </Link>
+                          </DropdownMenuItem>
+                        )}
+                        {userType === "student" && (
+                          <DropdownMenuItem
+                            asChild
+                            className="rounded-lg px-3 py-2.5 cursor-pointer"
+                          >
+                            <Link
                               href="/profile"
                               className="flex items-center gap-3"
                             >
@@ -327,6 +344,18 @@ export function Navbar() {
                         >
                           <ClipboardList className="w-4 h-4 mr-1" />
                           MCQ পরীক্ষা
+                        </Button>
+                      </Link>
+                    )}
+                    {userType === "student" && (
+                      <Link href="/study-log" onClick={closeMenu}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full border-slate-200 dark:border-slate-600 text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-slate-800 bg-transparent"
+                        >
+                          <BookCheck className="w-4 h-4 mr-1" />
+                          Study Log
                         </Button>
                       </Link>
                     )}

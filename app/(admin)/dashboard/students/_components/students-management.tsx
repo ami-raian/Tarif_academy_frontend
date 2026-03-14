@@ -22,11 +22,13 @@ import {
   Eye,
   Pencil,
   Trash2,
+  ClipboardList,
 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DeleteConfirmationDialog from "@/components/common/delete-confirmation-dialog";
@@ -100,9 +102,7 @@ export default function StudentsManagement() {
     pageSize: PAGE_SIZE,
   });
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
-    null,
-  );
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   const page = Number(searchParams.get("page")) || 1;
@@ -175,6 +175,14 @@ export default function StudentsManagement() {
                   সম্পাদনা
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href={`/dashboard/students/${student._id}/study-logs`} className="cursor-pointer">
+                  <ClipboardList className="mr-2 h-4 w-4 text-violet-500" />
+                  স্টাডি লগ
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-red-600 cursor-pointer"
                 onClick={() => {
@@ -305,6 +313,7 @@ export default function StudentsManagement() {
         itemName="এই শিক্ষার্থীকে"
         isDeleting={deleting}
       />
+
     </div>
   );
 }
