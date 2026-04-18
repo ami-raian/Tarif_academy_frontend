@@ -1,4 +1,4 @@
-Live link: tarifacademy.com
+Live link: staging.tarifacademy.com
 
 login and sign up done
 
