@@ -134,9 +134,9 @@ export const VideoUploadModal = ({
         );
         return;
       }
-      // Validate file size (500MB max)
-      if (file.size > 500 * 1024 * 1024) {
-        setError("ফাইল সাইজ 500MB এর বেশি হতে পারবে না");
+      // Validate file size (5GB max)
+      if (file.size > 5 * 1024 * 1024 * 1024) {
+        setError("ফাইল সাইজ 5GB এর বেশি হতে পারবে না");
         return;
       }
       setSelectedFile(file);
@@ -158,8 +158,8 @@ export const VideoUploadModal = ({
         setError("অনুগ্রহ করে একটি ভ্যালিড ভিডিও ফাইল সিলেক্ট করুন");
         return;
       }
-      if (file.size > 500 * 1024 * 1024) {
-        setError("ফাইল সাইজ 500MB এর বেশি হতে পারবে না");
+      if (file.size > 5 * 1024 * 1024 * 1024) {
+        setError("ফাইল সাইজ 5GB এর বেশি হতে পারবে না");
         return;
       }
       setSelectedFile(file);
@@ -369,7 +369,7 @@ export const VideoUploadModal = ({
                     ভিডিও ফাইল ড্র্যাগ করুন বা ক্লিক করুন
                   </p>
                   <p className="text-sm text-slate-400 mt-1">
-                    MP4, WebM, MOV, AVI (সর্বোচ্চ 500MB)
+                    MP4, WebM, MOV, AVI (সর্বোচ্চ 5GB)
                   </p>
                 </>
               )}
