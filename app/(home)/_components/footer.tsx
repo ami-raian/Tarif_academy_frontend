@@ -36,14 +36,20 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center mb-4">
-              <div className="bg-white dark:bg-white px-2 py-1 rounded-md">
-                <Image
-                  src="/tarifAcademyLogo.png"
-                  alt="Tarif Academy"
-                  width={150}
-                  height={40}
-                />
-              </div>
+              <Image
+                src="/tarifAcademyLogo.png"
+                alt="Tarif Academy"
+                width={150}
+                height={28}
+                className="block dark:hidden"
+              />
+              <Image
+                src="/tarifAcademyLogo-dark.png"
+                alt="Tarif Academy"
+                width={150}
+                height={28}
+                className="hidden dark:block"
+              />
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               বাংলাদেশের সেরা অনলাইন শিক্ষা প্ল্যাটফর্ম
