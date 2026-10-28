@@ -12,7 +12,6 @@ import {
 const quickLinks = [
   { href: "/", label: "হোম" },
   { href: "/courses", label: "কোর্সসমূহ" },
-  { href: "/about", label: "আমাদের সম্পর্কে" },
   { href: "/contact", label: "যোগাযোগ" },
 ];
 

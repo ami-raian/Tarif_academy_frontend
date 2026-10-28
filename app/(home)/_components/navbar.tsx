@@ -30,7 +30,6 @@ import {
 const NAV_LINKS = [
   { href: "/", label: "হোম" },
   { href: "/courses", label: "কোর্স সমূহ" },
-  { href: "/about", label: "আমাদের সম্পর্কে" },
   { href: "/contact", label: "যোগাযোগ" },
 ];
 
