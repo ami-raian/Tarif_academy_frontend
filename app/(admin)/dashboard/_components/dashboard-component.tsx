@@ -18,6 +18,7 @@ import {
   getCourses,
   getCourseVideos,
   syncAllVideos as syncAllVideosApi,
+  deleteVideo,
   getThumbnailUrl,
 } from "@/lib/api";
 import type {
@@ -43,6 +44,7 @@ import {
   RefreshCw,
   Pencil,
   GraduationCap,
+  Trash2,
 } from "lucide-react";
 
 const DashboardComponent = () => {
@@ -64,6 +66,7 @@ const DashboardComponent = () => {
   const [isEditCourseModalOpen, setIsEditCourseModalOpen] = useState(false);
   const [courseToEdit, setCourseToEdit] = useState<Course | null>(null);
   const [publishingCourse, setPublishingCourse] = useState<string | null>(null);
+  const [deletingVideo, setDeletingVideo] = useState<string | null>(null);
 
   // Fetch all courses
   useEffect(() => {
@@ -141,6 +144,35 @@ const DashboardComponent = () => {
       alert("সিঙ্ক করতে সমস্যা হয়েছে");
     } finally {
       setSyncing(false);
+    }
+  };
+
+  // Remove a video that never finished uploading (processing / failed)
+  const handleDeleteVideo = async (
+    e: React.MouseEvent,
+    video: Video | VideoWithAccess,
+  ) => {
+    e.stopPropagation(); // Prevent video selection
+    if (!confirm(`"${video.title}" ভিডিওটি মুছে ফেলতে চান?`)) return;
+
+    try {
+      setDeletingVideo(video._id);
+      const res = await deleteVideo(video._id);
+      if (res.success) {
+        if (selectedVideo?._id === video._id) {
+          setSelectedVideo(null);
+        }
+        if (selectedCourse) {
+          await fetchCourseVideos(selectedCourse._id);
+        }
+      } else {
+        alert(res.message || "ভিডিও মুছতে সমস্যা হয়েছে");
+      }
+    } catch (error) {
+      console.error("Failed to delete video:", error);
+      alert("ভিডিও মুছতে সমস্যা হয়েছে");
+    } finally {
+      setDeletingVideo(null);
     }
   };
 
@@ -511,61 +543,83 @@ const DashboardComponent = () => {
                                   const statusConfig = getStatusConfig(
                                     video.status,
                                   );
+                                  const canDelete = video.status !== "ready";
+                                  const isDeleting =
+                                    deletingVideo === video._id;
 
                                   return (
-                                    <button
-                                      key={video._id}
-                                      onClick={() => handleVideoSelect(video)}
-                                      className={`w-full px-4 py-3 flex items-start gap-3 transition-all border-l-2 ${
-                                        isSelected
-                                          ? "bg-primary/5 border-l-primary"
-                                          : "border-l-transparent hover:bg-white dark:hover:bg-gray-700"
-                                      }`}
-                                    >
-                                      <div
-                                        className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
+                                    <div key={video._id} className="relative">
+                                      <button
+                                        onClick={() => handleVideoSelect(video)}
+                                        className={`w-full px-4 py-3 flex items-start gap-3 transition-all border-l-2 ${
+                                          canDelete ? "pr-12" : ""
+                                        } ${
                                           isSelected
-                                            ? "bg-primary text-white"
-                                            : "bg-slate-200 dark:bg-gray-600 text-slate-600 dark:text-gray-300"
+                                            ? "bg-primary/5 border-l-primary"
+                                            : "border-l-transparent hover:bg-white dark:hover:bg-gray-700"
                                         }`}
                                       >
-                                        {isSelected ? (
-                                          <Play className="w-4 h-4" />
-                                        ) : (
-                                          <span className="text-xs font-medium">
-                                            {videoIndex + 1}
-                                          </span>
-                                        )}
-                                      </div>
-                                      <div className="flex-1 min-w-0 text-left">
-                                        <p
-                                          className={`text-sm truncate ${
+                                        <div
+                                          className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
                                             isSelected
-                                              ? "font-medium text-primary"
-                                              : "text-slate-700 dark:text-gray-300"
+                                              ? "bg-primary text-white"
+                                              : "bg-slate-200 dark:bg-gray-600 text-slate-600 dark:text-gray-300"
                                           }`}
                                         >
-                                          {video.title}
-                                        </p>
-                                        <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                          <span
-                                            className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${statusConfig.bg} ${statusConfig.text}`}
-                                          >
-                                            {statusConfig.icon}{" "}
-                                            {statusConfig.label}
-                                          </span>
-                                          {video.isFree && (
-                                            <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500 text-white">
-                                              ফ্রি
+                                          {isSelected ? (
+                                            <Play className="w-4 h-4" />
+                                          ) : (
+                                            <span className="text-xs font-medium">
+                                              {videoIndex + 1}
                                             </span>
                                           )}
-                                          <span className="text-[10px] text-slate-400 dark:text-gray-500 flex items-center gap-1">
-                                            <Clock className="w-4 h-4" />
-                                            {formatDuration(video.duration)}
-                                          </span>
                                         </div>
-                                      </div>
-                                    </button>
+                                        <div className="flex-1 min-w-0 text-left">
+                                          <p
+                                            className={`text-sm truncate ${
+                                              isSelected
+                                                ? "font-medium text-primary"
+                                                : "text-slate-700 dark:text-gray-300"
+                                            }`}
+                                          >
+                                            {video.title}
+                                          </p>
+                                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                            <span
+                                              className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${statusConfig.bg} ${statusConfig.text}`}
+                                            >
+                                              {statusConfig.icon}{" "}
+                                              {statusConfig.label}
+                                            </span>
+                                            {video.isFree && (
+                                              <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500 text-white">
+                                                ফ্রি
+                                              </span>
+                                            )}
+                                            <span className="text-[10px] text-slate-400 dark:text-gray-500 flex items-center gap-1">
+                                              <Clock className="w-4 h-4" />
+                                              {formatDuration(video.duration)}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </button>
+                                      {canDelete && (
+                                        <button
+                                          onClick={(e) =>
+                                            handleDeleteVideo(e, video)
+                                          }
+                                          disabled={isDeleting}
+                                          className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-md flex items-center justify-center text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/30 transition-colors disabled:opacity-50"
+                                          title="ভিডিও মুছে ফেলুন"
+                                        >
+                                          {isDeleting ? (
+                                            <span className="w-4 h-4 border-2 border-rose-500 border-t-transparent rounded-full animate-spin" />
+                                          ) : (
+                                            <Trash2 className="w-4 h-4" />
+                                          )}
+                                        </button>
+                                      )}
+                                    </div>
                                   );
                                 })}
                               </div>
